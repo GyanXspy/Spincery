@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Details - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-purple-600">Spincery Cloud Kitchen</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-purple-600">Dashboard</a>
+                    <a href="/subscriptions" class="text-gray-700 hover:text-purple-600">My Subscriptions</a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Subscription Details Section -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <!-- Subscription Header -->
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Subscription Details</h1>
+                    <p class="text-gray-600" th:text="${'Subscription ID: ' + subscription.id}">Subscription ID: 12345</p>
+                </div>
+                <div class="text-right">
+                    <span th:class="${'px-3 py-1 rounded-full text-sm font-semibold ' + 
+                                   (subscription.status == 'ACTIVE' ? 'bg-green-100 text-green-800' : 
+                                    subscription.status == 'PAUSED' ? 'bg-yellow-100 text-yellow-800' : 
+                                    subscription.status == 'CANCELLED' ? 'bg-red-100 text-red-800' : 
+                                    'bg-gray-100 text-gray-800')}"
+                          th:text="${subscription.status}">ACTIVE</span>
+                </div>
+            </div>
+
+            <!-- Cloud Kitchen Information -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Cloud Kitchen Information</h2>
+                <div class="flex items-center space-x-6">
+                    <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-cloud text-2xl text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800" th:text="${subscription.cloudKitchen.kitchenName}">Cloud Kitchen Name</h3>
+                        <p class="text-gray-600 mb-2" th:text="${subscription.cloudKitchen.location}">Kitchen Location</p>
+                        <p class="text-gray-500 mb-2" th:text="${subscription.cloudKitchen.cuisineType}">Cuisine Type</p>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center">
+                                <span class="text-yellow-500">★</span>
+                                <span class="text-gray-600 ml-1" th:text="${subscription.cloudKitchen.rating}">4.5</span>
+                                <span class="text-gray-500 ml-2">(80 reviews)</span>
+                            </div>
+                            <div class="text-purple-600 font-semibold">
+                                <span th:text="${subscription.cloudKitchen.phone}">+1 234 567 8900</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meal Plan Information -->
+            <div class="bg-purple-50 rounded-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Meal Plan Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Plan Details</h3>
+                        <div class="space-y-2 text-gray-600">
+                            <p><span class="font-medium">Plan Name:</span> <span th:text="${subscription.mealPlan.planName}">Vegetarian Plan</span></p>
+                            <p><span class="font-medium">Duration Type:</span> <span th:text="${subscription.mealPlan.durationType}">Weekly</span></p>
+                            <p><span class="font-medium">Price:</span> <span th:text="${'$' + subscription.mealPlan.price}">$49</span> per week</p>
+                            <p><span class="font-medium">Description:</span> <span th:text="${subscription.mealPlan.description}">Fresh vegetarian meals</span></p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Meal Schedule</h3>
+                        <div class="space-y-2 text-gray-600">
+                            <p><span class="font-medium">Breakfast:</span> <span th:text="${subscription.mealPlan.breakfastMenu}">Oatmeal, fruits</span></p>
+                            <p><span class="font-medium">Lunch:</span> <span th:text="${subscription.mealPlan.lunchMenu}">Salad, protein</span></p>
+                            <p><span class="font-medium">Dinner:</span> <span th:text="${subscription.mealPlan.dinnerMenu}">Vegetables, grains</span></p>
+                            <p><span class="font-medium">Dietary Preferences:</span> <span th:text="${subscription.mealPlan.dietaryPreferences}">Vegetarian</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscription Details -->
+            <div class="bg-blue-50 rounded-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Subscription Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Timeline</h3>
+                        <div class="space-y-2 text-gray-600">
+                            <p><span class="font-medium">Start Date:</span> <span th:text="${#temporals.format(subscription.startDate, 'dd MMM yyyy')}">20 Dec 2024</span></p>
+                            <p><span class="font-medium">End Date:</span> <span th:text="${#temporals.format(subscription.endDate, 'dd MMM yyyy')}">17 Jan 2025</span></p>
+                            <p><span class="font-medium">Duration:</span> <span>4 weeks</span></p>
+                            <p><span class="font-medium">Next Delivery:</span> <span th:text="${#temporals.format(subscription.nextDeliveryDate, 'dd MMM yyyy')}">22 Dec 2024</span></p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Delivery Information</h3>
+                        <div class="space-y-2 text-gray-600">
+                            <p><span class="font-medium">Delivery Address:</span> <span th:text="${subscription.deliveryAddress}">Your Address</span></p>
+                            <p><span class="font-medium">Delivery Time:</span> <span th:text="${subscription.deliveryTimeSlots}">Morning</span></p>
+                            <p><span class="font-medium">Dietary Preferences:</span> <span th:text="${subscription.dietaryPreferences}">No restrictions</span></p>
+                            <p><span class="font-medium">Meals per Week:</span> <span>7</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Information -->
+            <div class="bg-green-50 rounded-lg p-6 mb-8">
+                <h3 class="font-semibold text-gray-800 mb-4">Payment Information</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Plan Price (per week):</span>
+                        <span class="font-semibold" th:text="${'$' + subscription.mealPlan.price}">$49</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Number of weeks:</span>
+                        <span class="font-semibold">4</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Subtotal:</span>
+                        <span class="font-semibold">$196</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Delivery Fee:</span>
+                        <span class="font-semibold">$0</span>
+                    </div>
+                    <div class="border-t border-gray-200 pt-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-800 font-semibold">Total Amount:</span>
+                            <span class="text-green-600 font-bold" th:text="${'$' + subscription.totalAmount}">$196</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between mt-2">
+                        <span class="text-gray-600">Payment Status:</span>
+                        <span class="font-semibold text-green-600">Paid</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscription Terms -->
+            <div class="bg-yellow-50 rounded-lg p-6 mb-8">
+                <h3 class="font-semibold text-gray-800 mb-4">Subscription Terms</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                    <div>
+                        <p><i class="fas fa-calendar mr-2"></i>Flexible start date</p>
+                        <p><i class="fas fa-pause mr-2"></i>Pause anytime</p>
+                        <p><i class="fas fa-credit-card mr-2"></i>Weekly billing</p>
+                    </div>
+                    <div>
+                        <p><i class="fas fa-truck mr-2"></i>Free delivery</p>
+                        <p><i class="fas fa-leaf mr-2"></i>Fresh ingredients</p>
+                        <p><i class="fas fa-phone mr-2"></i>24/7 support</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscription Actions -->
+            <div class="border-t border-gray-200 pt-6">
+                <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                    <div class="text-sm text-gray-500">
+                        <p><span class="font-semibold">Subscribed on:</span> <span th:text="${#temporals.format(subscription.createdAt, 'dd MMM yyyy, HH:mm')}">20 Dec 2024, 14:30</span></p>
+                        <p><span class="font-semibold">Last updated:</span> <span th:text="${#temporals.format(subscription.updatedAt, 'dd MMM yyyy, HH:mm')}">20 Dec 2024, 14:30</span></p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-edit mr-2"></i>Modify Subscription
+                        </button>
+                        <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-pause mr-2"></i>Pause Subscription
+                        </button>
+                        <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-times mr-2"></i>Cancel Subscription
+                        </button>
+                        <button onclick="window.print()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-print mr-2"></i>Print
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

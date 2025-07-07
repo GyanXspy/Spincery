@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Menu Item - Spincery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white">Restaurant Panel</h4>
+                        <div class="text-white-50">
+                            <i class="fas fa-user-circle fa-2x"></i>
+                            <div>Restaurant Owner</div>
+                        </div>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/restaurant/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/restaurant/menu">
+                                <i class="fas fa-utensils me-2"></i>
+                                Menu
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/restaurant/orders">
+                                <i class="fas fa-list-alt me-2"></i>
+                                Orders
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/restaurant/edit">
+                                <i class="fas fa-edit me-2"></i>
+                                Edit Restaurant
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/restaurant/settings">
+                                <i class="fas fa-cog me-2"></i>
+                                Settings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/restaurant/analytics">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Analytics
+                            </a>
+                        </li>
+                        <li class="nav-item mt-3">
+                            <a class="nav-link" href="/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Edit Menu Item</h1>
+                </div>
+
+                <!-- Alert Messages -->
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- Edit Menu Item Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-edit me-2"></i>
+                            Edit Menu Item: <span th:text="${menuItem.itemName}">Item Name</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/menu-item/edit/{id}(id=${menuItem.id})}" th:object="${menuItem}" method="post">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="itemName" class="form-label">Item Name *</label>
+                                    <input type="text" class="form-control" id="itemName" 
+                                           th:field="*{itemName}" th:value="${menuItem.itemName}" required>
+                                    <div th:if="${#fields.hasErrors('itemName')}" class="text-danger">
+                                        <span th:errors="*{itemName}"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="category" class="form-label">Category *</label>
+                                    <select class="form-select" id="category" th:field="*{category}" required>
+                                        <option value="">Select Category</option>
+                                        <option value="STARTERS" th:selected="${menuItem.category == 'STARTERS'}">Starters</option>
+                                        <option value="MAIN_COURSE" th:selected="${menuItem.category == 'MAIN_COURSE'}">Main Course</option>
+                                        <option value="DESSERTS" th:selected="${menuItem.category == 'DESSERTS'}">Desserts</option>
+                                        <option value="BEVERAGES" th:selected="${menuItem.category == 'BEVERAGES'}">Beverages</option>
+                                        <option value="SIDES" th:selected="${menuItem.category == 'SIDES'}">Sides</option>
+                                        <option value="SALADS" th:selected="${menuItem.category == 'SALADS'}">Salads</option>
+                                        <option value="SOUPS" th:selected="${menuItem.category == 'SOUPS'}">Soups</option>
+                                        <option value="BREADS" th:selected="${menuItem.category == 'BREADS'}">Breads</option>
+                                        <option value="RICE" th:selected="${menuItem.category == 'RICE'}">Rice</option>
+                                        <option value="CURRIES" th:selected="${menuItem.category == 'CURRIES'}">Curries</option>
+                                        <option value="GRILLED" th:selected="${menuItem.category == 'GRILLED'}">Grilled</option>
+                                        <option value="SEAFOOD" th:selected="${menuItem.category == 'SEAFOOD'}">Seafood</option>
+                                        <option value="VEGETARIAN" th:selected="${menuItem.category == 'VEGETARIAN'}">Vegetarian</option>
+                                        <option value="NON_VEGETARIAN" th:selected="${menuItem.category == 'NON_VEGETARIAN'}">Non-Vegetarian</option>
+                                        <option value="FAST_FOOD" th:selected="${menuItem.category == 'FAST_FOOD'}">Fast Food</option>
+                                        <option value="HEALTHY" th:selected="${menuItem.category == 'HEALTHY'}">Healthy</option>
+                                        <option value="KIDS_MENU" th:selected="${menuItem.category == 'KIDS_MENU'}">Kids Menu</option>
+                                        <option value="SPECIALS" th:selected="${menuItem.category == 'SPECIALS'}">Specials</option>
+                                        <option value="OTHERS" th:selected="${menuItem.category == 'OTHERS'}">Others</option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('category')}" class="text-danger">
+                                        <span th:errors="*{category}"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="price" class="form-label">Price (₹) *</label>
+                                    <input type="number" class="form-control" id="price" 
+                                           th:field="*{price}" th:value="${menuItem.price}" step="0.01" min="0" required>
+                                    <div th:if="${#fields.hasErrors('price')}" class="text-danger">
+                                        <span th:errors="*{price}"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="preparationTime" class="form-label">Preparation Time (minutes)</label>
+                                    <input type="number" class="form-control" id="preparationTime" 
+                                           th:field="*{preparationTime}" th:value="${menuItem.preparationTime}" min="0">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" rows="3" 
+                                          th:field="*{description}" th:text="${menuItem.description}" placeholder="Describe the dish, ingredients, etc."></textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="imageUrl" class="form-label">Image URL</label>
+                                    <input type="url" class="form-control" id="imageUrl" 
+                                           th:field="*{imageUrl}" th:value="${menuItem.imageUrl}" placeholder="https://example.com/image.jpg">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="spiceLevel" class="form-label">Spice Level</label>
+                                    <select class="form-select" id="spiceLevel" th:field="*{spiceLevel}">
+                                        <option value="">Select Spice Level</option>
+                                        <option value="MILD" th:selected="${menuItem.spiceLevel == 'MILD'}">Mild</option>
+                                        <option value="MEDIUM" th:selected="${menuItem.spiceLevel == 'MEDIUM'}">Medium</option>
+                                        <option value="HOT" th:selected="${menuItem.spiceLevel == 'HOT'}">Hot</option>
+                                        <option value="VERY_HOT" th:selected="${menuItem.spiceLevel == 'VERY_HOT'}">Very Hot</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="dietaryInfo" class="form-label">Dietary Information</label>
+                                    <select class="form-select" id="dietaryInfo" th:field="*{dietaryInfo}">
+                                        <option value="">Select Dietary Info</option>
+                                        <option value="VEGETARIAN" th:selected="${menuItem.dietaryInfo == 'VEGETARIAN'}">Vegetarian</option>
+                                        <option value="NON_VEGETARIAN" th:selected="${menuItem.dietaryInfo == 'NON_VEGETARIAN'}">Non-Vegetarian</option>
+                                        <option value="VEGAN" th:selected="${menuItem.dietaryInfo == 'VEGAN'}">Vegan</option>
+                                        <option value="GLUTEN_FREE" th:selected="${menuItem.dietaryInfo == 'GLUTEN_FREE'}">Gluten Free</option>
+                                        <option value="DAIRY_FREE" th:selected="${menuItem.dietaryInfo == 'DAIRY_FREE'}">Dairy Free</option>
+                                        <option value="NUT_FREE" th:selected="${menuItem.dietaryInfo == 'NUT_FREE'}">Nut Free</option>
+                                        <option value="HALAL" th:selected="${menuItem.dietaryInfo == 'HALAL'}">Halal</option>
+                                        <option value="KOSHER" th:selected="${menuItem.dietaryInfo == 'KOSHER'}">Kosher</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" id="isAvailable" 
+                                               th:field="*{isAvailable}" th:checked="${menuItem.isAvailable}">
+                                        <label class="form-check-label" for="isAvailable">
+                                            Available
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="calories" class="form-label">Calories (per serving)</label>
+                                    <input type="number" class="form-control" id="calories" 
+                                           th:field="*{calories}" th:value="${menuItem.calories}" min="0">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="servingSize" class="form-label">Serving Size</label>
+                                    <input type="text" class="form-control" id="servingSize" 
+                                           th:field="*{servingSize}" th:value="${menuItem.servingSize}" placeholder="e.g., 1 plate, 250g">
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a th:href="@{/restaurant/menu(restaurantId=${menuItem.restaurant != null ? menuItem.restaurant.id : ''})}" class="btn btn-secondary me-md-2">
+                                    <i class="fas fa-arrow-left me-2"></i>
+                                    Back to Menu
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>
+                                    Update Menu Item
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

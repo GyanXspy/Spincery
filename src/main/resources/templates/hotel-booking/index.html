@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Booking - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">Spincery Hotel Booking</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-blue-600">Dashboard</a>
+                    <a href="/bookings" class="text-gray-700 hover:text-blue-600">My Bookings</a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h1 class="text-4xl font-bold mb-4">Find Your Perfect Stay</h1>
+            <p class="text-xl mb-8">Discover amazing hotels and book your next adventure with ease</p>
+            <div class="flex justify-center space-x-4">
+                <a href="/hotels" class="bg-white text-blue-600 font-bold py-3 px-6 rounded-lg hover:bg-gray-100">
+                    Browse Hotels
+                </a>
+                <a href="/my-bookings" class="bg-transparent border-2 border-white text-white font-bold py-3 px-6 rounded-lg hover:bg-white hover:text-blue-600">
+                    My Bookings
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Search Hotels</h2>
+            <form action="/hotels" method="get" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <input type="text" name="city" placeholder="Destination" 
+                       class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="date" name="checkIn" placeholder="Check-in Date" 
+                       class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="date" name="checkOut" placeholder="Check-out Date" 
+                       class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select name="guests" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="1">1 Guest</option>
+                    <option value="2">2 Guests</option>
+                    <option value="3">3 Guests</option>
+                    <option value="4">4 Guests</option>
+                    <option value="5">5+ Guests</option>
+                </select>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg">
+                    Search
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Featured Hotels -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">Featured Hotels</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div th:each="hotel : ${hotels}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                <div class="h-48 bg-gray-200 flex items-center justify-center">
+                    <i class="fas fa-hotel text-4xl text-gray-400"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2" th:text="${hotel.hotelName}">Hotel Name</h3>
+                    <p class="text-gray-600 mb-2" th:text="${hotel.city}">City</p>
+                    <p class="text-gray-500 mb-4" th:text="${hotel.address}">Address</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <span class="text-yellow-500">★</span>
+                            <span class="text-gray-600 ml-1" th:text="${hotel.rating}">4.5</span>
+                            <span class="text-gray-500 ml-2">(120 reviews)</span>
+                        </div>
+                        <div class="text-green-600 font-semibold">
+                            <span th:text="${'From $' + hotel.pricePerNight}">From $150</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-500">
+                            <span class="font-semibold">Amenities:</span> WiFi, Pool, Gym
+                        </div>
+                        <a th:href="@{/hotel-details/{id}(id=${hotel.id})}" 
+                           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popular Destinations -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">Popular Destinations</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+                <i class="fas fa-city text-4xl text-blue-500 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-800">New York</h3>
+                <p class="text-gray-500">500+ hotels</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+                <i class="fas fa-sun text-4xl text-blue-500 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-800">Miami</h3>
+                <p class="text-gray-500">300+ hotels</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+                <i class="fas fa-mountain text-4xl text-blue-500 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-800">Denver</h3>
+                <p class="text-gray-500">200+ hotels</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+                <i class="fas fa-palm-tree text-4xl text-blue-500 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-800">Los Angeles</h3>
+                <p class="text-gray-500">400+ hotels</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Spincery Hotel Booking</h3>
+                    <p class="text-gray-300">Find your perfect stay with us.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="/hotels" class="hover:text-white">Hotels</a></li>
+                        <li><a href="/bookings" class="hover:text-white">My Bookings</a></li>
+                        <li><a href="/support" class="hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 Spincery Hotel Booking. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

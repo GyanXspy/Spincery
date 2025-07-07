@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Menu - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-orange-600 to-orange-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-utensils text-2xl"></i>
+                    <h1 class="text-xl font-bold">Spincery Food Delivery</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/food-delivery" class="hover:text-orange-200 transition-colors">
+                        <i class="fas fa-home mr-2"></i>Home
+                    </a>
+                    <a href="/restaurants" class="hover:text-orange-200 transition-colors">
+                        <i class="fas fa-store mr-2"></i>Restaurants
+                    </a>
+                    <a href="/orders" class="hover:text-orange-200 transition-colors">
+                        <i class="fas fa-list mr-2"></i>My Orders
+                    </a>
+                    <a href="/dashboard" class="hover:text-orange-200 transition-colors">
+                        <i class="fas fa-user mr-2"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Restaurant Header -->
+    <div class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-utensils text-orange-600 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800" th:text="${restaurant.restaurantName}">Restaurant Name</h2>
+                        <p class="text-gray-600" th:text="${restaurant.cuisineType}">Cuisine Type</p>
+                        <div class="flex items-center mt-1">
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <span class="ml-1 text-gray-700" th:text="${restaurant.rating}">4.5</span>
+                            </div>
+                            <span class="mx-2 text-gray-400">•</span>
+                            <span class="text-gray-600" th:text="${restaurant.deliveryTime}">30-45 min</span>
+                            <span class="mx-2 text-gray-400">•</span>
+                            <span class="text-gray-600" th:text="${'₹' + restaurant.deliveryCharges}">₹30 delivery</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Minimum Order</p>
+                    <p class="text-lg font-semibold text-gray-800" th:text="${'₹' + restaurant.minimumOrder}">₹200</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Category Filter -->
+        <div class="mb-8">
+            <div class="flex flex-wrap gap-2">
+                <button class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+                    All Items
+                </button>
+                <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                    Starters
+                </button>
+                <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                    Main Course
+                </button>
+                <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                    Desserts
+                </button>
+                <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                    Beverages
+                </button>
+            </div>
+        </div>
+
+        <!-- Menu Items -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div th:each="menuItem : ${menuItems}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                <div class="relative">
+                    <img th:src="${menuItem.imageUrl}" alt="Food Item" 
+                         class="w-full h-48 object-cover"
+                         th:onerror="this.src='https://via.placeholder.com/400x300/f3f4f6/6b7280?text=Food+Image'">
+                    <div class="absolute top-2 right-2">
+                        <span th:if="${menuItem.isVegetarian}" class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">
+                            <i class="fas fa-leaf mr-1"></i>Veg
+                        </span>
+                        <span th:unless="${menuItem.isVegetarian}" class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">
+                            <i class="fas fa-drumstick-bite mr-1"></i>Non-Veg
+                        </span>
+                    </div>
+                    <div class="absolute top-2 left-2">
+                        <span th:if="${menuItem.isSpicy}" class="bg-red-600 text-white px-2 py-1 rounded-full text-xs">
+                            <i class="fas fa-fire mr-1"></i>Spicy
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-lg font-semibold text-gray-800" th:text="${menuItem.dishName}">Dish Name</h3>
+                        <span class="text-lg font-bold text-orange-600" th:text="${'₹' + menuItem.price}">₹150</span>
+                    </div>
+                    
+                    <p class="text-gray-600 text-sm mb-4" th:text="${menuItem.description}">Delicious dish description goes here...</p>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-500" th:text="${menuItem.category}">Category</span>
+                            <span class="text-gray-400">•</span>
+                            <span class="text-sm text-gray-500" th:text="${menuItem.foodType}">Food Type</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-2">
+                            <button class="bg-orange-600 text-white px-3 py-1 rounded-lg hover:bg-orange-700 transition-colors text-sm">
+                                <i class="fas fa-plus mr-1"></i>Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(menuItems)}" class="text-center py-12">
+            <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-utensils text-gray-400 text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">No Menu Items Available</h3>
+            <p class="text-gray-500">This restaurant hasn't added any menu items yet.</p>
+        </div>
+    </div>
+
+    <!-- Order Summary (Fixed Bottom) -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-orange-100 rounded-full p-2">
+                        <i class="fas fa-shopping-cart text-orange-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Items in cart</p>
+                        <p class="font-semibold text-gray-800">0 items</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="text-sm text-gray-600">Total Amount</p>
+                        <p class="text-lg font-bold text-gray-800">₹0</p>
+                    </div>
+                    <button class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors">
+                        <i class="fas fa-credit-card mr-2"></i>Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; 2024 Spincery. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Interactive Features -->
+    <script>
+        // Category filter functionality
+        document.querySelectorAll('[data-category]').forEach(button => {
+            button.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                filterMenuItems(category);
+            });
+        });
+
+        function filterMenuItems(category) {
+            // Implementation for filtering menu items
+            console.log('Filtering by category:', category);
+        }
+
+        // Add to cart functionality
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const itemId = this.getAttribute('data-item-id');
+                addToCart(itemId);
+            });
+        });
+
+        function addToCart(itemId) {
+            // Implementation for adding items to cart
+            console.log('Adding item to cart:', itemId);
+        }
+    </script>
+</body>
+</html> 

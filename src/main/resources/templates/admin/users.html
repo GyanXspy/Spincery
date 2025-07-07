@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - User Management - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-purple-600 to-purple-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-shield-alt text-2xl"></i>
+                    <h1 class="text-xl font-bold">Spincery Admin</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/admin/dashboard" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                    </a>
+                    <a href="/admin/control-panel" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-cog mr-2"></i>Control Panel
+                    </a>
+                    <a href="/admin/restaurants" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-utensils mr-2"></i>Restaurants
+                    </a>
+                    <a href="/dashboard" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-user mr-2"></i>Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">User Management</h2>
+            <p class="text-gray-600">View and manage all users in the system</p>
+        </div>
+
+        <!-- Error Messages -->
+        <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Success Messages -->
+        <div th:if="${success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+            <span th:text="${success}"></span>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <i class="fas fa-users text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Users</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${totalUsers != null ? totalUsers : '0'}">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                        <i class="fas fa-crown text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Admins</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${adminCount != null ? adminCount : '0'}">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100 text-green-600">
+                        <i class="fas fa-utensils text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Restaurant Owners</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${restaurantOwnerCount != null ? restaurantOwnerCount : '0'}">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                        <i class="fas fa-hotel text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Hotel Owners</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${hotelOwnerCount != null ? hotelOwnerCount : '0'}">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-orange-100 text-orange-600">
+                        <i class="fas fa-cloud text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Cloud Kitchen Owners</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${cloudKitchenOwnerCount != null ? cloudKitchenOwnerCount : '0'}">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Users Section -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-crown text-purple-600 mr-2"></i>
+                Admin Users (<span th:text="${adminCount != null ? adminCount : '0'}">0</span>)
+            </h3>
+            
+            <div th:if="${adminUsers != null and !#lists.isEmpty(adminUsers)}" class="space-y-4">
+                <div th:each="adminUser : ${adminUsers}" class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h4 class="text-lg font-semibold text-gray-800" th:text="${adminUser.name}">Admin Name</h4>
+                                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs">
+                                    <i class="fas fa-crown mr-1"></i>Admin
+                                </span>
+                                <span th:if="${adminUser.isVerified}" class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                                    <i class="fas fa-check-circle mr-1"></i>Verified
+                                </span>
+                                <span th:unless="${adminUser.isVerified}" class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">
+                                    <i class="fas fa-clock mr-1"></i>Pending
+                                </span>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                                <div>
+                                    <p><strong>Email:</strong> <span th:text="${adminUser.email}">email@example.com</span></p>
+                                    <p><strong>Phone:</strong> <span th:text="${adminUser.phone}">1234567890</span></p>
+                                </div>
+                                <div>
+                                    <p><strong>Role:</strong> <span th:text="${adminUser.role}">ADMIN</span></p>
+                                    <p><strong>Joined:</strong> <span th:text="${adminUser.createdAt != null ? adminUser.createdAt.toString() : 'N/A'}">Date</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col space-y-2 ml-4">
+                            <span class="text-purple-600 text-sm font-medium">
+                                <i class="fas fa-crown mr-1"></i>Admin User
+                            </span>
+                            <span class="text-gray-500 text-xs">
+                                ID: <span th:text="${adminUser.id}">1</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div th:if="${adminUsers == null or #lists.isEmpty(adminUsers)}" class="text-center text-gray-500 py-8">
+                <i class="fas fa-crown text-3xl mb-2"></i>
+                <p>No admin users found</p>
+            </div>
+        </div>
+
+        <!-- All Users Section -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-users text-gray-600 mr-2"></i>
+                All Users (<span th:text="${totalUsers != null ? totalUsers : '0'}">0</span>)
+            </h3>
+            
+            <div th:if="${allUsers != null and !#lists.isEmpty(allUsers)}" class="space-y-4">
+                <div th:each="user : ${allUsers}" class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h4 class="text-lg font-semibold text-gray-800" th:text="${user.name}">User Name</h4>
+                                <span th:classappend="${user.role == 'ADMIN' ? 'bg-purple-100 text-purple-800' : 
+                                                      user.role == 'RESTAURANT_OWNER' ? 'bg-green-100 text-green-800' : 
+                                                      user.role == 'HOTEL_OWNER' ? 'bg-yellow-100 text-yellow-800' : 
+                                                      user.role == 'CLOUD_KITCHEN_OWNER' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'}" 
+                                      class="px-2 py-1 rounded-full text-xs">
+                                    <i th:classappend="${user.role == 'ADMIN' ? 'fas fa-crown' : 
+                                                        user.role == 'RESTAURANT_OWNER' ? 'fas fa-utensils' : 
+                                                        user.role == 'HOTEL_OWNER' ? 'fas fa-hotel' : 
+                                                        user.role == 'CLOUD_KITCHEN_OWNER' ? 'fas fa-cloud' : 'fas fa-user'}" 
+                                       class="mr-1"></i>
+                                    <span th:text="${user.role}">CUSTOMER</span>
+                                </span>
+                                <span th:if="${user.isVerified}" class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                                    <i class="fas fa-check-circle mr-1"></i>Verified
+                                </span>
+                                <span th:unless="${user.isVerified}" class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">
+                                    <i class="fas fa-clock mr-1"></i>Pending
+                                </span>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                                <div>
+                                    <p><strong>Email:</strong> <span th:text="${user.email}">email@example.com</span></p>
+                                    <p><strong>Phone:</strong> <span th:text="${user.phone}">1234567890</span></p>
+                                </div>
+                                <div>
+                                    <p><strong>Role:</strong> <span th:text="${user.role}">CUSTOMER</span></p>
+                                    <p><strong>Joined:</strong> <span th:text="${user.createdAt != null ? user.createdAt.toString() : 'N/A'}">Date</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col space-y-2 ml-4">
+                            <form th:if="${user.role != 'ADMIN'}" th:action="@{/admin/users/make-admin}" method="post" class="inline">
+                                <input type="hidden" name="userId" th:value="${user.id}">
+                                <button type="submit" 
+                                        class="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700 transition-colors flex items-center"
+                                        onclick="return confirm('Are you sure you want to make this user an admin?')">
+                                    <i class="fas fa-crown mr-1"></i>Make Admin
+                                </button>
+                            </form>
+                            <span th:if="${user.role == 'ADMIN'}" class="text-purple-600 text-sm font-medium">
+                                <i class="fas fa-crown mr-1"></i>Already Admin
+                            </span>
+                            <span class="text-gray-500 text-xs">
+                                ID: <span th:text="${user.id}">1</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div th:if="${allUsers == null or #lists.isEmpty(allUsers)}" class="text-center text-gray-500 py-8">
+                <i class="fas fa-users text-3xl mb-2"></i>
+                <p>No users found</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; 2024 Spincery. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html> 

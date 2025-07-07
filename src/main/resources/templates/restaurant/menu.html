@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Menu - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-orange-600 to-orange-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-utensils text-2xl"></i>
+                    <h1 class="text-xl font-bold">Spincery Restaurant</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/restaurant/dashboard" class="hover:text-orange-200 transition-colors">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                    </a>
+                    <a href="/restaurant/list" class="hover:text-orange-200 transition-colors">
+                        <i class="fas fa-list mr-2"></i>Restaurants
+                    </a>
+                    <a href="/dashboard" class="hover:text-orange-200 transition-colors">
+                        <i class="fas fa-user mr-2"></i>Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Restaurant Header -->
+    <div class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-utensils text-orange-600 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800" th:text="${restaurant.restaurantName}">Restaurant Name</h2>
+                        <p class="text-gray-600" th:text="${restaurant.description != null ? restaurant.description : 'Restaurant'}">Restaurant Description</p>
+                        <div class="flex items-center mt-1">
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <span class="ml-1 text-gray-700" th:text="${restaurant.rating != null ? restaurant.rating : '0.0'}">4.5</span>
+                            </div>
+                            <span class="mx-2 text-gray-400">•</span>
+                            <span class="text-gray-600" th:text="${restaurant.city != null ? restaurant.city : 'N/A'}">City</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Status</p>
+                    <span th:if="${restaurant.isVerified != null and restaurant.isVerified}" class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                        Verified
+                    </span>
+                    <span th:unless="${restaurant.isVerified != null and restaurant.isVerified}" class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                        Pending
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Menu Management -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-utensils text-orange-600 mr-3"></i>
+                    Menu Management
+                </h3>
+                <a th:href="@{/menu-item/add(restaurantId=${restaurant.id})}" 
+                   class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors flex items-center">
+                    <i class="fas fa-plus mr-2"></i>Add Menu Item
+                </a>
+            </div>
+
+            <!-- Menu Categories -->
+            <div class="mb-6">
+                <div class="flex flex-wrap gap-2">
+                    <button class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+                        All Items
+                    </button>
+                    <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                        Starters
+                    </button>
+                    <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                        Main Course
+                    </button>
+                    <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                        Desserts
+                    </button>
+                    <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                        Beverages
+                    </button>
+                </div>
+            </div>
+
+            <!-- Menu Items Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" th:if="${menuItems != null and !#lists.isEmpty(menuItems)}">
+                        <tr th:each="item : ${menuItems}" class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <img class="h-10 w-10 rounded-full" 
+                                             th:src="${item.imageUrl != null ? item.imageUrl : 'https://via.placeholder.com/40x40'}" 
+                                             alt="Menu Item">
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900" th:text="${item.itemName}">Item Name</div>
+                                        <div class="text-sm text-gray-500" th:text="${item.description != null ? item.description : 'No description'}">Description</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${item.category != null ? item.category : 'General'}">Category</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="'₹' + ${item.price != null ? item.price : '0'}">₹0</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
+                                      th:classappend="${item.isAvailable != null and item.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}"
+                                      th:text="${item.isAvailable != null and item.isAvailable ? 'Available' : 'Unavailable'}">Available</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a th:href="@{/menu-item/edit/{id}(id=${item.id})}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
+                                <form th:action="@{/menu-item/delete/{id}(id=${item.id})}" method="post" style="display: inline;">
+                                    <button type="submit" class="text-red-600 hover:text-red-900" 
+                                            onclick="return confirm('Are you sure you want to delete this menu item?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody th:if="${menuItems == null or #lists.isEmpty(menuItems)}">
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                <i class="fas fa-utensils text-2xl mb-2"></i>
+                                <p>No menu items available</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Restaurant Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Contact Information -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-phone text-orange-600 mr-2"></i>
+                    Contact Information
+                </h4>
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Phone:</span>
+                        <span class="text-gray-800 font-medium" th:text="${restaurant.phone != null ? restaurant.phone : 'N/A'}">+91 98765 43210</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Email:</span>
+                        <span class="text-gray-800 font-medium" th:text="${restaurant.email != null ? restaurant.email : 'N/A'}">info@restaurant.com</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">WhatsApp:</span>
+                        <span class="text-gray-800" th:text="${restaurant.whatsappNumber != null ? restaurant.whatsappNumber : 'N/A'}">+91 98765 43210</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Address:</span>
+                        <span class="text-gray-800 text-sm" th:text="${restaurant.address != null ? restaurant.address : 'N/A'}">123 Main St, City</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Business Hours -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-clock text-orange-600 mr-2"></i>
+                    Business Hours
+                </h4>
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Working Days:</span>
+                        <span class="text-gray-800" th:text="${restaurant.workingDays != null ? restaurant.workingDays : 'N/A'}">Mon-Sun</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Opening Time:</span>
+                        <span class="text-gray-800" th:text="${restaurant.openingTime != null ? restaurant.openingTime : 'N/A'}">10:00 AM</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Closing Time:</span>
+                        <span class="text-gray-800" th:text="${restaurant.closingTime != null ? restaurant.closingTime : 'N/A'}">11:00 PM</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Weekly Off:</span>
+                        <span class="text-gray-800" th:text="${restaurant.weeklyOff != null ? restaurant.weeklyOff : 'None'}">None</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/restaurant/list" 
+               class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Restaurants
+            </a>
+            
+            <a href="/restaurant/edit" 
+               class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+                <i class="fas fa-edit mr-2"></i>
+                Edit Restaurant
+            </a>
+            
+            <a href="/restaurant/dashboard" 
+               class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center">
+                <i class="fas fa-tachometer-alt mr-2"></i>
+                Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; 2024 Spincery. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html> 

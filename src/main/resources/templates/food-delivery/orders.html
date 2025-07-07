@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-orange-600">Spincery Food Delivery</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-orange-600">Dashboard</a>
+                    <a href="/restaurants" class="text-gray-700 hover:text-orange-600">Restaurants</a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Orders Section -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">My Orders</h1>
+            <div class="flex space-x-2">
+                <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-filter mr-2"></i>Filter
+                </button>
+                <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-download mr-2"></i>Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Order Status Tabs -->
+        <div class="bg-white rounded-lg shadow-md mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="flex space-x-8 px-6">
+                    <a href="#" class="border-b-2 border-orange-500 py-4 px-1 text-sm font-medium text-orange-600">
+                        All Orders
+                    </a>
+                    <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Active
+                    </a>
+                    <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Completed
+                    </a>
+                    <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Cancelled
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Orders List -->
+        <div class="space-y-6">
+            <div th:each="order : ${orders}" class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800" th:text="${'Order #' + order.orderId}">Order #12345</h3>
+                        <p class="text-gray-600" th:text="${'Placed on ' + #temporals.format(order.orderDate, 'dd MMM yyyy, HH:mm')}">Placed on 15 Dec 2024, 14:30</p>
+                    </div>
+                    <div class="mt-2 md:mt-0">
+                        <span th:class="${'px-3 py-1 rounded-full text-sm font-semibold ' + 
+                                       (order.status == 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
+                                        order.status == 'CONFIRMED' ? 'bg-blue-100 text-blue-800' : 
+                                        order.status == 'PREPARING' ? 'bg-orange-100 text-orange-800' : 
+                                        order.status == 'OUT_FOR_DELIVERY' ? 'bg-purple-100 text-purple-800' : 
+                                        order.status == 'DELIVERED' ? 'bg-green-100 text-green-800' : 
+                                        'bg-red-100 text-red-800')}"
+                              th:text="${order.status}">PENDING</span>
+                    </div>
+                </div>
+
+                <!-- Restaurant Info -->
+                <div class="flex items-center space-x-4 mb-4">
+                    <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-utensils text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800" th:text="${order.restaurant.restaurantName}">Restaurant Name</h4>
+                        <p class="text-gray-600" th:text="${order.restaurant.address}">Restaurant Address</p>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="border-t border-gray-200 pt-4 mb-4">
+                    <div th:each="item : ${order.orderItems}" class="flex justify-between items-center py-2">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-gray-600" th:text="${item.quantity + 'x'}">2x</span>
+                            <span class="font-medium text-gray-800" th:text="${item.menuItem.dishName}">Dish Name</span>
+                        </div>
+                        <span class="text-gray-600" th:text="${'$' + item.menuItem.price}">$12.99</span>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="border-t border-gray-200 pt-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-gray-600">Subtotal: <span class="font-semibold" th:text="${'$' + order.subtotal}">$25.98</span></p>
+                            <p class="text-gray-600">Delivery Fee: <span class="font-semibold">$2.99</span></p>
+                            <p class="text-lg font-bold text-gray-800">Total: <span th:text="${'$' + order.totalAmount}">$28.97</span></p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+                                Track Order
+                            </button>
+                            <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                Reorder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Orders Message -->
+            <div th:if="${#lists.isEmpty(orders)}" class="text-center py-12">
+                <i class="fas fa-shopping-bag text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-2xl font-bold text-gray-600 mb-2">No orders yet</h3>
+                <p class="text-gray-500 mb-6">Start ordering delicious food from our restaurants!</p>
+                <a href="/restaurants" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg">
+                    Browse Restaurants
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Spincery Food Delivery</h3>
+                    <p class="text-gray-300">Delicious food delivered to your doorstep.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="/restaurants" class="hover:text-white">Restaurants</a></li>
+                        <li><a href="/orders" class="hover:text-white">My Orders</a></li>
+                        <li><a href="/track-order" class="hover:text-white">Track Order</a></li>
+                        <li><a href="/support" class="hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 Spincery Food Delivery. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

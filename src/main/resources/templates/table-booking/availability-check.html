@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Availability Check - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-green-600">Spincery Table Booking</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-green-600">Dashboard</a>
+                    <a href="/restaurants" class="text-gray-700 hover:text-green-600">Restaurants</a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Availability Check Section -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <!-- Restaurant Info -->
+            <div class="flex items-center space-x-6 mb-8">
+                <div class="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-utensils text-3xl text-gray-400"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800" th:text="${restaurant.restaurantName}">Restaurant Name</h1>
+                    <p class="text-gray-600 mb-2" th:text="${restaurant.address}">Restaurant Address</p>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <span class="text-yellow-500">★</span>
+                            <span class="text-gray-600 ml-1" th:text="${restaurant.rating}">4.5</span>
+                            <span class="text-gray-500 ml-2">(90 reviews)</span>
+                        </div>
+                        <div class="text-green-600 font-semibold">
+                            <span th:text="${restaurant.cuisineType}">Italian Cuisine</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Criteria -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Search Criteria</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <span class="font-medium text-gray-700">Date:</span>
+                        <span class="text-gray-600 ml-2" th:text="${#temporals.format(date, 'dd MMM yyyy')}">20 Dec 2024</span>
+                    </div>
+                    <div>
+                        <span class="font-medium text-gray-700">Time:</span>
+                        <span class="text-gray-600 ml-2" th:text="${time}">7:00 PM</span>
+                    </div>
+                    <div>
+                        <span class="font-medium text-gray-700">Number of Guests:</span>
+                        <span class="text-gray-600 ml-2" th:text="${guests}">4</span>
+                    </div>
+                    <div>
+                        <span class="font-medium text-gray-700">Restaurant:</span>
+                        <span class="text-gray-600 ml-2" th:text="${restaurant.restaurantName}">Restaurant Name</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Availability Result -->
+            <div th:if="${hasAvailableTables}" class="bg-green-50 rounded-lg p-6 mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-check text-2xl text-green-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-green-800">Tables Available!</h3>
+                        <p class="text-green-600">Great news! We have tables available for your requested time.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg p-4 mb-4">
+                    <h4 class="font-semibold text-gray-800 mb-2">Available Options</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Standard Table</span>
+                            <span class="text-green-600 font-semibold">Available</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Window Seat</span>
+                            <span class="text-green-600 font-semibold">Available</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Outdoor Seating</span>
+                            <span class="text-green-600 font-semibold">Available</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-4">
+                    <a th:href="@{/restaurant/{id}/table-booking(id=${restaurant.id})}" 
+                       class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg">
+                        <i class="fas fa-calendar-plus mr-2"></i>Book Now
+                    </a>
+                    <a href="/restaurants" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg">
+                        <i class="fas fa-search mr-2"></i>Search Other Times
+                    </a>
+                </div>
+            </div>
+
+            <div th:unless="${hasAvailableTables}" class="bg-red-50 rounded-lg p-6 mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-times text-2xl text-red-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-red-800">No Tables Available</h3>
+                        <p class="text-red-600">Sorry, no tables are available for your requested time.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg p-4 mb-4">
+                    <h4 class="font-semibold text-gray-800 mb-2">Alternative Times</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">6:00 PM</span>
+                            <span class="text-green-600 font-semibold">Available</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">8:00 PM</span>
+                            <span class="text-green-600 font-semibold">Available</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">9:00 PM</span>
+                            <span class="text-green-600 font-semibold">Available</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-4">
+                    <a th:href="@{/restaurant/{id}/table-booking(id=${restaurant.id})}" 
+                       class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg">
+                        <i class="fas fa-calendar-alt mr-2"></i>Choose Different Time
+                    </a>
+                    <a href="/restaurants" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg">
+                        <i class="fas fa-search mr-2"></i>Find Other Restaurants
+                    </a>
+                </div>
+            </div>
+
+            <!-- Restaurant Information -->
+            <div class="bg-blue-50 rounded-lg p-6">
+                <h3 class="font-semibold text-gray-800 mb-4">Restaurant Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p><span class="font-medium">Hours:</span> 11:00 AM - 10:00 PM</p>
+                        <p><span class="font-medium">Phone:</span> <span th:text="${restaurant.phone}">+1 234 567 8900</span></p>
+                        <p><span class="font-medium">Cuisine:</span> <span th:text="${restaurant.cuisineType}">Italian</span></p>
+                    </div>
+                    <div>
+                        <p><span class="font-medium">Reservation Duration:</span> 2 hours</p>
+                        <p><span class="font-medium">Minimum Spend:</span> $50 per person</p>
+                        <p><span class="font-medium">Cancellation:</span> 24 hours notice</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

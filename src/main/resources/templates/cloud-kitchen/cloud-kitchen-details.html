@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Kitchen Details - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-purple-600 to-purple-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-utensils text-2xl"></i>
+                    <span class="text-xl font-bold">Spincery</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-home mr-2"></i>Home
+                    </a>
+                    <a href="/cloud-kitchen" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-cloud-kitchen mr-2"></i>Cloud Kitchens
+                    </a>
+                    <a href="/user/dashboard" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-user mr-2"></i>Dashboard
+                    </a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="hover:text-purple-200 transition-colors">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Cloud Kitchen Details -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8" th:if="${cloudKitchen}">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900" th:text="${cloudKitchen.kitchenName}">Cloud Kitchen Name</h1>
+                    <p class="text-gray-600 mt-2" th:text="${cloudKitchen.description}">Description</p>
+                </div>
+                <div class="text-right">
+                    <div class="flex items-center text-yellow-500 mb-2">
+                        <i class="fas fa-star"></i>
+                        <span class="ml-1" th:text="${cloudKitchen.rating}">4.5</span>
+                        <span class="text-gray-600 ml-1">(<span th:text="${cloudKitchen.totalReviews}">120</span> reviews)</span>
+                    </div>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800" 
+                          th:if="${cloudKitchen.isVerified}">
+                        <i class="fas fa-check-circle mr-1"></i>Verified
+                    </span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Contact Information</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-phone text-purple-600 w-5"></i>
+                            <span class="ml-3" th:text="${cloudKitchen.phone}">Phone</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-envelope text-purple-600 w-5"></i>
+                            <span class="ml-3" th:text="${cloudKitchen.email}">Email</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-map-marker-alt text-purple-600 w-5"></i>
+                            <span class="ml-3" th:text="${cloudKitchen.address + ', ' + cloudKitchen.city}">Address</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Kitchen Details</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-clock text-purple-600 w-5"></i>
+                            <span class="ml-3" th:text="${cloudKitchen.workingHours}">Working Hours</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar text-purple-600 w-5"></i>
+                            <span class="ml-3" th:text="${cloudKitchen.workingDays}">Working Days</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-truck text-purple-600 w-5"></i>
+                            <span class="ml-3" th:text="${cloudKitchen.deliveryRadius + ' km delivery radius'}">Delivery Radius</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t pt-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Specialties</h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800" 
+                          th:each="specialty : ${cloudKitchen.specialties?.split(',')}">
+                        <i class="fas fa-utensils mr-1"></i>
+                        <span th:text="${specialty}">Specialty</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meal Plans Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Available Meal Plans</h2>
+                                        <a th:href="@{/cloud-kitchen/{cloudKitchenId}/meal-plans(cloudKitchenId=${cloudKitchen.id})}" 
+                   class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>View All Plans
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" th:if="${mealPlans and !mealPlans.empty}">
+                <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow" 
+                     th:each="mealPlan : ${mealPlans}">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900" th:text="${mealPlan.planName}">Plan Name</h3>
+                        <span class="text-2xl font-bold text-purple-600" th:text="'₹' + ${mealPlan.price}">₹299</span>
+                    </div>
+                    
+                    <p class="text-gray-600 mb-4" th:text="${mealPlan.description}">Description</p>
+                    
+                    <div class="space-y-2 mb-4">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i class="fas fa-calendar-day text-purple-600 w-4 mr-2"></i>
+                            <span th:text="${mealPlan.durationType + ' - ' + mealPlan.durationValue + ' days'}">Duration</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i class="fas fa-utensils text-purple-600 w-4 mr-2"></i>
+                            <span th:text="${mealPlan.dietaryPreferences}">Dietary Preferences</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Meals Included:</h4>
+                        <div class="space-y-1 text-sm text-gray-600">
+                            <div th:if="${mealPlan.breakfastMenu}">
+                                <i class="fas fa-sun text-yellow-500 w-4 mr-2"></i>
+                                <span th:text="${mealPlan.breakfastMenu}">Breakfast</span>
+                            </div>
+                            <div th:if="${mealPlan.lunchMenu}">
+                                <i class="fas fa-sun text-orange-500 w-4 mr-2"></i>
+                                <span th:text="${mealPlan.lunchMenu}">Lunch</span>
+                            </div>
+                            <div th:if="${mealPlan.dinnerMenu}">
+                                <i class="fas fa-moon text-blue-500 w-4 mr-2"></i>
+                                <span th:text="${mealPlan.dinnerMenu}">Dinner</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <a th:href="@{/meal-plan/{id}/subscribe(id=${mealPlan.id})}" 
+                           class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-center block">
+                            <i class="fas fa-shopping-cart mr-2"></i>Subscribe Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center py-8" th:if="${!mealPlans or mealPlans.empty}">
+                <i class="fas fa-utensils text-4xl text-gray-400 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">No Meal Plans Available</h3>
+                <p class="text-gray-600">This cloud kitchen hasn't added any meal plans yet.</p>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="mt-8 text-center">
+            <a href="/cloud-kitchen" class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Cloud Kitchens
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p>&copy; 2024 Spincery. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-orange-600">Spincery</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-700" th:text="${user.name}">User Name</span>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Welcome Section -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Welcome back, <span th:text="${user.name}">User</span>!</h2>
+            <p class="text-gray-600">Explore our comprehensive platform for food delivery, hotel bookings, and dining experiences.</p>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Food Delivery -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-utensils text-3xl text-orange-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Food Delivery</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Order delicious food from your favorite restaurants and get it delivered to your doorstep.</p>
+                <a href="/food-delivery" class="inline-block bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+                    Order Now
+                </a>
+            </div>
+
+            <!-- Hotel Booking -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-hotel text-3xl text-blue-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Hotel Booking</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Find and book the perfect hotel room for your stay with our wide selection of accommodations.</p>
+                <a href="/hotel-booking" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Book Hotel
+                </a>
+            </div>
+
+            <!-- Dining Table Booking -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-chair text-3xl text-green-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Dining Table Booking</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Reserve a table at your preferred restaurant and enjoy a wonderful dining experience.</p>
+                <a href="/table-booking" class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Book Table
+                </a>
+            </div>
+
+            <!-- Cloud Kitchen -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-cloud text-3xl text-purple-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Cloud Kitchen</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Discover unique meal plans and subscription services from cloud kitchens.</p>
+                <a href="/cloud-kitchen" class="inline-block bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                    Explore Plans
+                </a>
+            </div>
+
+            <!-- Order History -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-history text-3xl text-gray-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Order History</h3>
+                </div>
+                <p class="text-gray-600 mb-4">View your past orders, bookings, and track your current deliveries.</p>
+                <a href="/orders" class="inline-block bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    View History
+                </a>
+            </div>
+
+            <!-- Profile Settings -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-user-cog text-3xl text-indigo-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Profile Settings</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Manage your profile, update preferences, and change account settings.</p>
+                <a href="/profile" class="inline-block bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                    Manage Profile
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Quick Actions</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <a href="/restaurants" class="flex items-center p-3 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">
+                    <i class="fas fa-search text-orange-500 mr-3"></i>
+                    <span class="text-gray-700">Find Restaurants</span>
+                </a>
+                <a href="/hotels" class="flex items-center p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                    <i class="fas fa-search text-blue-500 mr-3"></i>
+                    <span class="text-gray-700">Find Hotels</span>
+                </a>
+                <a href="/track-order" class="flex items-center p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                    <i class="fas fa-truck text-green-500 mr-3"></i>
+                    <span class="text-gray-700">Track Order</span>
+                </a>
+                <a href="/support" class="flex items-center p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                    <i class="fas fa-headset text-purple-500 mr-3"></i>
+                    <span class="text-gray-700">Support</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Spincery</h3>
+                    <p class="text-gray-300">Your comprehensive platform for food delivery, hotel bookings, and dining experiences.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Food Delivery</a></li>
+                        <li><a href="#" class="hover:text-white">Hotel Booking</a></li>
+                        <li><a href="#" class="hover:text-white">Table Booking</a></li>
+                        <li><a href="#" class="hover:text-white">Cloud Kitchen</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">Track Order</a></li>
+                        <li><a href="#" class="hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 Spincery. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

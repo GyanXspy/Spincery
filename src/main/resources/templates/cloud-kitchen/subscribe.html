@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscribe to Meal Plan - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-purple-600">Spincery Cloud Kitchen</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-purple-600">Dashboard</a>
+                    <a href="/subscriptions" class="text-gray-700 hover:text-purple-600">My Subscriptions</a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Subscription Form Section -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <!-- Meal Plan Info -->
+            <div class="flex items-center space-x-6 mb-8">
+                <div class="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-utensils text-3xl text-gray-400"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800" th:text="${mealPlan.planName}">Meal Plan Name</h1>
+                    <p class="text-gray-600 mb-2" th:text="${mealPlan.cloudKitchen.kitchenName}">Cloud Kitchen Name</p>
+                    <p class="text-gray-500 mb-2" th:text="${mealPlan.description}">Meal plan description</p>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-green-600 font-semibold">
+                            <span th:text="${'$' + mealPlan.price}">$49</span> per week
+                        </div>
+                        <div class="text-gray-500">
+                            <span th:text="${mealPlan.durationType}">WEEKLY</span> plan
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscription Form -->
+            <form th:action="@{/subscription/create}" method="post" th:object="${subscription}" class="space-y-6">
+                <input type="hidden" name="mealPlanId" th:value="${mealPlan.id}">
+                <input type="hidden" name="cloudKitchenId" th:value="${mealPlan.cloudKitchen.id}">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                        <input type="date" name="startDate" required
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                        <input type="date" name="endDate" required
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Delivery Address</label>
+                        <textarea name="deliveryAddress" rows="3" required
+                                  placeholder="Enter your delivery address..."
+                                  class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Delivery Time Slots</label>
+                        <select name="deliveryTimeSlots" required
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">Select preferred time</option>
+                            <option value="MORNING">Morning (7:00 AM - 9:00 AM)</option>
+                            <option value="AFTERNOON">Afternoon (12:00 PM - 2:00 PM)</option>
+                            <option value="EVENING">Evening (6:00 PM - 8:00 PM)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Dietary Preferences</label>
+                    <textarea name="dietaryPreferences" rows="3" 
+                              placeholder="Any dietary restrictions or preferences..."
+                              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+                </div>
+
+                <!-- Meal Plan Details -->
+                <div class="bg-purple-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Meal Plan Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div>
+                            <p><span class="font-medium">Plan Type:</span> <span th:text="${mealPlan.planName}">Vegetarian Plan</span></p>
+                            <p><span class="font-medium">Duration:</span> <span th:text="${mealPlan.durationType}">Weekly</span></p>
+                            <p><span class="font-medium">Meals per Week:</span> <span>7</span></p>
+                        </div>
+                        <div>
+                            <p><span class="font-medium">Breakfast:</span> <span th:text="${mealPlan.breakfastMenu}">Oatmeal, fruits</span></p>
+                            <p><span class="font-medium">Lunch:</span> <span th:text="${mealPlan.lunchMenu}">Salad, protein</span></p>
+                            <p><span class="font-medium">Dinner:</span> <span th:text="${mealPlan.dinnerMenu}">Vegetables, grains</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing -->
+                <div class="bg-green-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Pricing Summary</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Plan Price (per week):</span>
+                            <span class="font-semibold" th:text="${'$' + mealPlan.price}">$49</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Number of weeks:</span>
+                            <span class="font-semibold">4</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Subtotal:</span>
+                            <span class="font-semibold">$196</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Delivery Fee:</span>
+                            <span class="font-semibold">$0</span>
+                        </div>
+                        <div class="border-t border-gray-200 pt-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-800 font-semibold">Total:</span>
+                                <span class="text-green-600 font-bold">$196</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subscription Terms -->
+                <div class="bg-yellow-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Subscription Terms</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div>
+                            <p><i class="fas fa-calendar mr-2"></i>Flexible start date</p>
+                            <p><i class="fas fa-pause mr-2"></i>Pause anytime</p>
+                            <p><i class="fas fa-credit-card mr-2"></i>Weekly billing</p>
+                        </div>
+                        <div>
+                            <p><i class="fas fa-truck mr-2"></i>Free delivery</p>
+                            <p><i class="fas fa-leaf mr-2"></i>Fresh ingredients</p>
+                            <p><i class="fas fa-phone mr-2"></i>24/7 support</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end space-x-4">
+                    <a href="/meal-plans" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg">
+                        Cancel
+                    </a>
+                    <button type="submit" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg">
+                        Subscribe Now
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html> 

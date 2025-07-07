@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Kitchens - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-purple-600">Spincery Cloud Kitchen</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-purple-600">Dashboard</a>
+                    <a href="/subscriptions" class="text-gray-700 hover:text-purple-600">My Subscriptions</a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search and Filters -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Find Cloud Kitchens</h2>
+            <form action="/cloud-kitchens" method="get" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <input type="text" name="location" placeholder="Location" 
+                       class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <select name="cuisine" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <option value="">All Cuisines</option>
+                    <option value="Italian">Italian</option>
+                    <option value="Chinese">Chinese</option>
+                    <option value="Indian">Indian</option>
+                    <option value="Mexican">Mexican</option>
+                    <option value="American">American</option>
+                </select>
+                <select name="rating" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <option value="">All Ratings</option>
+                    <option value="4">4+ Stars</option>
+                    <option value="3">3+ Stars</option>
+                    <option value="2">2+ Stars</option>
+                </select>
+                <select name="price" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <option value="">All Prices</option>
+                    <option value="low">Under $10</option>
+                    <option value="medium">$10-$20</option>
+                    <option value="high">Over $20</option>
+                </select>
+                <button type="submit" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg">
+                    Search
+                </button>
+            </form>
+        </div>
+
+        <!-- Cloud Kitchens Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div th:each="kitchen : ${cloudKitchens}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                <div class="h-48 bg-gray-200 flex items-center justify-center">
+                    <i class="fas fa-cloud text-4xl text-gray-400"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2" th:text="${kitchen.kitchenName}">Kitchen Name</h3>
+                    <p class="text-gray-600 mb-2" th:text="${kitchen.cuisineType}">Cuisine Type</p>
+                    <p class="text-gray-500 mb-2" th:text="${kitchen.location}">Location</p>
+                    <p class="text-gray-500 mb-4" th:text="${kitchen.description}">Description</p>
+                    
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <span class="text-yellow-500">★</span>
+                            <span class="text-gray-600 ml-1" th:text="${kitchen.rating}">4.5</span>
+                            <span class="text-gray-500 ml-2">(90 reviews)</span>
+                        </div>
+                        <div class="text-green-600 font-semibold">
+                            <span th:text="${'From $' + kitchen.pricePerMeal}">From $8</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-sm text-gray-500">
+                            <span class="font-semibold">Delivery Time:</span> 25-35 min
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            <span class="font-semibold">Min. Order:</span> $15
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-500">
+                            <span class="font-semibold">Available:</span> 24/7
+                        </div>
+                        <a th:href="@{/cloud-kitchen-details/{id}(id=${kitchen.id})}" 
+                           class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                            View Menu
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Results Message -->
+        <div th:if="${#lists.isEmpty(cloudKitchens)}" class="text-center py-12">
+            <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-2xl font-bold text-gray-600 mb-2">No cloud kitchens found</h3>
+            <p class="text-gray-500">Try adjusting your search criteria or location.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Spincery Cloud Kitchen</h3>
+                    <p class="text-gray-300">Virtual kitchens delivering delicious meals.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="/cloud-kitchens" class="hover:text-white">Cloud Kitchens</a></li>
+                        <li><a href="/meal-plans" class="hover:text-white">Meal Plans</a></li>
+                        <li><a href="/subscriptions" class="hover:text-white">My Subscriptions</a></li>
+                        <li><a href="/support" class="hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 Spincery Cloud Kitchen. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

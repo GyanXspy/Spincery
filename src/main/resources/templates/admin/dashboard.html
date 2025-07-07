@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-purple-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-crown text-2xl mr-3"></i>
+                    <span class="text-xl font-bold">Spincery Admin</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/admin/control-panel" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-cog mr-2"></i>Control Panel
+                    </a>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-purple-300 rounded-full flex items-center justify-center text-purple-800 font-bold">
+                            <span th:text="${userInitial}">A</span>
+                        </div>
+                        <span class="ml-2" th:text="${user.name}">Admin User</span>
+                    </div>
+                    <a href="/logout" class="bg-purple-700 hover:bg-purple-800 px-4 py-2 rounded-lg transition duration-200">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold mb-2">Welcome, <span th:text="${user.name}">Admin</span>!</h1>
+            <p class="text-purple-100">Manage and monitor all Spincery services from your admin dashboard.</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-blue-100 rounded-full">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Users</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${totalUsers != null ? totalUsers : '0'}">1,234</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-green-100 rounded-full">
+                        <i class="fas fa-utensils text-green-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Restaurants</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${totalRestaurants != null ? totalRestaurants : '0'}">89</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-yellow-100 rounded-full">
+                        <i class="fas fa-hotel text-yellow-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Hotels</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${totalHotels != null ? totalHotels : '0'}">45</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-red-100 rounded-full">
+                        <i class="fas fa-cloud text-red-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Cloud Kitchens</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${totalCloudKitchens != null ? totalCloudKitchens : '0'}">23</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Management -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- User Management -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">
+                    <i class="fas fa-users mr-2 text-purple-600"></i>User Management
+                </h2>
+                <div class="space-y-3">
+                    <a href="/admin/users" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-200">
+                        <i class="fas fa-users text-blue-600 mr-3"></i>
+                        <span>View All Users</span>
+                    </a>
+                    <a href="/admin/users" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-200">
+                        <i class="fas fa-crown text-purple-600 mr-3"></i>
+                        <span>Manage Admin Roles</span>
+                    </a>
+                    <a href="/admin/users" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-200">
+                        <i class="fas fa-user-shield text-green-600 mr-3"></i>
+                        <span>User Statistics</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Service Monitoring -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">
+                    <i class="fas fa-chart-line mr-2 text-purple-600"></i>Service Monitoring
+                </h2>
+                <div class="space-y-3">
+                    <a href="/admin/restaurants" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-200">
+                        <i class="fas fa-utensils text-green-600 mr-3"></i>
+                        <span>Restaurant Management</span>
+                    </a>
+                    <a href="#" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-200">
+                        <i class="fas fa-hotel text-blue-600 mr-3"></i>
+                        <span>Hotel Booking</span>
+                    </a>
+                    <a href="#" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-200">
+                        <i class="fas fa-cloud text-yellow-600 mr-3"></i>
+                        <span>Cloud Kitchen</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">
+                <i class="fas fa-history mr-2 text-purple-600"></i>Recent Activity
+            </h2>
+            <div class="space-y-4" th:if="${recentActivities != null and !#lists.isEmpty(recentActivities)}">
+                <div th:each="activity : ${recentActivities}" class="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <div class="w-2 h-2 rounded-full mr-3" 
+                         th:classappend="${activity.type == 'RESTAURANT' ? 'bg-green-500' : 
+                                        activity.type == 'HOTEL' ? 'bg-blue-500' : 
+                                        activity.type == 'CLOUD_KITCHEN' ? 'bg-yellow-500' : 'bg-purple-500'}"></div>
+                    <span class="text-sm text-gray-600" th:text="${activity.message}">Activity message</span>
+                    <span class="ml-auto text-xs text-gray-400" th:text="${activity.timestamp}">2 minutes ago</span>
+                </div>
+            </div>
+            <div th:if="${recentActivities == null or #lists.isEmpty(recentActivities)}" class="text-center text-gray-500 py-8">
+                <i class="fas fa-history text-3xl mb-2"></i>
+                <p>No recent activities</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p>&copy; 2024 Spincery. All rights reserved.</p>
+                <p class="text-gray-400 mt-2">Admin Dashboard - Manage your platform with ease</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

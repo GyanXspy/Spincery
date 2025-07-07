@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">Spincery Hotel Booking</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-blue-600">Dashboard</a>
+                    <a href="/bookings" class="text-gray-700 hover:text-blue-600">My Bookings</a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Booking Details Section -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <!-- Booking Header -->
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Booking Details</h1>
+                    <p class="text-gray-600" th:text="${'Booking ID: ' + booking.id}">Booking ID: 12345</p>
+                </div>
+                <div class="text-right">
+                    <span th:class="${'px-3 py-1 rounded-full text-sm font-semibold ' + 
+                                   (booking.status == 'CONFIRMED' ? 'bg-green-100 text-green-800' : 
+                                    booking.status == 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
+                                    booking.status == 'CANCELLED' ? 'bg-red-100 text-red-800' : 
+                                    'bg-gray-100 text-gray-800')}"
+                          th:text="${booking.status}">CONFIRMED</span>
+                </div>
+            </div>
+
+            <!-- Hotel Information -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Hotel Information</h2>
+                <div class="flex items-center space-x-6">
+                    <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-hotel text-2xl text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800" th:text="${booking.hotel.hotelName}">Hotel Name</h3>
+                        <p class="text-gray-600 mb-2" th:text="${booking.hotel.address}">Hotel Address</p>
+                        <p class="text-gray-500 mb-2" th:text="${booking.hotel.city}">City</p>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center">
+                                <span class="text-yellow-500">★</span>
+                                <span class="text-gray-600 ml-1" th:text="${booking.hotel.rating}">4.5</span>
+                                <span class="text-gray-500 ml-2">(120 reviews)</span>
+                            </div>
+                            <div class="text-blue-600 font-semibold">
+                                <span th:text="${booking.hotel.phone}">+1 234 567 8900</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stay Details -->
+            <div class="bg-blue-50 rounded-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Stay Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Dates & Times</h3>
+                        <div class="space-y-2 text-gray-600">
+                            <p><span class="font-medium">Check-in:</span> <span th:text="${#temporals.format(booking.checkInDate, 'dd MMM yyyy')}">20 Dec 2024</span></p>
+                            <p><span class="font-medium">Check-out:</span> <span th:text="${#temporals.format(booking.checkOutDate, 'dd MMM yyyy')}">22 Dec 2024</span></p>
+                            <p><span class="font-medium">Duration:</span> <span th:text="${booking.numberOfNights}">2</span> nights</p>
+                            <p><span class="font-medium">Check-in Time:</span> 3:00 PM</p>
+                            <p><span class="font-medium">Check-out Time:</span> 11:00 AM</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Guest Information</h3>
+                        <div class="space-y-2 text-gray-600">
+                            <p><span class="font-medium">Number of Guests:</span> <span th:text="${booking.numberOfGuests}">2</span></p>
+                            <p><span class="font-medium">Room Type:</span> <span th:text="${booking.roomType}">Deluxe Room</span></p>
+                            <p><span class="font-medium">Room Size:</span> <span th:text="${booking.room.size}">350</span> sq ft</p>
+                            <p><span class="font-medium">Floor:</span> <span th:text="${booking.room.floor}">5th</span></p>
+                            <p><span class="font-medium">View:</span> <span th:text="${booking.room.view}">City View</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Special Requests -->
+            <div th:if="${booking.specialRequests}" class="bg-yellow-50 rounded-lg p-6 mb-8">
+                <h3 class="font-semibold text-gray-800 mb-2">Special Requests</h3>
+                <p class="text-gray-600" th:text="${booking.specialRequests}">Late check-in, extra towels, room service</p>
+            </div>
+
+            <!-- Payment Information -->
+            <div class="bg-green-50 rounded-lg p-6 mb-8">
+                <h3 class="font-semibold text-gray-800 mb-4">Payment Information</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Room Rate (per night):</span>
+                        <span class="font-semibold" th:text="${'$' + booking.room.pricePerNight}">$150</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Number of nights:</span>
+                        <span class="font-semibold" th:text="${booking.numberOfNights}">2</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Subtotal:</span>
+                        <span class="font-semibold">$300</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Taxes & Fees:</span>
+                        <span class="font-semibold">$25</span>
+                    </div>
+                    <div class="border-t border-gray-200 pt-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-800 font-semibold">Total Amount:</span>
+                            <span class="text-green-600 font-bold" th:text="${'$' + booking.totalAmount}">$325</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between mt-2">
+                        <span class="text-gray-600">Payment Status:</span>
+                        <span class="font-semibold text-green-600">Paid</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hotel Policies -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                <h3 class="font-semibold text-gray-800 mb-4">Hotel Policies</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                    <div>
+                        <p><i class="fas fa-clock mr-2"></i>Check-in: 3:00 PM</p>
+                        <p><i class="fas fa-clock mr-2"></i>Check-out: 11:00 AM</p>
+                        <p><i class="fas fa-credit-card mr-2"></i>Credit Card Required</p>
+                    </div>
+                    <div>
+                        <p><i class="fas fa-calendar mr-2"></i>Cancellation: 24 hours notice</p>
+                        <p><i class="fas fa-smoking-ban mr-2"></i>No Smoking</p>
+                        <p><i class="fas fa-paw mr-2"></i>Pet Friendly</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Actions -->
+            <div class="border-t border-gray-200 pt-6">
+                <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                    <div class="text-sm text-gray-500">
+                        <p><span class="font-semibold">Booked on:</span> <span th:text="${#temporals.format(booking.createdAt, 'dd MMM yyyy, HH:mm')}">15 Dec 2024, 14:30</span></p>
+                        <p><span class="font-semibold">Last updated:</span> <span th:text="${#temporals.format(booking.updatedAt, 'dd MMM yyyy, HH:mm')}">15 Dec 2024, 14:30</span></p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-edit mr-2"></i>Modify Booking
+                        </button>
+                        <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-times mr-2"></i>Cancel Booking
+                        </button>
+                        <button onclick="window.print()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-print mr-2"></i>Print
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

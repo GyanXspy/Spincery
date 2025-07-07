@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">Spincery Hotel Booking</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-blue-600">Dashboard</a>
+                    <a href="/hotels" class="text-gray-700 hover:text-blue-600">Hotels</a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Bookings Section -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">My Bookings</h1>
+            <div class="flex space-x-2">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-filter mr-2"></i>Filter
+                </button>
+                <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-download mr-2"></i>Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Booking Status Tabs -->
+        <div class="bg-white rounded-lg shadow-md mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="flex space-x-8 px-6">
+                    <a href="#" class="border-b-2 border-blue-500 py-4 px-1 text-sm font-medium text-blue-600">
+                        All Bookings
+                    </a>
+                    <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Upcoming
+                    </a>
+                    <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Completed
+                    </a>
+                    <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Cancelled
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Bookings List -->
+        <div class="space-y-6">
+            <div th:each="booking : ${bookings}" class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800" th:text="${'Booking #' + booking.bookingId}">Booking #12345</h3>
+                        <p class="text-gray-600" th:text="${'Booked on ' + #temporals.format(booking.bookingDate, 'dd MMM yyyy, HH:mm')}">Booked on 15 Dec 2024, 14:30</p>
+                    </div>
+                    <div class="mt-2 md:mt-0">
+                        <span th:class="${'px-3 py-1 rounded-full text-sm font-semibold ' + 
+                                       (booking.status == 'CONFIRMED' ? 'bg-green-100 text-green-800' : 
+                                        booking.status == 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
+                                        booking.status == 'CANCELLED' ? 'bg-red-100 text-red-800' : 
+                                        'bg-gray-100 text-gray-800')}"
+                              th:text="${booking.status}">CONFIRMED</span>
+                    </div>
+                </div>
+
+                <!-- Hotel Info -->
+                <div class="flex items-center space-x-4 mb-4">
+                    <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-hotel text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800" th:text="${booking.hotel.hotelName}">Hotel Name</h4>
+                        <p class="text-gray-600" th:text="${booking.hotel.address}">Hotel Address</p>
+                    </div>
+                </div>
+
+                <!-- Booking Details -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <h5 class="font-semibold text-gray-800 mb-2">Stay Details</h5>
+                        <div class="space-y-1 text-sm text-gray-600">
+                            <p><span class="font-medium">Check-in:</span> <span th:text="${#temporals.format(booking.checkInDate, 'dd MMM yyyy')}">20 Dec 2024</span></p>
+                            <p><span class="font-medium">Check-out:</span> <span th:text="${#temporals.format(booking.checkOutDate, 'dd MMM yyyy')}">22 Dec 2024</span></p>
+                            <p><span class="font-medium">Guests:</span> <span th:text="${booking.numberOfGuests}">2</span></p>
+                            <p><span class="font-medium">Room Type:</span> <span th:text="${booking.roomType}">Deluxe Room</span></p>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold text-gray-800 mb-2">Pricing</h5>
+                        <div class="space-y-1 text-sm text-gray-600">
+                            <p><span class="font-medium">Room Rate:</span> <span th:text="${'$' + booking.totalAmount}">$300</span></p>
+                            <p><span class="font-medium">Taxes & Fees:</span> <span>$25</span></p>
+                            <p><span class="font-medium">Total:</span> <span class="font-semibold" th:text="${'$' + (booking.totalAmount + 25)}">$325</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Booking Actions -->
+                <div class="border-t border-gray-200 pt-4">
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm text-gray-500">
+                            <span class="font-semibold">Booking ID:</span> <span th:text="${booking.bookingId}">12345</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                View Details
+                            </button>
+                            <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                Cancel Booking
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Bookings Message -->
+            <div th:if="${#lists.isEmpty(bookings)}" class="text-center py-12">
+                <i class="fas fa-calendar-alt text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-2xl font-bold text-gray-600 mb-2">No bookings yet</h3>
+                <p class="text-gray-500 mb-6">Start exploring amazing hotels and book your next adventure!</p>
+                <a href="/hotels" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg">
+                    Browse Hotels
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Spincery Hotel Booking</h3>
+                    <p class="text-gray-300">Find your perfect stay with us.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="/hotels" class="hover:text-white">Hotels</a></li>
+                        <li><a href="/bookings" class="hover:text-white">My Bookings</a></li>
+                        <li><a href="/support" class="hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 Spincery Hotel Booking. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

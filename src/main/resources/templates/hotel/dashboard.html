@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Dashboard - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">Spincery Hotel</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-700" th:text="${user.name}">Hotel Owner</span>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Welcome Section -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Hotel Management Dashboard</h2>
+            <p class="text-gray-600">Welcome back, <span th:text="${user.name}">Hotel Owner</span>! Manage your hotel rooms, bookings, and revenue.</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <i class="fas fa-bed text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Rooms</p>
+                        <p class="text-2xl font-semibold text-gray-900">24</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100 text-green-600">
+                        <i class="fas fa-check-circle text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Available</p>
+                        <p class="text-2xl font-semibold text-gray-900">18</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-orange-100 text-orange-600">
+                        <i class="fas fa-calendar-check text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Booked</p>
+                        <p class="text-2xl font-semibold text-gray-900">6</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                        <i class="fas fa-dollar-sign text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Revenue</p>
+                        <p class="text-2xl font-semibold text-gray-900">$12,450</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Management Tools -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Room Management -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-door-open text-3xl text-blue-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Room Management</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Add, edit, and manage your hotel rooms, amenities, and pricing.</p>
+                <a href="/hotel/rooms" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Manage Rooms
+                </a>
+            </div>
+
+            <!-- Booking Management -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-calendar-alt text-3xl text-green-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Booking Management</h3>
+                </div>
+                <p class="text-gray-600 mb-4">View and manage all hotel bookings, check-ins, and check-outs.</p>
+                <a href="/hotel/bookings" class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    View Bookings
+                </a>
+            </div>
+
+            <!-- Revenue Analytics -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-chart-line text-3xl text-purple-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Revenue Analytics</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Track your hotel's performance, revenue, and occupancy rates.</p>
+                <a href="/hotel/analytics" class="inline-block bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                    View Analytics
+                </a>
+            </div>
+
+            <!-- Guest Services -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-concierge-bell text-3xl text-orange-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Guest Services</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Manage guest requests, housekeeping, and special services.</p>
+                <a href="/hotel/services" class="inline-block bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+                    Manage Services
+                </a>
+            </div>
+
+            <!-- Hotel Settings -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-cog text-3xl text-gray-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Hotel Settings</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Configure hotel information, policies, and operational settings.</p>
+                <a href="/hotel/settings" class="inline-block bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Settings
+                </a>
+            </div>
+
+            <!-- Reports -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-file-alt text-3xl text-indigo-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Reports</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Generate detailed reports on occupancy, revenue, and guest satisfaction.</p>
+                <a href="/hotel/reports" class="inline-block bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                    Generate Reports
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Bookings -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Recent Bookings</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guest</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-in</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-out</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">John Doe</div>
+                                <div class="text-sm text-gray-500">john@example.com</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Deluxe Room 201</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2024-01-15</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2024-01-17</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Confirmed</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$450</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">Jane Smith</div>
+                                <div class="text-sm text-gray-500">jane@example.com</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Suite 301</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2024-01-18</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2024-01-20</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$650</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Spincery Hotel</h3>
+                    <p class="text-gray-300">Professional hotel management platform for modern hospitality.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Management</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Room Management</a></li>
+                        <li><a href="#" class="hover:text-white">Booking Management</a></li>
+                        <li><a href="#" class="hover:text-white">Revenue Analytics</a></li>
+                        <li><a href="#" class="hover:text-white">Guest Services</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Support</a></li>
+                        <li><a href="#" class="hover:text-white">Training</a></li>
+                        <li><a href="#" class="hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 Spincery Hotel. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

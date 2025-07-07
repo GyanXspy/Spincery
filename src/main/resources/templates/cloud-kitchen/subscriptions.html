@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Subscriptions - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-purple-600">Spincery Cloud Kitchen</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-purple-600">Dashboard</a>
+                    <a href="/cloud-kitchens" class="text-gray-700 hover:text-purple-600">Cloud Kitchens</a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Subscriptions Section -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">My Subscriptions</h1>
+            <div class="flex space-x-2">
+                <button class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-filter mr-2"></i>Filter
+                </button>
+                <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-download mr-2"></i>Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Subscription Status Tabs -->
+        <div class="bg-white rounded-lg shadow-md mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="flex space-x-8 px-6">
+                    <a href="#" class="border-b-2 border-purple-500 py-4 px-1 text-sm font-medium text-purple-600">
+                        All Subscriptions
+                    </a>
+                    <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Active
+                    </a>
+                    <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Paused
+                    </a>
+                    <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Cancelled
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Subscriptions List -->
+        <div class="space-y-6">
+            <div th:each="subscription : ${subscriptions}" class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800" th:text="${'Subscription #' + subscription.subscriptionId}">Subscription #12345</h3>
+                        <p class="text-gray-600" th:text="${'Started on ' + #temporals.format(subscription.startDate, 'dd MMM yyyy')}">Started on 15 Dec 2024</p>
+                    </div>
+                    <div class="mt-2 md:mt-0">
+                        <span th:class="${'px-3 py-1 rounded-full text-sm font-semibold ' + 
+                                       (subscription.status == 'ACTIVE' ? 'bg-green-100 text-green-800' : 
+                                        subscription.status == 'PAUSED' ? 'bg-yellow-100 text-yellow-800' : 
+                                        subscription.status == 'CANCELLED' ? 'bg-red-100 text-red-800' : 
+                                        'bg-gray-100 text-gray-800')}"
+                              th:text="${subscription.status}">ACTIVE</span>
+                    </div>
+                </div>
+
+                <!-- Kitchen Info -->
+                <div class="flex items-center space-x-4 mb-4">
+                    <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-cloud text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800" th:text="${subscription.cloudKitchen.kitchenName}">Kitchen Name</h4>
+                        <p class="text-gray-600" th:text="${subscription.cloudKitchen.location}">Kitchen Location</p>
+                    </div>
+                </div>
+
+                <!-- Subscription Details -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <h5 class="font-semibold text-gray-800 mb-2">Subscription Details</h5>
+                        <div class="space-y-1 text-sm text-gray-600">
+                            <p><span class="font-medium">Plan Type:</span> <span th:text="${subscription.mealPlan.planName}">Vegetarian Plan</span></p>
+                            <p><span class="font-medium">Frequency:</span> <span th:text="${subscription.frequency}">Weekly</span></p>
+                            <p><span class="font-medium">Meals per Week:</span> <span th:text="${subscription.mealsPerWeek}">7</span></p>
+                            <p><span class="font-medium">Next Delivery:</span> <span th:text="${#temporals.format(subscription.nextDeliveryDate, 'dd MMM yyyy')}">22 Dec 2024</span></p>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold text-gray-800 mb-2">Billing Information</h5>
+                        <div class="space-y-1 text-sm text-gray-600">
+                            <p><span class="font-medium">Plan Price:</span> <span th:text="${'$' + subscription.mealPlan.price}">$49</span></p>
+                            <p><span class="font-medium">Billing Cycle:</span> <span th:text="${subscription.billingCycle}">Weekly</span></p>
+                            <p><span class="font-medium">Next Billing:</span> <span th:text="${#temporals.format(subscription.nextBillingDate, 'dd MMM yyyy')}">22 Dec 2024</span></p>
+                            <p><span class="font-medium">Payment Method:</span> <span>Credit Card</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subscription Actions -->
+                <div class="border-t border-gray-200 pt-4">
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm text-gray-500">
+                            <span class="font-semibold">Subscription ID:</span> <span th:text="${subscription.subscriptionId}">12345</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                                Manage Subscription
+                            </button>
+                            <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                Pause Subscription
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Subscriptions Message -->
+            <div th:if="${#lists.isEmpty(subscriptions)}" class="text-center py-12">
+                <i class="fas fa-calendar-alt text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-2xl font-bold text-gray-600 mb-2">No subscriptions yet</h3>
+                <p class="text-gray-500 mb-6">Start subscribing to amazing meal plans!</p>
+                <a href="/meal-plans" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg">
+                    Browse Meal Plans
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Spincery Cloud Kitchen</h3>
+                    <p class="text-gray-300">Virtual kitchens delivering delicious meals.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="/cloud-kitchens" class="hover:text-white">Cloud Kitchens</a></li>
+                        <li><a href="/meal-plans" class="hover:text-white">Meal Plans</a></li>
+                        <li><a href="/subscriptions" class="hover:text-white">My Subscriptions</a></li>
+                        <li><a href="/support" class="hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 Spincery Cloud Kitchen. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

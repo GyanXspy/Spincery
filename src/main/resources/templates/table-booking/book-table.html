@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Table - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-green-600">Spincery Table Booking</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-green-600">Dashboard</a>
+                    <a href="/restaurants" class="text-gray-700 hover:text-green-600">Restaurants</a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Booking Form Section -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <!-- Restaurant Info -->
+            <div class="flex items-center space-x-6 mb-8">
+                <div class="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-utensils text-3xl text-gray-400"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800" th:text="${restaurant.restaurantName}">Restaurant Name</h1>
+                    <p class="text-gray-600 mb-2" th:text="${restaurant.address}">Restaurant Address</p>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <span class="text-yellow-500">★</span>
+                            <span class="text-gray-600 ml-1" th:text="${restaurant.rating}">4.5</span>
+                            <span class="text-gray-500 ml-2">(90 reviews)</span>
+                        </div>
+                        <div class="text-green-600 font-semibold">
+                            <span th:text="${restaurant.cuisineType}">Italian Cuisine</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Form -->
+            <form th:action="@{/table-booking/create}" method="post" th:object="${booking}" class="space-y-6">
+                <input type="hidden" name="restaurantId" th:value="${restaurant.id}">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Booking Date</label>
+                        <input type="date" name="bookingDate" required
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Booking Time</label>
+                        <input type="time" name="bookingTime" required
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Number of Guests</label>
+                        <select name="numberOfGuests" required
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Select Guests</option>
+                            <option value="1">1 Guest</option>
+                            <option value="2">2 Guests</option>
+                            <option value="3">3 Guests</option>
+                            <option value="4">4 Guests</option>
+                            <option value="5">5 Guests</option>
+                            <option value="6">6+ Guests</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Table Type</label>
+                        <select name="tableType" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Any Table</option>
+                            <option value="window">Window Seat</option>
+                            <option value="outdoor">Outdoor</option>
+                            <option value="private">Private</option>
+                            <option value="bar">Bar Seating</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Special Requests</label>
+                    <textarea name="specialRequests" rows="4" 
+                              placeholder="Any special requests or dietary requirements..."
+                              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                </div>
+
+                <!-- Restaurant Policies -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Restaurant Policies</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div>
+                            <p><i class="fas fa-clock mr-2"></i>Reservation Duration: 2 hours</p>
+                            <p><i class="fas fa-credit-card mr-2"></i>Advance Payment: $20 deposit</p>
+                        </div>
+                        <div>
+                            <p><i class="fas fa-calendar mr-2"></i>Cancellation: 24 hours notice</p>
+                            <p><i class="fas fa-users mr-2"></i>Maximum Group: 8 people</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing -->
+                <div class="bg-green-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Pricing</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Reservation Fee:</span>
+                            <span class="font-semibold">$20</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Minimum Spend:</span>
+                            <span class="font-semibold">$50 per person</span>
+                        </div>
+                        <div class="border-t border-gray-200 pt-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-800 font-semibold">Total:</span>
+                                <span class="text-green-600 font-bold">$20</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end space-x-4">
+                    <a href="/restaurants" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg">
+                        Cancel
+                    </a>
+                    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg">
+                        Confirm Booking
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Confirmation - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-purple-600 to-purple-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-cloud text-2xl"></i>
+                    <h1 class="text-xl font-bold">Spincery Cloud Kitchen</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/cloud-kitchen" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-home mr-2"></i>Home
+                    </a>
+                    <a href="/cloud-kitchen/subscriptions" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-list mr-2"></i>My Subscriptions
+                    </a>
+                    <a href="/dashboard" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-user mr-2"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Success Message -->
+        <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-check-circle text-green-400 text-3xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h2 class="text-xl font-semibold text-green-800">Subscription Confirmed!</h2>
+                    <p class="text-green-700 mt-1">Your cloud kitchen subscription has been successfully created.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscription Details -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-receipt text-purple-600 mr-3"></i>
+                Subscription Details
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Subscription Info -->
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                        <span class="font-medium text-gray-600">Subscription ID:</span>
+                        <span class="text-gray-800 font-semibold" th:text="${subscription.id}">#12345</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                        <span class="font-medium text-gray-600">Start Date:</span>
+                        <span class="text-gray-800" th:text="${#temporals.format(subscription.startDate, 'dd MMM yyyy')}">01 Jan 2024</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                        <span class="font-medium text-gray-600">End Date:</span>
+                        <span class="text-gray-800" th:text="${#temporals.format(subscription.endDate, 'dd MMM yyyy')}">31 Jan 2024</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                        <span class="font-medium text-gray-600">Status:</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium" 
+                              th:text="${subscription.status}">ACTIVE</span>
+                    </div>
+                </div>
+                
+                <!-- Payment Info -->
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                        <span class="font-medium text-gray-600">Total Amount:</span>
+                        <span class="text-gray-800 font-semibold" th:text="${'₹' + subscription.totalAmount}">₹2,500</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                        <span class="font-medium text-gray-600">Payment Status:</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium" 
+                              th:text="${subscription.paymentStatus}">PAID</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                        <span class="font-medium text-gray-600">Delivery Address:</span>
+                        <span class="text-gray-800 text-sm" th:text="${subscription.deliveryAddress}">123 Main St, City</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                        <span class="font-medium text-gray-600">Delivery Time:</span>
+                        <span class="text-gray-800 text-sm" th:text="${subscription.deliveryTimeSlots}">7:00 PM - 8:00 PM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cloud Kitchen & Meal Plan Info -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Cloud Kitchen Info -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-utensils text-purple-600 mr-2"></i>
+                    Cloud Kitchen
+                </h4>
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Name:</span>
+                        <span class="text-gray-800 font-medium" th:text="${subscription.cloudKitchen.kitchenName}">Healthy Bites</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Cuisine:</span>
+                        <span class="text-gray-800" th:text="${subscription.cloudKitchen.cuisineType}">Healthy</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Rating:</span>
+                        <span class="text-gray-800">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span th:text="${subscription.cloudKitchen.rating}">4.5</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Meal Plan Info -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-calendar-alt text-purple-600 mr-2"></i>
+                    Meal Plan
+                </h4>
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Plan:</span>
+                        <span class="text-gray-800 font-medium" th:text="${subscription.mealPlan.planName}">Weekly Healthy</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Category:</span>
+                        <span class="text-gray-800" th:text="${subscription.mealPlan.category}">Weight Loss</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Price:</span>
+                        <span class="text-gray-800 font-medium" th:text="${'₹' + subscription.mealPlan.price}">₹500/week</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/cloud-kitchen/subscriptions" 
+               class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center">
+                <i class="fas fa-list mr-2"></i>
+                View All Subscriptions
+            </a>
+            
+            <a href="/cloud-kitchen/subscription-details" 
+               th:href="@{'/cloud-kitchen/subscription-details/' + ${subscription.id}}"
+               class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+                <i class="fas fa-eye mr-2"></i>
+                View Details
+            </a>
+            
+            <a href="/cloud-kitchen" 
+               class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center">
+                <i class="fas fa-home mr-2"></i>
+                Back to Cloud Kitchen
+            </a>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h4 class="text-lg font-semibold text-blue-800 mb-3 flex items-center">
+                <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                What's Next?
+            </h4>
+            <ul class="text-blue-700 space-y-2">
+                <li class="flex items-start">
+                    <i class="fas fa-check text-blue-600 mt-1 mr-2"></i>
+                    You'll receive meal deliveries according to your selected schedule
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check text-blue-600 mt-1 mr-2"></i>
+                    Track your deliveries and manage your subscription from your dashboard
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check text-blue-600 mt-1 mr-2"></i>
+                    Contact support if you need to modify or cancel your subscription
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check text-blue-600 mt-1 mr-2"></i>
+                    Rate and review your meals to help improve our service
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; 2024 Spincery. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html> 

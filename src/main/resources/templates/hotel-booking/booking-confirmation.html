@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">Spincery Hotel Booking</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-blue-600">Dashboard</a>
+                    <a href="/bookings" class="text-gray-700 hover:text-blue-600">My Bookings</a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Confirmation Section -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <!-- Success Icon -->
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-4xl text-green-600"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Booking Confirmed!</h1>
+                <p class="text-gray-600">Your hotel reservation has been successfully confirmed.</p>
+            </div>
+
+            <!-- Booking Details -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Booking Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Hotel Information</h3>
+                        <div class="space-y-2 text-gray-600">
+                            <p><span class="font-medium">Hotel:</span> <span th:text="${booking.hotel.hotelName}">Hotel Name</span></p>
+                            <p><span class="font-medium">Address:</span> <span th:text="${booking.hotel.address}">Hotel Address</span></p>
+                            <p><span class="font-medium">Phone:</span> <span th:text="${booking.hotel.phone}">+1 234 567 8900</span></p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Stay Details</h3>
+                        <div class="space-y-2 text-gray-600">
+                            <p><span class="font-medium">Check-in:</span> <span th:text="${#temporals.format(booking.checkInDate, 'dd MMM yyyy')}">20 Dec 2024</span></p>
+                            <p><span class="font-medium">Check-out:</span> <span th:text="${#temporals.format(booking.checkOutDate, 'dd MMM yyyy')}">22 Dec 2024</span></p>
+                            <p><span class="font-medium">Guests:</span> <span th:text="${booking.numberOfGuests}">2</span></p>
+                            <p><span class="font-medium">Booking ID:</span> <span th:text="${booking.id}">12345</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Information -->
+            <div class="bg-blue-50 rounded-lg p-6 mb-8">
+                <h3 class="font-semibold text-gray-800 mb-4">Room Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
+                    <div>
+                        <p><span class="font-medium">Room Type:</span> <span th:text="${booking.roomType}">Deluxe Room</span></p>
+                        <p><span class="font-medium">Room Size:</span> <span th:text="${booking.room.size}">350</span> sq ft</p>
+                        <p><span class="font-medium">Floor:</span> <span th:text="${booking.room.floor}">5th</span></p>
+                    </div>
+                    <div>
+                        <p><span class="font-medium">View:</span> <span th:text="${booking.room.view}">City View</span></p>
+                        <p><span class="font-medium">Amenities:</span> WiFi, TV, AC</p>
+                        <p><span class="font-medium">Capacity:</span> <span th:text="${booking.room.capacity}">2</span> guests</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Special Requests -->
+            <div th:if="${booking.specialRequests}" class="bg-yellow-50 rounded-lg p-6 mb-8">
+                <h3 class="font-semibold text-gray-800 mb-2">Special Requests</h3>
+                <p class="text-gray-600" th:text="${booking.specialRequests}">Late check-in, extra towels</p>
+            </div>
+
+            <!-- Payment Information -->
+            <div class="bg-green-50 rounded-lg p-6 mb-8">
+                <h3 class="font-semibold text-gray-800 mb-4">Payment Summary</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Room Rate (per night):</span>
+                        <span class="font-semibold" th:text="${'$' + booking.room.pricePerNight}">$150</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Number of nights:</span>
+                        <span class="font-semibold">2</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Subtotal:</span>
+                        <span class="font-semibold">$300</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Taxes & Fees:</span>
+                        <span class="font-semibold">$25</span>
+                    </div>
+                    <div class="border-t border-gray-200 pt-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-800 font-semibold">Total Paid:</span>
+                            <span class="text-green-600 font-bold" th:text="${'$' + booking.totalAmount}">$325</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Important Information -->
+            <div class="bg-yellow-50 rounded-lg p-6 mb-8">
+                <h3 class="font-semibold text-gray-800 mb-4">Important Information</h3>
+                <div class="space-y-3 text-sm text-gray-700">
+                    <div class="flex items-start">
+                        <i class="fas fa-clock text-yellow-600 mt-1 mr-3"></i>
+                        <div>
+                            <p class="font-medium">Check-in Time</p>
+                            <p>Check-in is available from 3:00 PM onwards. Early check-in is subject to availability.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-credit-card text-yellow-600 mt-1 mr-3"></i>
+                        <div>
+                            <p class="font-medium">Payment</p>
+                            <p>Your payment has been processed. Keep your booking confirmation for check-in.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-calendar text-yellow-600 mt-1 mr-3"></i>
+                        <div>
+                            <p class="font-medium">Cancellation Policy</p>
+                            <p>Cancellations must be made 24 hours in advance for a full refund.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-id-card text-yellow-600 mt-1 mr-3"></i>
+                        <div>
+                            <p class="font-medium">Check-in Requirements</p>
+                            <p>Please bring a valid photo ID and the credit card used for booking.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="/bookings" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center">
+                    <i class="fas fa-list mr-2"></i>View My Bookings
+                </a>
+                <a href="/hotels" class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-center">
+                    <i class="fas fa-hotel mr-2"></i>Book Another Hotel
+                </a>
+                <button onclick="window.print()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg">
+                    <i class="fas fa-print mr-2"></i>Print Confirmation
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

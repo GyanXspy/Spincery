@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Hours - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-orange-600 to-orange-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-utensils text-2xl"></i>
+                    <h1 class="text-xl font-bold">Spincery Restaurant</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/restaurant/dashboard" class="hover:text-orange-200 transition-colors">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                    </a>
+                    <a href="/restaurant/settings" class="hover:text-orange-200 transition-colors">
+                        <i class="fas fa-cog mr-2"></i>Settings
+                    </a>
+                    <a href="/dashboard" class="hover:text-orange-200 transition-colors">
+                        <i class="fas fa-user mr-2"></i>Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-clock text-orange-600 text-2xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Operating Hours</h2>
+                <p class="text-gray-600">Manage your restaurant's operating hours and availability</p>
+            </div>
+
+            <!-- Error Messages -->
+            <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- Success Messages -->
+            <div th:if="${success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                <span th:text="${success}"></span>
+            </div>
+
+            <!-- Current Hours Display -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-info-circle text-orange-600 mr-2"></i>
+                    Current Operating Hours
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-medium text-gray-700">Opening Time:</span>
+                            <span class="text-gray-900" th:text="${restaurant.openingTime != null ? restaurant.openingTime.toString() : 'Not set'}">09:00</span>
+                        </div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-medium text-gray-700">Closing Time:</span>
+                            <span class="text-gray-900" th:text="${restaurant.closingTime != null ? restaurant.closingTime.toString() : 'Not set'}">22:00</span>
+                        </div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-medium text-gray-700">Working Days:</span>
+                            <span class="text-gray-900" th:text="${restaurant != null and restaurant.workingDays != null ? restaurant.workingDays : 'Not set'}">Monday to Sunday</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="font-medium text-gray-700">Weekly Off:</span>
+                            <span class="text-gray-900" th:text="${restaurant != null and restaurant.weeklyOff != null ? restaurant.weeklyOff : 'Not set'}">Sunday</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-800 mb-3">Quick Actions</h4>
+                        <div class="space-y-2">
+                            <button class="w-full bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+                                <i class="fas fa-edit mr-2"></i>Edit Hours
+                            </button>
+                            <button class="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                <i class="fas fa-toggle-on mr-2"></i>Set as Open
+                            </button>
+                            <button class="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                <i class="fas fa-toggle-off mr-2"></i>Set as Closed
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hours Management Form -->
+            <form th:action="@{/restaurant/hours/update}" method="post" class="space-y-6">
+                <div class="border-b border-gray-200 pb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-clock text-orange-600 mr-2"></i>
+                        Update Operating Hours
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Opening Time</label>
+                            <input type="time" name="openingTime" 
+                                   th:value="${restaurant.openingTime != null ? restaurant.openingTime.toString() : ''}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Closing Time</label>
+                            <input type="time" name="closingTime" 
+                                   th:value="${restaurant.closingTime != null ? restaurant.closingTime.toString() : ''}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Working Days</label>
+                            <select name="workingDays" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                <option value="Monday to Sunday" th:selected="${restaurant != null and restaurant.workingDays == 'Monday to Sunday'}">Monday to Sunday</option>
+                                <option value="Monday to Saturday" th:selected="${restaurant != null and restaurant.workingDays == 'Monday to Saturday'}">Monday to Saturday</option>
+                                <option value="Tuesday to Sunday" th:selected="${restaurant != null and restaurant.workingDays == 'Tuesday to Sunday'}">Tuesday to Sunday</option>
+                                <option value="Custom" th:selected="${restaurant != null and restaurant.workingDays == 'Custom'}">Custom</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Weekly Off</label>
+                            <select name="weeklyOff" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                <option value="Sunday" th:selected="${restaurant != null and restaurant.weeklyOff == 'Sunday'}">Sunday</option>
+                                <option value="Monday" th:selected="${restaurant != null and restaurant.weeklyOff == 'Monday'}">Monday</option>
+                                <option value="Tuesday" th:selected="${restaurant != null and restaurant.weeklyOff == 'Tuesday'}">Tuesday</option>
+                                <option value="Wednesday" th:selected="${restaurant != null and restaurant.weeklyOff == 'Wednesday'}">Wednesday</option>
+                                <option value="Thursday" th:selected="${restaurant != null and restaurant.weeklyOff == 'Thursday'}">Thursday</option>
+                                <option value="Friday" th:selected="${restaurant != null and restaurant.weeklyOff == 'Friday'}">Friday</option>
+                                <option value="Saturday" th:selected="${restaurant != null and restaurant.weeklyOff == 'Saturday'}">Saturday</option>
+                                <option value="None" th:selected="${restaurant != null and restaurant.weeklyOff == 'None'}">No weekly off</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Special Hours -->
+                <div class="border-b border-gray-200 pb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-calendar-alt text-orange-600 mr-2"></i>
+                        Special Hours
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h4 class="font-medium text-gray-800">Holiday Hours</h4>
+                                <p class="text-sm text-gray-600">Set different hours for holidays</p>
+                            </div>
+                            <button type="button" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Add Holiday Hours
+                            </button>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h4 class="font-medium text-gray-800">Special Events</h4>
+                                <p class="text-sm text-gray-600">Set extended hours for special events</p>
+                            </div>
+                            <button type="button" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Add Event Hours
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="flex justify-center space-x-4">
+                    <button type="submit" 
+                            class="bg-orange-600 text-white px-8 py-3 rounded-lg hover:bg-orange-700 transition-colors flex items-center">
+                        <i class="fas fa-save mr-2"></i>
+                        Save Hours
+                    </button>
+                    <a href="/restaurant/dashboard" 
+                       class="bg-gray-500 text-white px-8 py-3 rounded-lg hover:bg-gray-600 transition-colors flex items-center">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; 2024 Spincery. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html> 

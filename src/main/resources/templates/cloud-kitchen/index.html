@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Kitchen - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-purple-600">Spincery Cloud Kitchen</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-purple-600">Dashboard</a>
+                    <a href="/subscriptions" class="text-gray-700 hover:text-purple-600">My Subscriptions</a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-purple-500 to-pink-600 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h1 class="text-4xl font-bold mb-4">Cloud Kitchen Solutions</h1>
+            <p class="text-xl mb-8">Virtual kitchens delivering delicious meals and subscription services</p>
+            <div class="flex justify-center space-x-4">
+                <a href="/cloud-kitchens" class="bg-white text-purple-600 font-bold py-3 px-6 rounded-lg hover:bg-gray-100">
+                    Browse Kitchens
+                </a>
+                <a href="/meal-plans" class="bg-transparent border-2 border-white text-white font-bold py-3 px-6 rounded-lg hover:bg-white hover:text-purple-600">
+                    Meal Plans
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Our Services</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <i class="fas fa-utensils text-4xl text-purple-500 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Virtual Kitchens</h3>
+                <p class="text-gray-600">Cloud-based kitchens operating without physical dining spaces</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <i class="fas fa-calendar-alt text-4xl text-purple-500 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Meal Plans</h3>
+                <p class="text-gray-600">Weekly and monthly meal subscription services</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <i class="fas fa-truck text-4xl text-purple-500 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Fast Delivery</h3>
+                <p class="text-gray-600">Quick delivery to your doorstep within 30 minutes</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Cloud Kitchens -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">Featured Cloud Kitchens</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div th:each="kitchen : ${cloudKitchens}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                <div class="h-48 bg-gray-200 flex items-center justify-center">
+                    <i class="fas fa-cloud text-4xl text-gray-400"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2" th:text="${kitchen.kitchenName}">Kitchen Name</h3>
+                    <p class="text-gray-600 mb-2" th:text="${kitchen.description != null ? kitchen.description : 'Cloud Kitchen'}">Cuisine Type</p>
+                    <p class="text-gray-500 mb-4" th:text="${kitchen.location}">Location</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <span class="text-yellow-500">★</span>
+                            <span class="text-gray-600 ml-1" th:text="${kitchen.rating}">4.5</span>
+                            <span class="text-gray-500 ml-2">(90 reviews)</span>
+                        </div>
+                        <div class="text-green-600 font-semibold">
+                            <span th:text="${'From $' + kitchen.pricePerMeal}">From $8</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-500">
+                            <span class="font-semibold">Delivery Time:</span> 25-35 min
+                        </div>
+                        <a th:href="@{/cloud-kitchen-details/{id}(id=${kitchen.id})}" 
+                           class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                            View Menu
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Meal Plans Section -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">Popular Meal Plans</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <i class="fas fa-leaf text-4xl text-green-500 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Vegetarian Plan</h3>
+                <p class="text-gray-600 mb-4">Fresh vegetarian meals</p>
+                <p class="text-2xl font-bold text-gray-800 mb-4">$49/week</p>
+                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Subscribe
+                </button>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <i class="fas fa-dumbbell text-4xl text-blue-500 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Protein Plan</h3>
+                <p class="text-gray-600 mb-4">High protein meals</p>
+                <p class="text-2xl font-bold text-gray-800 mb-4">$59/week</p>
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Subscribe
+                </button>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <i class="fas fa-heart text-4xl text-red-500 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Keto Plan</h3>
+                <p class="text-gray-600 mb-4">Low carb keto meals</p>
+                <p class="text-2xl font-bold text-gray-800 mb-4">$69/week</p>
+                <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    Subscribe
+                </button>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <i class="fas fa-balance-scale text-4xl text-purple-500 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Balanced Plan</h3>
+                <p class="text-gray-600 mb-4">Well-balanced meals</p>
+                <p class="text-2xl font-bold text-gray-800 mb-4">$54/week</p>
+                <button class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                    Subscribe
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Spincery Cloud Kitchen</h3>
+                    <p class="text-gray-300">Virtual kitchens delivering delicious meals.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="/cloud-kitchens" class="hover:text-white">Cloud Kitchens</a></li>
+                        <li><a href="/meal-plans" class="hover:text-white">Meal Plans</a></li>
+                        <li><a href="/subscriptions" class="hover:text-white">My Subscriptions</a></li>
+                        <li><a href="/support" class="hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 Spincery Cloud Kitchen. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

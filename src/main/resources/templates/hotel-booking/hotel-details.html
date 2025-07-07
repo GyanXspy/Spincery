@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${hotel.hotelName + ' - Spincery'}">Hotel Details - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">Spincery Hotel Booking</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-blue-600">Dashboard</a>
+                    <a href="/bookings" class="text-gray-700 hover:text-blue-600">My Bookings</a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hotel Header -->
+    <div class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
+                <div class="flex items-center space-x-6">
+                    <div class="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-hotel text-3xl text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2" th:text="${hotel.hotelName}">Hotel Name</h1>
+                        <p class="text-gray-600 mb-2" th:text="${hotel.city}">City</p>
+                        <p class="text-gray-500 mb-2" th:text="${hotel.address}">Address</p>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center">
+                                <span class="text-yellow-500">★</span>
+                                <span class="text-gray-600 ml-1" th:text="${hotel.rating}">4.5</span>
+                                <span class="text-gray-500 ml-2">(120 reviews)</span>
+                            </div>
+                            <div class="text-green-600 font-semibold">
+                                <span th:text="${'From $' + hotel.pricePerNight}">From $150</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500">Available Rooms</p>
+                        <p class="text-lg font-semibold text-gray-800" th:text="${hotel.availableRooms}">15</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hotel Details and Booking -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Hotel Information -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Hotel Information</h2>
+                    <p class="text-gray-600 mb-4" th:text="${hotel.description}">Hotel description goes here...</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Amenities</h3>
+                            <ul class="space-y-2 text-gray-600">
+                                <li><i class="fas fa-wifi mr-2"></i>Free WiFi</li>
+                                <li><i class="fas fa-swimming-pool mr-2"></i>Swimming Pool</li>
+                                <li><i class="fas fa-dumbbell mr-2"></i>Fitness Center</li>
+                                <li><i class="fas fa-utensils mr-2"></i>Restaurant</li>
+                                <li><i class="fas fa-parking mr-2"></i>Free Parking</li>
+                                <li><i class="fas fa-concierge-bell mr-2"></i>24/7 Front Desk</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Hotel Policies</h3>
+                            <ul class="space-y-2 text-gray-600">
+                                <li><i class="fas fa-clock mr-2"></i>Check-in: 3:00 PM</li>
+                                <li><i class="fas fa-clock mr-2"></i>Check-out: 11:00 AM</li>
+                                <li><i class="fas fa-smoking-ban mr-2"></i>No Smoking</li>
+                                <li><i class="fas fa-paw mr-2"></i>Pet Friendly</li>
+                                <li><i class="fas fa-credit-card mr-2"></i>Credit Card Required</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Rooms -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Available Rooms</h2>
+                    <div class="space-y-4">
+                        <div th:each="room : ${rooms}" class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800" th:text="${room.roomType}">Deluxe Room</h3>
+                                    <p class="text-gray-600 mb-2" th:text="${room.description}">Spacious room with city view</p>
+                                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                        <span><i class="fas fa-bed mr-1"></i><span th:text="${room.capacity}">2</span> Guests</span>
+                                        <span><i class="fas fa-ruler-combined mr-1"></i><span th:text="${room.size}">350</span> sq ft</span>
+                                        <span><i class="fas fa-wifi mr-1"></i>Free WiFi</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-2xl font-bold text-gray-800" th:text="${'$' + room.pricePerNight}">$150</p>
+                                    <p class="text-sm text-gray-500">per night</p>
+                                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2">
+                                        Select Room
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Form -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Book Your Stay</h2>
+                    <form action="/book-room" method="post" class="space-y-4">
+                        <input type="hidden" name="hotelId" th:value="${hotel.id}">
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Check-in Date</label>
+                            <input type="date" name="checkInDate" required
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Check-out Date</label>
+                            <input type="date" name="checkOutDate" required
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Number of Guests</label>
+                            <select name="guests" required
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="1">1 Guest</option>
+                                <option value="2">2 Guests</option>
+                                <option value="3">3 Guests</option>
+                                <option value="4">4 Guests</option>
+                                <option value="5">5+ Guests</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Room Type</label>
+                            <select name="roomType" required
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Room Type</option>
+                                <option th:each="room : ${rooms}" th:value="${room.roomType}" th:text="${room.roomType + ' - $' + room.pricePerNight}">Deluxe Room - $150</option>
+                            </select>
+                        </div>
+                        
+                        <div class="border-t border-gray-200 pt-4">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">Room Rate (per night)</span>
+                                <span class="font-semibold">$150</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">Number of nights</span>
+                                <span class="font-semibold">2</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">Taxes & Fees</span>
+                                <span class="font-semibold">$25</span>
+                            </div>
+                            <div class="border-t border-gray-200 pt-2">
+                                <div class="flex justify-between">
+                                    <span class="text-lg font-bold text-gray-800">Total</span>
+                                    <span class="text-lg font-bold text-gray-800">$325</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg">
+                            Book Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Spincery Hotel Booking</h3>
+                    <p class="text-gray-300">Find your perfect stay with us.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="/hotels" class="hover:text-white">Hotels</a></li>
+                        <li><a href="/bookings" class="hover:text-white">My Bookings</a></li>
+                        <li><a href="/support" class="hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 Spincery Hotel Booking. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

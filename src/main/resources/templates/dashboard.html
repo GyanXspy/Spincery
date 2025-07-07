@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-confirmed { background-color: #d1fae5; color: #065f46; }
+        .status-delivered { background-color: #dbeafe; color: #1e40af; }
+        .status-cancelled { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-purple-600">Spincery</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="user-avatar" th:text="${userInitial}"></div>
+                    <span class="text-gray-700" th:text="${user.name}"></span>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pt-16">
+        <!-- Welcome Section -->
+        <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h1 class="text-3xl font-bold mb-2">Welcome back, <span th:text="${user.name}"></span>!</h1>
+                <p class="text-purple-100">Manage your orders, bookings, and subscriptions all in one place.</p>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <a href="/food-delivery" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300">
+                    <div class="text-center">
+                        <i class="fas fa-utensils text-3xl text-red-500 mb-3"></i>
+                        <h3 class="font-semibold text-gray-900">Order Food</h3>
+                        <p class="text-sm text-gray-600">Order from restaurants</p>
+                    </div>
+                </a>
+                
+                <a href="/hotel-booking" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300">
+                    <div class="text-center">
+                        <i class="fas fa-hotel text-3xl text-blue-500 mb-3"></i>
+                        <h3 class="font-semibold text-gray-900">Book Hotel</h3>
+                        <p class="text-sm text-gray-600">Find and book hotels</p>
+                    </div>
+                </a>
+                
+                <a href="/dining-booking" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300">
+                    <div class="text-center">
+                        <i class="fas fa-chair text-3xl text-green-500 mb-3"></i>
+                        <h3 class="font-semibold text-gray-900">Dining Table</h3>
+                        <p class="text-sm text-gray-600">Reserve dining tables</p>
+                    </div>
+                </a>
+                
+                <a href="/cloud-kitchen" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300">
+                    <div class="text-center">
+                        <i class="fas fa-cloud text-3xl text-purple-500 mb-3"></i>
+                        <h3 class="font-semibold text-gray-900">Cloud Kitchen</h3>
+                        <p class="text-sm text-gray-600">Subscribe to meal plans</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Profile Overview -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-user mr-2 text-purple-600"></i>Profile Overview
+                    </h2>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Name:</span>
+                            <span class="font-medium" th:text="${user.name}"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Email:</span>
+                            <span class="font-medium" th:text="${user.email}"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Phone:</span>
+                            <span class="font-medium" th:text="${user.phone}"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Address:</span>
+                            <span class="font-medium" th:text="${user.address}"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">City:</span>
+                            <span class="font-medium" th:text="${user.city}"></span>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="/profile/edit" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-300">
+                            Edit Profile
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-bell mr-2 text-yellow-600"></i>Notifications
+                    </h2>
+                    <div class="space-y-3" th:if="${notifications != null and !#lists.isEmpty(notifications)}">
+                        <div th:each="notification : ${notifications}" class="flex items-center p-3 rounded-lg" 
+                             th:classappend="${notification.type == 'INFO' ? 'bg-blue-50' : 
+                                            notification.type == 'SUCCESS' ? 'bg-green-50' : 
+                                            notification.type == 'WARNING' ? 'bg-yellow-50' : 'bg-purple-50'}">
+                            <i th:class="${notification.type == 'INFO' ? 'fas fa-info-circle text-blue-500' : 
+                                        notification.type == 'SUCCESS' ? 'fas fa-check-circle text-green-500' : 
+                                        notification.type == 'WARNING' ? 'fas fa-exclamation-triangle text-yellow-500' : 
+                                        'fas fa-utensils text-purple-500'} mr-3"></i>
+                            <span class="text-sm" th:text="${notification.message}">Notification message</span>
+                        </div>
+                    </div>
+                    <div th:if="${notifications == null or #lists.isEmpty(notifications)}" class="text-center text-gray-500 py-4">
+                        <i class="fas fa-bell-slash text-2xl mb-2"></i>
+                        <p>No notifications</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order History -->
+            <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-history mr-2 text-gray-600"></i>Recent Orders
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Restaurant</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" th:if="${orders != null and !#lists.isEmpty(orders)}">
+                            <tr th:each="order : ${orders}">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="'#' + ${order.id}">#12345</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${order.restaurant != null ? order.restaurant.restaurantName : 'N/A'}">Restaurant</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="'₹' + ${order.totalAmount}">₹450</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="status-badge" 
+                                          th:classappend="${order.status == 'DELIVERED' ? 'status-delivered' : 
+                                                          order.status == 'CONFIRMED' ? 'status-confirmed' : 
+                                                          order.status == 'PENDING' ? 'status-pending' : 'status-cancelled'}"
+                                          th:text="${order.status}">Delivered</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd')}">2024-01-15</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <a th:href="@{'/food-delivery/order-details/' + ${order.id}}" class="text-purple-600 hover:text-purple-900">View Details</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody th:if="${orders == null or #lists.isEmpty(orders)}">
+                            <tr>
+                                <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                    <i class="fas fa-shopping-bag text-2xl mb-2"></i>
+                                    <p>No orders found</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Hotel Bookings -->
+            <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-hotel mr-2 text-blue-600"></i>Hotel Bookings
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" th:if="${hotelBookings != null and !#lists.isEmpty(hotelBookings)}">
+                    <div th:each="booking : ${hotelBookings}" class="border rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-semibold text-gray-900" th:text="${booking.hotel != null ? booking.hotel.hotelName : 'N/A'}">Hotel Name</h3>
+                                <p class="text-sm text-gray-600" th:text="${booking.room != null ? booking.room.roomType : 'N/A'}">Room Type</p>
+                            </div>
+                            <span class="status-badge" 
+                                  th:classappend="${booking.status == 'CONFIRMED' ? 'status-confirmed' : 
+                                                  booking.status == 'PENDING' ? 'status-pending' : 'status-cancelled'}"
+                                  th:text="${booking.status}">Confirmed</span>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Check-in:</span>
+                                <span th:text="${#temporals.format(booking.checkInDate, 'yyyy-MM-dd')}">2024-01-20</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Check-out:</span>
+                                <span th:text="${#temporals.format(booking.checkOutDate, 'yyyy-MM-dd')}">2024-01-22</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Amount:</span>
+                                <span th:text="'₹' + ${booking.totalAmount}">₹5,000</span>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a th:href="@{'/hotel-booking/booking-details/' + ${booking.id}}" class="text-blue-600 hover:text-blue-800 text-sm">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${hotelBookings == null or #lists.isEmpty(hotelBookings)}" class="text-center text-gray-500 py-8">
+                    <i class="fas fa-hotel text-3xl mb-2"></i>
+                    <p>No hotel bookings found</p>
+                </div>
+            </div>
+
+            <!-- Cloud Kitchen Subscriptions -->
+            <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-cloud mr-2 text-purple-600"></i>Cloud Kitchen Subscriptions
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" th:if="${cloudKitchenSubscriptions != null and !#lists.isEmpty(cloudKitchenSubscriptions)}">
+                    <div th:each="subscription : ${cloudKitchenSubscriptions}" class="border rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-semibold text-gray-900" th:text="${subscription.cloudKitchen != null ? subscription.cloudKitchen.kitchenName : 'N/A'}">Kitchen Name</h3>
+                                <p class="text-sm text-gray-600" th:text="${subscription.mealPlan != null ? subscription.mealPlan.planName : 'N/A'}">Plan Name</p>
+                            </div>
+                            <span class="status-badge" 
+                                  th:classappend="${subscription.status == 'ACTIVE' ? 'status-confirmed' : 
+                                                  subscription.status == 'PENDING' ? 'status-pending' : 'status-cancelled'}"
+                                  th:text="${subscription.status}">Active</span>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Start Date:</span>
+                                <span th:text="${#temporals.format(subscription.startDate, 'yyyy-MM-dd')}">2024-01-01</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">End Date:</span>
+                                <span th:text="${#temporals.format(subscription.endDate, 'yyyy-MM-dd')}">2024-01-31</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Amount:</span>
+                                <span th:text="'₹' + ${subscription.totalAmount}">₹3,000</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 flex space-x-2">
+                            <a th:href="@{'/cloud-kitchen/subscription-details/' + ${subscription.id}}" class="text-purple-600 hover:text-purple-800 text-sm">View Details</a>
+                            <a th:href="@{'/cloud-kitchen/pause-subscription/' + ${subscription.id}}" class="text-red-600 hover:text-red-800 text-sm">Pause</a>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${cloudKitchenSubscriptions == null or #lists.isEmpty(cloudKitchenSubscriptions)}" class="text-center text-gray-500 py-8">
+                    <i class="fas fa-cloud text-3xl mb-2"></i>
+                    <p>No cloud kitchen subscriptions found</p>
+                </div>
+            </div>
+
+            <!-- Dining Table Bookings -->
+            <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-chair mr-2 text-green-600"></i>Dining Table Bookings
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" th:if="${tableBookings != null and !#lists.isEmpty(tableBookings)}">
+                    <div th:each="booking : ${tableBookings}" class="border rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-semibold text-gray-900" th:text="${booking.restaurant != null ? booking.restaurant.restaurantName : 'N/A'}">Restaurant Name</h3>
+                                <p class="text-sm text-gray-600" th:text="'Table for ' + ${booking.numberOfGuests}">Table for 4</p>
+                            </div>
+                            <span class="status-badge" 
+                                  th:classappend="${booking.status == 'CONFIRMED' ? 'status-confirmed' : 
+                                                  booking.status == 'PENDING' ? 'status-pending' : 'status-cancelled'}"
+                                  th:text="${booking.status}">Confirmed</span>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Date:</span>
+                                <span th:text="${#temporals.format(booking.reservationDate, 'yyyy-MM-dd')}">2024-01-25</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Time:</span>
+                                <span th:text="${booking.reservationTime}">7:00 PM</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Guests:</span>
+                                <span th:text="${booking.numberOfGuests}">4</span>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a th:href="@{'/table-booking/booking-details/' + ${booking.id}}" class="text-green-600 hover:text-green-800 text-sm">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${tableBookings == null or #lists.isEmpty(tableBookings)}" class="text-center text-gray-500 py-8">
+                    <i class="fas fa-chair text-3xl mb-2"></i>
+                    <p>No table bookings found</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add any interactive functionality here
+        document.addEventListener('DOMContentLoaded', function() {
+            // Example: Auto-refresh notifications
+            setInterval(function() {
+                // Refresh notifications every 30 seconds
+                console.log('Checking for new notifications...');
+            }, 30000);
+        });
+    </script>
+</body>
+</html> 
