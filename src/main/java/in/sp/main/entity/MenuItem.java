@@ -44,7 +44,7 @@ public class MenuItem {
     private String tags;
     
     @Column(name = "is_available")
-    private boolean isAvailable = true;
+    private boolean available = true;
     
     @Column(name = "image_url")
     private String imageUrl;
@@ -68,6 +68,14 @@ public class MenuItem {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+    
+    public boolean isAvailable() {
+        return available;
+    }
+    
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
     
     public enum FoodType {

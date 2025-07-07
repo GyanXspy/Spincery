@@ -17,7 +17,7 @@ public interface MenuItemService {
     
     List<MenuItem> findByRestaurantId(Long restaurantId);
     
-    List<MenuItem> findByRestaurantIdAndIsAvailableTrue(Long restaurantId);
+    List<MenuItem> findByRestaurantIdAndAvailableTrue(Long restaurantId);
     
     List<MenuItem> findByCategory(String category);
     

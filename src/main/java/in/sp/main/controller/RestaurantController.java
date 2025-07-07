@@ -604,25 +604,17 @@ public class RestaurantController {
             Optional<User> userOpt = userService.findByEmail(auth.getName());
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
-                if (user.getRole() == User.UserRole.RESTAURANT_OWNER) {
-                    try {
-                        // Get the restaurant owned by this user
-                        List<Restaurant> restaurants = restaurantService.findByOwnerId(user.getId());
-                        if (!restaurants.isEmpty()) {
-                            Restaurant restaurant = restaurants.get(0);
-                            model.addAttribute("restaurant", restaurant);
-                            model.addAttribute("user", user);
-                            return "restaurant/edit";
-                        } else {
-                            model.addAttribute("error", "No restaurant found for this user");
-                            return "redirect:/restaurant/register";
-                        }
-                    } catch (Exception e) {
-                        model.addAttribute("error", "Error loading restaurant: " + e.getMessage());
-                        return "redirect:/restaurant/dashboard";
-                    }
+                System.out.println("[DEBUG] Logged-in user ID: " + user.getId() + ", role: " + user.getRole());
+                List<Restaurant> restaurants = restaurantService.findByOwnerId(user.getId());
+                if (!restaurants.isEmpty()) {
+                    Restaurant restaurant = restaurants.get(0);
+                    System.out.println("[DEBUG] Restaurant owner ID: " + (restaurant.getOwner() != null ? restaurant.getOwner().getId() : "null"));
+                    model.addAttribute("restaurant", restaurant);
+                    return "restaurant/edit";
                 } else {
-                    return "redirect:/access-denied";
+                    System.out.println("[DEBUG] No restaurant found for user ID: " + user.getId());
+                    model.addAttribute("error", "No restaurant found for this user");
+                    return "redirect:/restaurant/list";
                 }
             }
         }

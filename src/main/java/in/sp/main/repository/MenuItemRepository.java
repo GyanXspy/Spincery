@@ -13,7 +13,7 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
     
     List<MenuItem> findByRestaurantId(Long restaurantId);
     
-    List<MenuItem> findByRestaurantIdAndIsAvailableTrue(Long restaurantId);
+    List<MenuItem> findByRestaurantIdAndAvailableTrue(Long restaurantId);
     
     @Query("SELECT m FROM MenuItem m WHERE m.restaurant.id = :restaurantId AND m.category = :category")
     List<MenuItem> findByRestaurantIdAndCategory(@Param("restaurantId") Long restaurantId, @Param("category") String category);

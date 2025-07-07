@@ -65,6 +65,7 @@ public class MenuItemController {
             Optional<User> userOpt = userService.findByEmail(auth.getName());
             if (userOpt.isPresent() && userOpt.get().getRole() == User.UserRole.RESTAURANT_OWNER) {
                 restaurants = restaurantService.findByOwnerId(userOpt.get().getId());
+                model.addAttribute("ownerName", userOpt.get().getName());
             }
         }
         model.addAttribute("restaurants", restaurants);
@@ -85,6 +86,7 @@ public class MenuItemController {
                 Optional<User> userOpt = userService.findByEmail(auth.getName());
                 if (userOpt.isPresent() && userOpt.get().getRole() == User.UserRole.RESTAURANT_OWNER) {
                     restaurants = restaurantService.findByOwnerId(userOpt.get().getId());
+                    model.addAttribute("ownerName", userOpt.get().getName());
                 }
             }
             model.addAttribute("restaurants", restaurants);

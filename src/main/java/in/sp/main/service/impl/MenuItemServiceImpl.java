@@ -41,8 +41,8 @@ public class MenuItemServiceImpl implements MenuItemService {
     }
     
     @Override
-    public List<MenuItem> findByRestaurantIdAndIsAvailableTrue(Long restaurantId) {
-        return menuItemRepository.findByRestaurantIdAndIsAvailableTrue(restaurantId);
+    public List<MenuItem> findByRestaurantIdAndAvailableTrue(Long restaurantId) {
+        return menuItemRepository.findByRestaurantIdAndAvailableTrue(restaurantId);
     }
     
     @Override
