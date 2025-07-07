@@ -48,7 +48,8 @@ public class RestaurantController {
                 User user = userOpt.get();
                 if (user.getRole() == User.UserRole.RESTAURANT_OWNER) {
                     model.addAttribute("user", user);
-                    model.addAttribute("userInitial", user.getName().substring(0, 1).toUpperCase());
+                    String userInitial = (user.getName() != null && !user.getName().isEmpty()) ? user.getName().substring(0, 1).toUpperCase() : "";
+                    model.addAttribute("userInitial", userInitial);
                     return "restaurant/dashboard";
                 } else {
                     return "redirect:/access-denied";
@@ -128,8 +129,10 @@ public class RestaurantController {
             
             return "restaurant/menu";
         } else {
+            model.addAttribute("restaurant", null);
+            model.addAttribute("menuItems", new ArrayList<>());
             model.addAttribute("error", "Restaurant not found");
-            return "redirect:/restaurant/list";
+            return "restaurant/menu";
         }
     }
     
@@ -151,10 +154,12 @@ public class RestaurantController {
                             model.addAttribute("restaurant", restaurant);
                         } else {
                             model.addAttribute("orders", new ArrayList<>());
+                            model.addAttribute("restaurant", null);
                             model.addAttribute("error", "No restaurant found for this user");
                         }
                     } catch (Exception e) {
                         model.addAttribute("orders", new ArrayList<>());
+                        model.addAttribute("restaurant", null);
                         model.addAttribute("error", "Error loading orders: " + e.getMessage());
                     }
                     return "restaurant/orders";
@@ -242,6 +247,7 @@ public class RestaurantController {
                             model.addAttribute("customerGrowth", customerGrowth);
                             model.addAttribute("popularItems", new ArrayList<>()); // Placeholder for popular items
                         } else {
+                            model.addAttribute("restaurant", null);
                             model.addAttribute("error", "No restaurant found for this user");
                             model.addAttribute("totalOrders", 0);
                             model.addAttribute("pendingOrders", 0);
@@ -261,6 +267,7 @@ public class RestaurantController {
                             model.addAttribute("popularItems", new ArrayList<>());
                         }
                     } catch (Exception e) {
+                        model.addAttribute("restaurant", null);
                         model.addAttribute("error", "Error loading analytics: " + e.getMessage());
                         model.addAttribute("totalOrders", 0);
                         model.addAttribute("pendingOrders", 0);
@@ -304,9 +311,11 @@ public class RestaurantController {
                             Restaurant restaurant = restaurants.get(0);
                             model.addAttribute("restaurant", restaurant);
                         } else {
+                            model.addAttribute("restaurant", null);
                             model.addAttribute("error", "No restaurant found for this user");
                         }
                     } catch (Exception e) {
+                        model.addAttribute("restaurant", null);
                         model.addAttribute("error", "Error loading restaurant: " + e.getMessage());
                     }
                     model.addAttribute("user", user);
@@ -333,9 +342,11 @@ public class RestaurantController {
                             Restaurant restaurant = restaurants.get(0);
                             model.addAttribute("restaurant", restaurant);
                         } else {
+                            model.addAttribute("restaurant", null);
                             model.addAttribute("error", "No restaurant found for this user");
                         }
                     } catch (Exception e) {
+                        model.addAttribute("restaurant", null);
                         model.addAttribute("error", "Error loading restaurant: " + e.getMessage());
                     }
                     model.addAttribute("user", user);
@@ -362,9 +373,11 @@ public class RestaurantController {
                             Restaurant restaurant = restaurants.get(0);
                             model.addAttribute("restaurant", restaurant);
                         } else {
+                            model.addAttribute("restaurant", null);
                             model.addAttribute("error", "No restaurant found for this user");
                         }
                     } catch (Exception e) {
+                        model.addAttribute("restaurant", null);
                         model.addAttribute("error", "Error loading restaurant: " + e.getMessage());
                     }
                     model.addAttribute("user", user);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,18 +45,8 @@
                 <p class="text-gray-600">Manage your restaurant information and preferences</p>
             </div>
 
-            <!-- Error Messages -->
-            <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-                <span th:text="${error}"></span>
-            </div>
-
-            <!-- Success Messages -->
-            <div th:if="${success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-                <span th:text="${success}"></span>
-            </div>
-
             <!-- Settings Form -->
-            <form th:action="@{/restaurant/settings/update}" method="post" class="space-y-6">
+            <form action="#" method="post" class="space-y-6">
                 <!-- Basic Information -->
                 <div class="border-b border-gray-200 pb-6">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
@@ -67,18 +57,12 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Restaurant Name *</label>
-                            <input type="text" name="restaurantName" 
-                                   th:value="${restaurant != null ? restaurant.restaurantName : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="Enter restaurant name">
+                            <input type="text" name="restaurantName" value="Spincery Restaurant" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter restaurant name">
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Owner Name *</label>
-                            <input type="text" name="ownerName" 
-                                   th:value="${restaurant != null ? restaurant.ownerName : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="Enter owner name">
+                            <input type="text" name="ownerName" value="John Doe" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter owner name">
                         </div>
                     </div>
                 </div>
@@ -93,34 +77,22 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                            <input type="email" name="email" 
-                                   th:value="${restaurant != null ? restaurant.email : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="Enter email address">
+                            <input type="email" name="email" value="info@spincery.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter email address">
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Phone *</label>
-                            <input type="tel" name="phone" 
-                                   th:value="${restaurant != null ? restaurant.phone : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="Enter phone number">
+                            <input type="tel" name="phone" value="+91 98765 43210" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter phone number">
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">WhatsApp Number</label>
-                            <input type="tel" name="whatsappNumber" 
-                                   th:value="${restaurant != null ? restaurant.whatsappNumber : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="Enter WhatsApp number">
+                            <input type="tel" name="whatsappNumber" value="+91 98765 43210" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter WhatsApp number">
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Alternate Contact</label>
-                            <input type="tel" name="alternateContact" 
-                                   th:value="${restaurant != null ? restaurant.alternateContact : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="Enter alternate contact">
+                            <input type="tel" name="alternateContact" value="+91 98765 43211" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter alternate contact">
                         </div>
                     </div>
                 </div>
@@ -135,44 +107,29 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Address *</label>
-                            <textarea name="address" rows="3"
-                                      th:text="${restaurant != null ? restaurant.address : ''}"
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                      placeholder="Enter complete address"></textarea>
+                            <textarea name="address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter complete address">123 Main St, City</textarea>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
-                                <input type="text" name="city" 
-                                       th:value="${restaurant != null ? restaurant.city : ''}"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                       placeholder="Enter city">
+                                <input type="text" name="city" value="Metropolis" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter city">
                             </div>
                             
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">State *</label>
-                                <input type="text" name="state" 
-                                       th:value="${restaurant != null ? restaurant.state : ''}"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                       placeholder="Enter state">
+                                <input type="text" name="state" value="State" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter state">
                             </div>
                             
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Zip Code *</label>
-                                <input type="text" name="zipCode" 
-                                       th:value="${restaurant != null ? restaurant.zipCode : ''}"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                       placeholder="Enter zip code">
+                                <input type="text" name="zipCode" value="123456" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter zip code">
                             </div>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Nearby Landmark</label>
-                            <input type="text" name="nearbyLandmark" 
-                                   th:value="${restaurant != null ? restaurant.nearbyLandmark : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="Enter nearby landmark">
+                            <input type="text" name="nearbyLandmark" value="Near Central Park" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter nearby landmark">
                         </div>
                     </div>
                 </div>
@@ -187,34 +144,22 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Business Registration Number</label>
-                            <input type="text" name="businessRegistrationNumber" 
-                                   th:value="${restaurant != null ? restaurant.businessRegistrationNumber : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="Enter business registration number">
+                            <input type="text" name="businessRegistrationNumber" value="BRN123456" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter business registration number">
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">FSSAI License Number</label>
-                            <input type="text" name="fssaiLicenseNumber" 
-                                   th:value="${restaurant != null ? restaurant.fssaiLicenseNumber : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="Enter FSSAI license number">
+                            <input type="text" name="fssaiLicenseNumber" value="FSSAI987654" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter FSSAI license number">
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">GSTIN</label>
-                            <input type="text" name="gstin" 
-                                   th:value="${restaurant != null ? restaurant.gstin : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="Enter GSTIN">
+                            <input type="text" name="gstin" value="GSTIN123456" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter GSTIN">
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                            <textarea name="description" rows="3"
-                                      th:text="${restaurant != null ? restaurant.description : ''}"
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                      placeholder="Enter restaurant description"></textarea>
+                            <textarea name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter restaurant description">Best restaurant in town!</textarea>
                         </div>
                     </div>
                 </div>
@@ -229,34 +174,22 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Opening Time</label>
-                            <input type="text" name="openingTime" 
-                                   th:value="${restaurant.openingTime != null ? restaurant.openingTime.toString() : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="HH:MM (e.g., 09:00)">
+                            <input type="text" name="openingTime" value="09:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="HH:MM (e.g., 09:00)">
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Closing Time</label>
-                            <input type="text" name="closingTime" 
-                                   th:value="${restaurant.closingTime != null ? restaurant.closingTime.toString() : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="HH:MM (e.g., 22:00)">
+                            <input type="text" name="closingTime" value="22:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="HH:MM (e.g., 22:00)">
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Working Days</label>
-                            <input type="text" name="workingDays" 
-                                   th:value="${restaurant != null ? restaurant.workingDays : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="e.g., Monday to Sunday">
+                            <input type="text" name="workingDays" value="Monday to Sunday" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="e.g., Monday to Sunday">
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Weekly Off</label>
-                            <input type="text" name="weeklyOff" 
-                                   th:value="${restaurant != null ? restaurant.weeklyOff : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="e.g., Sunday">
+                            <input type="text" name="weeklyOff" value="Sunday" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="e.g., Sunday">
                         </div>
                     </div>
                 </div>
@@ -270,47 +203,34 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex items-center">
-                            <input type="checkbox" name="deliveryOffered" 
-                                   th:checked="${restaurant.deliveryOffered != null and restaurant.deliveryOffered == true}"
-                                   class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
+                            <input type="checkbox" name="deliveryOffered" checked class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
                             <label class="ml-2 block text-sm text-gray-900">Offer Delivery</label>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Delivery Radius (km)</label>
-                            <input type="number" name="deliveryRadius" 
-                                   th:value="${restaurant != null ? restaurant.deliveryRadius : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="Enter delivery radius">
+                            <input type="number" name="deliveryRadius" value="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter delivery radius">
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Packaging Charges (₹)</label>
-                            <input type="number" name="packagingCharges" 
-                                   th:value="${restaurant != null ? restaurant.packagingCharges : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="Enter packaging charges">
+                            <input type="number" name="packagingCharges" value="20" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter packaging charges">
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Average Preparation Time (minutes)</label>
-                            <input type="number" name="avgPreparationTime" 
-                                   th:value="${restaurant != null ? restaurant.avgPreparationTime : ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                   placeholder="Enter preparation time">
+                            <input type="number" name="avgPreparationTime" value="30" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter preparation time">
                         </div>
                     </div>
                 </div>
 
                 <!-- Submit Buttons -->
                 <div class="flex justify-center space-x-4">
-                    <button type="submit" 
-                            class="bg-orange-600 text-white px-8 py-3 rounded-lg hover:bg-orange-700 transition-colors flex items-center">
+                    <button type="submit" class="bg-orange-600 text-white px-8 py-3 rounded-lg hover:bg-orange-700 transition-colors flex items-center">
                         <i class="fas fa-save mr-2"></i>
                         Save Changes
                     </button>
-                    <a href="/restaurant/dashboard" 
-                       class="bg-gray-500 text-white px-8 py-3 rounded-lg hover:bg-gray-600 transition-colors flex items-center">
+                    <a href="/restaurant/dashboard" class="bg-gray-500 text-white px-8 py-3 rounded-lg hover:bg-gray-600 transition-colors flex items-center">
                         <i class="fas fa-times mr-2"></i>
                         Cancel
                     </a>

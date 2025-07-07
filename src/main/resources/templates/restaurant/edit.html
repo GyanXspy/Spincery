@@ -60,7 +60,7 @@
                         <h4 class="text-white">Restaurant Panel</h4>
                         <div class="text-white-50">
                             <i class="fas fa-user-circle fa-2x"></i>
-                            <div th:text="${user.name}">User Name</div>
+                            <div th:text="${user != null ? user.name : 'User'}">User Name</div>
                         </div>
                     </div>
                     
@@ -130,8 +130,13 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
 
+                <!-- Alert if restaurant is missing -->
+                <div th:if="${restaurant == null}" class="alert alert-danger mt-4">
+                    Restaurant data is missing. Please try again later.
+                </div>
+
                 <!-- Restaurant Edit Form -->
-                <div class="card">
+                <div class="card" th:if="${restaurant != null}">
                     <div class="card-header">
                         <h5 class="card-title mb-0">
                             <i class="fas fa-edit me-2"></i>

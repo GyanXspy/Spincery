@@ -8,125 +8,131 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-gradient-to-r from-orange-600 to-orange-800 text-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-4">
-                    <i class="fas fa-utensils text-2xl"></i>
-                    <h1 class="text-xl font-bold">Spincery Restaurant</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="/restaurant/dashboard" class="hover:text-orange-200 transition-colors">
-                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-                    </a>
-                    <a href="/dashboard" class="hover:text-orange-200 transition-colors">
-                        <i class="fas fa-user mr-2"></i>Profile
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">Restaurant Orders</h1>
-            <div class="flex space-x-2">
-                <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
-                    <i class="fas fa-filter mr-2"></i>Filter
-                </button>
-                <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                    <i class="fas fa-download mr-2"></i>Export
-                </button>
-            </div>
-        </div>
-
-        <!-- Error Messages -->
-        <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <span th:text="${error}"></span>
-        </div>
-
-        <!-- Order Status Tabs -->
-        <div class="bg-white rounded-lg shadow-md mb-8">
-            <div class="border-b border-gray-200">
-                <nav class="flex space-x-8 px-6">
-                    <a href="#" class="border-b-2 border-orange-500 py-4 px-1 text-sm font-medium text-orange-600">
-                        All Orders
-                    </a>
-                    <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
-                        Pending
-                    </a>
-                    <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
-                        Confirmed
-                    </a>
-                    <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
-                        Preparing
-                    </a>
-                    <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
-                        Ready
-                    </a>
-                </nav>
-            </div>
-        </div>
-
-        <!-- Orders List -->
-        <div class="space-y-6">
-            <div th:each="order : ${orders}" class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800" th:text="${'Order #' + order.id}">Order #12345</h3>
-                        <p class="text-gray-600" th:text="${'Placed on ' + #temporals.format(order.orderDate, 'dd MMM yyyy, HH:mm')}">Placed on 15 Dec 2024, 14:30</p>
-                        <p class="text-gray-600" th:text="${'Customer: ' + order.user.name}">Customer: John Doe</p>
+    <!-- Alert if orders is missing -->
+    <div th:if="${orders == null}" class="alert alert-danger mt-4 text-center">
+        Orders data is missing. Please try again later.
+    </div>
+    <div th:if="${orders != null}">
+        <!-- Navigation -->
+        <nav class="bg-gradient-to-r from-orange-600 to-orange-800 text-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center space-x-4">
+                        <i class="fas fa-utensils text-2xl"></i>
+                        <h1 class="text-xl font-bold">Spincery Restaurant</h1>
                     </div>
-                    <div class="mt-2 md:mt-0">
-                        <span th:class="${'px-3 py-1 rounded-full text-sm font-semibold ' + 
-                                       (order.status == 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
-                                        order.status == 'CONFIRMED' ? 'bg-blue-100 text-blue-800' : 
-                                        order.status == 'PREPARING' ? 'bg-orange-100 text-orange-800' : 
-                                        order.status == 'READY' ? 'bg-green-100 text-green-800' : 
-                                        order.status == 'DELIVERED' ? 'bg-purple-100 text-purple-800' : 
-                                        'bg-red-100 text-red-800')}"
-                              th:text="${order.status}">PENDING</span>
+                    <div class="flex items-center space-x-4">
+                        <a href="/restaurant/dashboard" class="hover:text-orange-200 transition-colors">
+                            <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                        </a>
+                        <a href="/dashboard" class="hover:text-orange-200 transition-colors">
+                            <i class="fas fa-user mr-2"></i>Profile
+                        </a>
                     </div>
                 </div>
+            </div>
+        </nav>
 
-                <!-- Order Items -->
-                <div class="border-t border-gray-200 pt-4 mb-4">
-                    <div th:each="item : ${order.orderItems}" class="flex justify-between items-center py-2">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-gray-600" th:text="${item.quantity + 'x'}">2x</span>
-                            <span class="font-medium text-gray-800" th:text="${item.menuItem.dishName}">Dish Name</span>
-                        </div>
-                        <span class="text-gray-600" th:text="${'₹' + item.menuItem.price}">₹12.99</span>
-                    </div>
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Restaurant Orders</h1>
+                <div class="flex space-x-2">
+                    <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                    <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-download mr-2"></i>Export
+                    </button>
                 </div>
+            </div>
 
-                <!-- Order Summary -->
-                <div class="border-t border-gray-200 pt-4">
-                    <div class="flex justify-between items-center">
+            <!-- Error Messages -->
+            <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- Order Status Tabs -->
+            <div class="bg-white rounded-lg shadow-md mb-8">
+                <div class="border-b border-gray-200">
+                    <nav class="flex space-x-8 px-6">
+                        <a href="#" class="border-b-2 border-orange-500 py-4 px-1 text-sm font-medium text-orange-600">
+                            All Orders
+                        </a>
+                        <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                            Pending
+                        </a>
+                        <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                            Confirmed
+                        </a>
+                        <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                            Preparing
+                        </a>
+                        <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                            Ready
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Orders List -->
+            <div class="space-y-6">
+                <div th:each="order : ${orders}" class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
                         <div>
-                            <p class="text-gray-600">Subtotal: <span class="font-semibold" th:text="${'₹' + order.subtotal}">₹25.98</span></p>
-                            <p class="text-gray-600">Delivery Fee: <span class="font-semibold">₹2.99</span></p>
-                            <p class="text-lg font-bold text-gray-800">Total: <span th:text="${'₹' + order.totalAmount}">₹28.97</span></p>
+                            <h3 class="text-lg font-semibold text-gray-800" th:text="${'Order #' + (order != null && order.id != null ? order.id : 'N/A')}">Order #12345</h3>
+                            <p class="text-gray-600" th:text="${'Placed on ' + (order != null && order.orderDate != null ? #temporals.format(order.orderDate, 'dd MMM yyyy, HH:mm') : 'N/A')}">Placed on 15 Dec 2024, 14:30</p>
+                            <p class="text-gray-600" th:text="${'Customer: ' + (order != null && order.user != null && order.user.name != null ? order.user.name : 'N/A')}">Customer: John Doe</p>
                         </div>
-                        <div class="flex space-x-2">
-                            <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
-                                Update Status
-                            </button>
-                            <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                                View Details
-                            </button>
+                        <div class="mt-2 md:mt-0">
+                            <span th:class="${'px-3 py-1 rounded-full text-sm font-semibold ' + 
+                                           (order.status == 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
+                                            order.status == 'CONFIRMED' ? 'bg-blue-100 text-blue-800' : 
+                                            order.status == 'PREPARING' ? 'bg-orange-100 text-orange-800' : 
+                                            order.status == 'READY' ? 'bg-green-100 text-green-800' : 
+                                            order.status == 'DELIVERED' ? 'bg-purple-100 text-purple-800' : 
+                                            'bg-red-100 text-red-800')}"
+                                  th:text="${order.status}">PENDING</span>
+                        </div>
+                    </div>
+
+                    <!-- Order Items -->
+                    <div class="border-t border-gray-200 pt-4 mb-4">
+                        <div th:each="item : ${order.orderItems}" class="flex justify-between items-center py-2">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-gray-600" th:text="${item.quantity + 'x'}">2x</span>
+                                <span class="font-medium text-gray-800" th:text="${item.menuItem.dishName}">Dish Name</span>
+                            </div>
+                            <span class="text-gray-600" th:text="${'₹' + item.menuItem.price}">₹12.99</span>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="border-t border-gray-200 pt-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-gray-600">Subtotal: <span class="font-semibold" th:text="${'₹' + order.subtotal}">₹25.98</span></p>
+                                <p class="text-gray-600">Delivery Fee: <span class="font-semibold">₹2.99</span></p>
+                                <p class="text-lg font-bold text-gray-800">Total: <span th:text="${'₹' + order.totalAmount}">₹28.97</span></p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+                                    Update Status
+                                </button>
+                                <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                    View Details
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- No Orders Message -->
-            <div th:if="${#lists.isEmpty(orders)}" class="text-center py-12">
-                <i class="fas fa-shopping-bag text-6xl text-gray-300 mb-4"></i>
-                <h3 class="text-2xl font-bold text-gray-600 mb-2">No orders yet</h3>
-                <p class="text-gray-500 mb-6">Orders will appear here when customers place them.</p>
+                <!-- No Orders Message -->
+                <div th:if="${#lists.isEmpty(orders)}" class="text-center py-12">
+                    <i class="fas fa-shopping-bag text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-600 mb-2">No orders yet</h3>
+                    <p class="text-gray-500 mb-6">Orders will appear here when customers place them.</p>
+                </div>
             </div>
         </div>
     </div>
