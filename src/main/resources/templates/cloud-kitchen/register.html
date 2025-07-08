@@ -86,7 +86,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
 
-                    <form th:action="@{/cloud-kitchen/register}" method="post" th:object="${cloudKitchen}">
+                    <form th:action="@{/cloud-kitchen/register}" method="post" th:object="${cloudKitchen}" enctype="multipart/form-data">
                         <!-- Hidden Owner ID for debugging (remove in production) -->
                         <input type="hidden" name="ownerId" th:value="${#authentication.principal.id}" />
                         <!-- Owner Info (read-only) -->
@@ -94,15 +94,15 @@
                             <div class="row">
                                 <div class="col-md-4 mb-2">
                                     <label class="form-label fw-semibold"><i class="fas fa-user me-2"></i>Owner Name</label>
-                                    <input type="text" class="form-control" th:value="${#authentication.principal.name}" readonly>
+                                    <input type="text" th:field="*{ownerName}" class="form-control" id="ownerName" readonly>
                                 </div>
                                 <div class="col-md-4 mb-2">
                                     <label class="form-label fw-semibold"><i class="fas fa-envelope me-2"></i>Email</label>
-                                    <input type="email" class="form-control" th:value="${#authentication.principal.username}" readonly>
+                                    <input type="email" th:field="*{email}" class="form-control" id="email" readonly>
                                 </div>
                                 <div class="col-md-4 mb-2">
                                     <label class="form-label fw-semibold"><i class="fas fa-phone me-2"></i>Phone</label>
-                                    <input type="text" class="form-control" th:value="${#authentication.principal.phone}" readonly>
+                                    <input type="tel" th:field="*{phone}" class="form-control" id="phone" readonly>
                                 </div>
                             </div>
                         </div>
@@ -185,6 +185,13 @@
                                 <input type="tel" class="form-control" id="alternateContact" 
                                        th:field="*{alternateContact}">
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="imageFile" class="form-label fw-semibold">
+                                <i class="fas fa-image me-2"></i>Upload Kitchen Image
+                            </label>
+                            <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*" required>
                         </div>
 
                         <div class="mb-4">

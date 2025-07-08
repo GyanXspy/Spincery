@@ -53,7 +53,7 @@
             </div>
 
             <!-- Booking Form -->
-            <form th:action="@{/table-booking/create}" method="post" th:object="${booking}" class="space-y-6">
+            <form th:action="@{/table-booking/create}" method="post" th:object="${booking}" enctype="multipart/form-data" class="space-y-6">
                 <input type="hidden" name="restaurantId" th:value="${restaurant.id}">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -102,6 +102,13 @@
                     <textarea name="specialRequests" rows="4" 
                               placeholder="Any special requests or dietary requirements..."
                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="imageFile" class="form-label fw-semibold">
+                        <i class="fas fa-image me-2"></i>Upload Table Image
+                    </label>
+                    <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*" required>
                 </div>
 
                 <!-- Restaurant Policies -->

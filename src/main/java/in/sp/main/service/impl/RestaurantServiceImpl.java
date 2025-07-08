@@ -6,6 +6,7 @@ import in.sp.main.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,5 +74,16 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public List<Restaurant> findByIsVerifiedTrue() {
         return restaurantRepository.findByIsVerifiedTrue();
+    }
+
+    @PostConstruct
+    public void migrateCoverPhotoUrl() {
+        List<Restaurant> all = restaurantRepository.findAll();
+        for (Restaurant r : all) {
+            if ((r.getCoverPhotoUrl() == null || r.getCoverPhotoUrl().isBlank()) && r.getLogoUrl() != null && !r.getLogoUrl().isBlank()) {
+                r.setCoverPhotoUrl(r.getLogoUrl());
+                restaurantRepository.save(r);
+            }
+        }
     }
 } 

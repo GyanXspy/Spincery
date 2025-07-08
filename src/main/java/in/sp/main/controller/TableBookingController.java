@@ -3,6 +3,7 @@ package in.sp.main.controller;
 import in.sp.main.entity.Restaurant;
 import in.sp.main.entity.TableBooking;
 import in.sp.main.entity.User;
+import in.sp.main.service.CloudinaryService;
 import in.sp.main.service.RestaurantService;
 import in.sp.main.service.TableBookingService;
 import in.sp.main.service.UserService;
@@ -12,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,15 +22,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
+@RequestMapping("/table-booking")
 @RequiredArgsConstructor
 public class TableBookingController {
     
     private final RestaurantService restaurantService;
     private final TableBookingService tableBookingService;
     private final UserService userService;
+    private final CloudinaryService cloudinaryService;
     
-    @GetMapping("/table-booking")
-    public String tableBookingPage(Model model) {
+    @GetMapping("")
+    public String tableBookingHome(Model model) {
         try {
             List<Restaurant> restaurants = restaurantService.findAll();
             model.addAttribute("restaurants", restaurants);
@@ -67,7 +71,7 @@ public class TableBookingController {
         return "redirect:/restaurants/table-booking";
     }
     
-    @PostMapping("/table-booking/create")
+    @PostMapping("/create")
     public String createTableBooking(@ModelAttribute TableBooking booking, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
@@ -89,7 +93,22 @@ public class TableBookingController {
         return "redirect:/login";
     }
     
-    @GetMapping("/table-bookings")
+    @PostMapping("/register")
+    public String registerTableBooking(@ModelAttribute TableBooking tableBooking,
+                                       @RequestParam("imageFile") MultipartFile imageFile,
+                                       Model model) {
+        try {
+            String imageUrl = cloudinaryService.uploadFile(imageFile, "tablebooking");
+            tableBooking.setImageUrl(imageUrl);
+            tableBookingService.createBooking(tableBooking);
+            model.addAttribute("success", "Table Booking registered successfully!");
+        } catch (Exception e) {
+            model.addAttribute("error", "Error registering Table Booking: " + e.getMessage());
+        }
+        return "table-booking/book-table";
+    }
+    
+    @GetMapping("/bookings")
     public String userTableBookings(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
@@ -110,10 +129,10 @@ public class TableBookingController {
         return "redirect:/login";
     }
     
-    @GetMapping("/table-booking/{id}")
+    @GetMapping("/{id}")
     public String tableBookingDetails(@PathVariable Long id, Model model) {
         if (id == null) {
-            return "redirect:/table-bookings";
+            return "redirect:/bookings";
         }
         
         Optional<TableBooking> bookingOpt = tableBookingService.findById(id);
@@ -122,7 +141,7 @@ public class TableBookingController {
             model.addAttribute("booking", booking);
             return "table-booking/booking-details";
         }
-        return "redirect:/table-bookings";
+        return "redirect:/bookings";
     }
     
     @GetMapping("/restaurant/{restaurantId}/available-tables")

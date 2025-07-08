@@ -8,6 +8,7 @@ import in.sp.main.service.HotelService;
 import in.sp.main.service.RoomBookingService;
 import in.sp.main.service.RoomService;
 import in.sp.main.service.UserService;
+import in.sp.main.service.CloudinaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/hotel")
@@ -32,6 +34,7 @@ public class HotelBookingController {
     private final RoomService roomService;
     private final RoomBookingService roomBookingService;
     private final UserService userService;
+    private final CloudinaryService cloudinaryService;
     
     @GetMapping("/booking")
     public String hotelBookingPage(Model model) {
@@ -224,24 +227,30 @@ public class HotelBookingController {
     }
 
     @PostMapping("/register")
-    public String handleHotelRegister(@Valid @ModelAttribute("hotel") Hotel hotel,
-                                      BindingResult bindingResult,
-                                      RedirectAttributes redirectAttributes,
-                                      Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("hotel", hotel);
-            model.addAttribute("error", "Please correct the errors in the form.");
-            return "hotel/register";
-        }
+    public String registerHotel(@ModelAttribute Hotel hotel,
+                                @RequestParam("imageFile") MultipartFile imageFile,
+                                Model model) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                hotel.setOwner(user);
+                hotel.setOwnerName(user.getName());
+                hotel.setEmail(user.getEmail());
+                hotel.setPhone(user.getPhone());
+            } else {
+                model.addAttribute("error", "Could not determine owner for this hotel.");
+                return "hotel/register";
+            }
+            String imageUrl = cloudinaryService.uploadFile(imageFile, "hotel");
+            hotel.setHotelLogoUrl(imageUrl);
             hotelService.save(hotel);
-            redirectAttributes.addFlashAttribute("success", "Hotel registered successfully!");
-            return "redirect:/hotel/register";
+            model.addAttribute("success", "Hotel registered successfully!");
         } catch (Exception e) {
-            model.addAttribute("hotel", hotel);
-            model.addAttribute("error", "Error registering hotel: " + e.getMessage());
-            return "hotel/register";
+            model.addAttribute("error", "Error registering Hotel: " + e.getMessage());
         }
+        return "hotel/register";
     }
     
     @GetMapping("/list")

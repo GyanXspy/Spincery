@@ -331,25 +331,6 @@ public class TemplateController {
         return "table-booking/availability-check";
     }
     
-    @GetMapping("/table-booking/bookings")
-    public String tableBookingBookings(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
-            try {
-                var userOpt = userService.findByEmail(auth.getName());
-                if (userOpt.isPresent()) {
-                    List<TableBooking> bookings = tableBookingService.findByUserId(userOpt.get().getId());
-                    model.addAttribute("bookings", bookings);
-                    model.addAttribute("user", userOpt.get());
-                }
-            } catch (Exception e) {
-                model.addAttribute("error", "Error loading bookings: " + e.getMessage());
-                model.addAttribute("bookings", new ArrayList<>());
-            }
-        }
-        return "table-booking/bookings";
-    }
-    
     @GetMapping("/table-booking/booking-confirmation")
     public String tableBookingConfirmation(Model model) {
         return "table-booking/booking-confirmation";

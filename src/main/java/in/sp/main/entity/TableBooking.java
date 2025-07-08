@@ -51,6 +51,9 @@ public class TableBooking {
     @Column(name = "payment_status")
     private String paymentStatus;
     
+    @Column(name = "image_url")
+    private String imageUrl;
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -74,6 +77,13 @@ public class TableBooking {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+    
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
     
     public enum BookingStatus {

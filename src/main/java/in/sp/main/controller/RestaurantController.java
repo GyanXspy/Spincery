@@ -8,6 +8,7 @@ import in.sp.main.service.RestaurantService;
 import in.sp.main.service.UserService;
 import in.sp.main.service.FoodOrderService;
 import in.sp.main.service.MenuItemService;
+import in.sp.main.service.CloudinaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +29,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/restaurant")
@@ -38,6 +40,7 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
     private final FoodOrderService foodOrderService;
     private final MenuItemService menuItemService;
+    private final CloudinaryService cloudinaryService;
     
     @GetMapping("/dashboard")
     public String restaurantDashboard(Model model) {
@@ -68,24 +71,31 @@ public class RestaurantController {
     }
 
     @PostMapping("/register")
-    public String handleRestaurantRegister(@Valid @ModelAttribute("restaurant") Restaurant restaurant,
-                                           BindingResult bindingResult,
-                                           RedirectAttributes redirectAttributes,
-                                           Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("restaurant", restaurant);
-            model.addAttribute("error", "Please correct the errors in the form.");
-            return "restaurant/register";
-        }
+    public String registerRestaurant(@ModelAttribute Restaurant restaurant,
+                                     @RequestParam("imageFile") MultipartFile imageFile,
+                                     Model model) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                restaurant.setOwner(user);
+                restaurant.setOwnerName(user.getName());
+                restaurant.setEmail(user.getEmail());
+                restaurant.setPhone(user.getPhone());
+            } else {
+                model.addAttribute("error", "Could not determine owner for this restaurant.");
+                return "restaurant/register";
+            }
+            String imageUrl = cloudinaryService.uploadFile(imageFile, "restaurant");
+            restaurant.setLogoUrl(imageUrl);
+            restaurant.setCoverPhotoUrl(imageUrl);
             restaurantService.save(restaurant);
-            redirectAttributes.addFlashAttribute("success", "Restaurant registered successfully!");
-            return "redirect:/restaurant/register";
+            model.addAttribute("success", "Restaurant registered successfully!");
         } catch (Exception e) {
-            model.addAttribute("restaurant", restaurant);
-            model.addAttribute("error", "Error registering restaurant: " + e.getMessage());
-            return "restaurant/register";
+            model.addAttribute("error", "Error registering Restaurant: " + e.getMessage());
         }
+        return "restaurant/register";
     }
     
     @GetMapping("/list")
@@ -643,6 +653,10 @@ public class RestaurantController {
                         // Verify restaurant ownership
                         List<Restaurant> userRestaurants = restaurantService.findByOwnerId(user.getId());
                         if (!userRestaurants.isEmpty() && userRestaurants.get(0).getId().equals(restaurant.getId())) {
+                            // If coverPhotoUrl is empty but logoUrl is set, use logoUrl as coverPhotoUrl
+                            if ((restaurant.getCoverPhotoUrl() == null || restaurant.getCoverPhotoUrl().isBlank()) && restaurant.getLogoUrl() != null && !restaurant.getLogoUrl().isBlank()) {
+                                restaurant.setCoverPhotoUrl(restaurant.getLogoUrl());
+                            }
                             restaurantService.save(restaurant);
                             redirectAttributes.addFlashAttribute("success", "Restaurant updated successfully!");
                             return "redirect:/restaurant/edit";

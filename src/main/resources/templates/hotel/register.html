@@ -76,7 +76,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
 
-                    <form th:action="@{/hotel/register}" method="post" th:object="${hotel}">
+                    <form th:action="@{/hotel/register}" method="post" th:object="${hotel}" enctype="multipart/form-data">
                         <div class="row">
                             <!-- Hotel Information -->
                             <div class="col-md-6 mb-3">
@@ -94,8 +94,7 @@
                                 <label for="ownerName" class="form-label fw-semibold">
                                     <i class="fas fa-user me-2"></i>Owner Name
                                 </label>
-                                <input type="text" class="form-control" id="ownerName" 
-                                       th:field="*{ownerName}" required>
+                                <input type="text" th:field="*{ownerName}" class="form-control" id="ownerName" readonly>
                                 <div th:if="${#fields.hasErrors('ownerName')}" class="text-danger small mt-1">
                                     <span th:errors="*{ownerName}"></span>
                                 </div>
@@ -131,8 +130,7 @@
                                 <label for="phone" class="form-label fw-semibold">
                                     <i class="fas fa-phone me-2"></i>Phone Number
                                 </label>
-                                <input type="tel" class="form-control" id="phone" 
-                                       th:field="*{phone}" required>
+                                <input type="tel" th:field="*{phone}" class="form-control" id="phone" readonly>
                                 <div th:if="${#fields.hasErrors('phone')}" class="text-danger small mt-1">
                                     <span th:errors="*{phone}"></span>
                                 </div>
@@ -142,8 +140,7 @@
                                 <label for="email" class="form-label fw-semibold">
                                     <i class="fas fa-envelope me-2"></i>Email
                                 </label>
-                                <input type="email" class="form-control" id="email" 
-                                       th:field="*{email}" required>
+                                <input type="email" th:field="*{email}" class="form-control" id="email" readonly>
                                 <div th:if="${#fields.hasErrors('email')}" class="text-danger small mt-1">
                                     <span th:errors="*{email}"></span>
                                 </div>
@@ -190,6 +187,13 @@
                                 <input type="tel" class="form-control" id="alternateContact" 
                                        th:field="*{alternateContact}">
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="imageFile" class="form-label fw-semibold">
+                                <i class="fas fa-image me-2"></i>Upload Hotel Image
+                            </label>
+                            <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*" required>
                         </div>
 
                         <div class="mb-4">

@@ -158,12 +158,12 @@
                     <div th:if="${cloudKitchens != null and !cloudKitchens.empty}" class="row">
                         <div th:each="kitchen : ${cloudKitchens}" class="col-md-6 col-lg-4 mb-4">
                             <div class="card kitchen-card">
-                                <img th:src="${kitchen.imageUrl != null ? kitchen.imageUrl : '/images/default-kitchen.jpg'}" 
+                                <img th:src="${kitchen.kitchenLogoUrl != null ? kitchen.kitchenLogoUrl : '/images/default-kitchen.jpg'}" 
                                      class="card-img-top kitchen-image" alt="Kitchen Image">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <h5 class="card-title fw-bold text-dark mb-1" th:text="${kitchen.kitchenName}">Kitchen Name</h5>
-                                        <span class="cuisine-badge" th:text="${kitchen.cuisineType}">Cuisine</span>
+                                        <span class="cuisine-badge" th:text="${kitchen.description != null ? kitchen.description : 'N/A'}">Cuisine</span>
                                     </div>
                                     
                                     <div class="mb-2">

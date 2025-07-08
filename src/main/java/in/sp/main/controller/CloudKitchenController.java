@@ -23,6 +23,8 @@ import java.util.Optional;
 import jakarta.validation.Valid;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Validator;
+import in.sp.main.service.CloudinaryService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/cloud-kitchen")
@@ -34,6 +36,7 @@ public class CloudKitchenController {
     private final CloudKitchenSubscriptionService subscriptionService;
     private final UserService userService;
     private final Validator validator;
+    private final CloudinaryService cloudinaryService;
     
     @GetMapping("/dashboard")
     public String cloudKitchenDashboard(Model model) {
@@ -68,51 +71,30 @@ public class CloudKitchenController {
     }
 
     @PostMapping("/register")
-    public String handleCloudKitchenRegister(@ModelAttribute("cloudKitchen") CloudKitchen cloudKitchen,
-                                             BindingResult bindingResult,
-                                             RedirectAttributes redirectAttributes,
-                                             Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<User> userOpt = userService.findByEmail(auth.getName());
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            if (user.getName() == null || user.getName().isBlank() ||
-                user.getEmail() == null || user.getEmail().isBlank() ||
-                user.getPhone() == null || !user.getPhone().matches("\\d{10}")) {
-                model.addAttribute("cloudKitchen", cloudKitchen);
-                model.addAttribute("error", "Your profile is incomplete. Please ensure your name, email, and a valid 10-digit phone number are set in your account before registering a kitchen.");
+    public String registerCloudKitchen(@ModelAttribute CloudKitchen cloudKitchen,
+                                       @RequestParam("imageFile") MultipartFile imageFile,
+                                       Model model) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                cloudKitchen.setOwner(user);
+                cloudKitchen.setOwnerName(user.getName());
+                cloudKitchen.setEmail(user.getEmail());
+                cloudKitchen.setPhone(user.getPhone());
+            } else {
+                model.addAttribute("error", "Could not determine owner for this cloud kitchen.");
                 return "cloud-kitchen/register";
             }
-            cloudKitchen.setOwner(user);
-            cloudKitchen.setOwnerName(user.getName());
-            cloudKitchen.setEmail(user.getEmail());
-            cloudKitchen.setPhone(user.getPhone());
-        } else {
-            model.addAttribute("cloudKitchen", cloudKitchen);
-            model.addAttribute("error", "Could not determine owner for this kitchen.");
-            return "cloud-kitchen/register";
-        }
-
-        // Manual validation after setting owner fields
-        BeanPropertyBindingResult localBindingResult = new BeanPropertyBindingResult(cloudKitchen, "cloudKitchen");
-        validator.validate(cloudKitchen, localBindingResult);
-        if (localBindingResult.hasErrors()) {
-            model.addAttribute("cloudKitchen", cloudKitchen);
-            model.addAttribute("error", "Please correct the errors in the form.");
-            model.addAttribute("fieldErrors", localBindingResult.getAllErrors());
-            return "cloud-kitchen/register";
-        }
-
-        try {
+            String imageUrl = cloudinaryService.uploadFile(imageFile, "cloudkitchen");
+            cloudKitchen.setKitchenLogoUrl(imageUrl);
             cloudKitchenService.save(cloudKitchen);
-            redirectAttributes.addFlashAttribute("success", "Cloud kitchen registered successfully!");
-            return "redirect:/cloud-kitchen/register";
+            model.addAttribute("success", "Cloud Kitchen registered successfully!");
         } catch (Exception e) {
-            model.addAttribute("cloudKitchen", cloudKitchen);
-            model.addAttribute("error", "Error registering cloud kitchen: " + e.getMessage());
-            model.addAttribute("exceptionStackTrace", e);
-            return "cloud-kitchen/register";
+            model.addAttribute("error", "Error registering Cloud Kitchen: " + e.getMessage());
         }
+        return "cloud-kitchen/register";
     }
     
     @GetMapping("/list")
@@ -372,5 +354,17 @@ public class CloudKitchenController {
         }
         model.addAttribute("error", "Cloud kitchen not found.");
         return "cloud-kitchen/delivery";
+    }
+
+    @GetMapping("/meal-plans")
+    public String mealPlansPage(Model model) {
+        try {
+            List<MealPlan> mealPlans = mealPlanService.findAll();
+            model.addAttribute("mealPlans", mealPlans);
+        } catch (Exception e) {
+            model.addAttribute("mealPlans", new ArrayList<>());
+            model.addAttribute("error", "Error loading meal plans: " + e.getMessage());
+        }
+        return "cloud-kitchen/meal-plans";
     }
 } 
