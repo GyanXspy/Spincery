@@ -52,7 +52,7 @@
             </div>
 
             <!-- Subscription Form -->
-            <form th:action="@{/subscription/create}" method="post" th:object="${subscription}" class="space-y-6">
+            <form th:action="@{/cloud-kitchen/subscription/create}" method="post" th:object="${subscription}" class="space-y-6">
                 <input type="hidden" name="mealPlanId" th:value="${mealPlan.id}">
                 <input type="hidden" name="cloudKitchenId" th:value="${mealPlan.cloudKitchen.id}">
                 

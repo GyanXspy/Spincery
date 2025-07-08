@@ -173,7 +173,7 @@ public class CloudKitchenController {
         return "redirect:/cloud-kitchens";
     }
     
-    @GetMapping("/cloud-kitchen/{kitchenId}/meal-plans")
+    @GetMapping("/{kitchenId}/meal-plans")
     public String mealPlans(@PathVariable Long kitchenId, Model model) {
         Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
         if (kitchenOpt.isPresent()) {
@@ -185,30 +185,6 @@ public class CloudKitchenController {
         }
         model.addAttribute("error", "Cloud kitchen not found.");
         return "cloud-kitchen/meal-plans";
-    }
-    
-    @GetMapping("/cloud-kitchen/{cloudKitchenId}/meal-plans")
-    public String cloudKitchenMealPlans(@PathVariable Long cloudKitchenId, Model model) {
-        if (cloudKitchenId == null) {
-            return "redirect:/cloud-kitchens";
-        }
-        
-        Optional<CloudKitchen> cloudKitchenOpt = cloudKitchenService.findById(cloudKitchenId);
-        List<MealPlan> mealPlans = new ArrayList<>();
-        
-        try {
-            mealPlans = mealPlanService.findByCloudKitchenId(cloudKitchenId);
-        } catch (Exception e) {
-            model.addAttribute("error", "Error loading meal plans: " + e.getMessage());
-        }
-        
-        if (cloudKitchenOpt.isPresent()) {
-            CloudKitchen cloudKitchen = cloudKitchenOpt.get();
-            model.addAttribute("cloudKitchen", cloudKitchen);
-            model.addAttribute("mealPlans", mealPlans);
-            return "cloud-kitchen/meal-plans";
-        }
-        return "redirect:/cloud-kitchens";
     }
     
     @GetMapping("/meal-plan/{mealPlanId}/subscribe")
@@ -228,20 +204,44 @@ public class CloudKitchenController {
     }
     
     @PostMapping("/subscription/create")
-    public String createSubscription(@ModelAttribute CloudKitchenSubscription subscription, Model model) {
+    public String createSubscription(
+            @RequestParam Long mealPlanId,
+            @RequestParam Long cloudKitchenId,
+            @RequestParam String startDate,
+            @RequestParam String endDate,
+            @RequestParam String deliveryAddress,
+            @RequestParam String deliveryTimeSlots,
+            @RequestParam(required = false) String dietaryPreferences,
+            Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             String email = authentication.getName();
             Optional<User> userOpt = userService.findByEmail(email);
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
+                Optional<MealPlan> mealPlanOpt = mealPlanService.findById(mealPlanId);
+                Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(cloudKitchenId);
+                if (mealPlanOpt.isEmpty() || kitchenOpt.isEmpty()) {
+                    model.addAttribute("error", "Invalid meal plan or kitchen.");
+                    if (mealPlanOpt.isPresent()) model.addAttribute("mealPlan", mealPlanOpt.get());
+                    return "cloud-kitchen/subscribe";
+                }
+                CloudKitchenSubscription subscription = new CloudKitchenSubscription();
                 subscription.setUser(user);
+                subscription.setMealPlan(mealPlanOpt.get());
+                subscription.setCloudKitchen(kitchenOpt.get());
+                subscription.setStartDate(java.time.LocalDate.parse(startDate));
+                subscription.setEndDate(java.time.LocalDate.parse(endDate));
+                subscription.setDeliveryAddress(deliveryAddress);
+                subscription.setDeliveryTimeSlots(deliveryTimeSlots);
+                subscription.setDietaryPreferences(dietaryPreferences);
                 try {
                     CloudKitchenSubscription savedSubscription = subscriptionService.createSubscription(subscription);
                     model.addAttribute("subscription", savedSubscription);
                     return "cloud-kitchen/subscription-confirmation";
                 } catch (Exception e) {
                     model.addAttribute("error", "Error creating subscription: " + e.getMessage());
+                    model.addAttribute("mealPlan", mealPlanOpt.get());
                     return "cloud-kitchen/subscribe";
                 }
             }
@@ -360,5 +360,30 @@ public class CloudKitchenController {
             model.addAttribute("error", "Error loading meal plans: " + e.getMessage());
         }
         return "cloud-kitchen/meal-plans";
+    }
+
+    @GetMapping("/{kitchenId}/meal-plans/add")
+    public String showAddMealPlanForm(@PathVariable Long kitchenId, Model model) {
+        Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
+        if (kitchenOpt.isEmpty()) {
+            model.addAttribute("error", "Cloud kitchen not found.");
+            return "redirect:/cloud-kitchen/" + kitchenId + "/meal-plans";
+        }
+        model.addAttribute("cloudKitchen", kitchenOpt.get());
+        model.addAttribute("mealPlan", new MealPlan());
+        model.addAttribute("durationTypes", MealPlan.DurationType.values());
+        return "cloud-kitchen/meal-plan/add";
+    }
+
+    @PostMapping("/{kitchenId}/meal-plans/add")
+    public String addMealPlan(@PathVariable Long kitchenId, @ModelAttribute("mealPlan") MealPlan mealPlan, Model model) {
+        Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
+        if (kitchenOpt.isEmpty()) {
+            model.addAttribute("error", "Cloud kitchen not found.");
+            return "redirect:/cloud-kitchen/" + kitchenId + "/meal-plans";
+        }
+        mealPlan.setCloudKitchen(kitchenOpt.get());
+        mealPlanService.save(mealPlan);
+        return "redirect:/cloud-kitchen/" + kitchenId + "/meal-plans";
     }
 } 

@@ -38,246 +38,58 @@
 
     <!-- Meal Plans Section -->
     <div class="max-w-7xl mx-auto px-4 py-8">
+        <th:block th:if="${cloudKitchen != null}">
+            <a th:href="@{'/cloud-kitchen/' + ${cloudKitchen.id} + '/meal-plans/add'}" class="inline-flex items-center px-4 py-2 mb-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>Create Meal Plan
+            </a>
+        </th:block>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Vegetarian Plan -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="bg-green-500 text-white p-6 text-center">
-                    <i class="fas fa-leaf text-4xl mb-4"></i>
-                    <h3 class="text-2xl font-bold">Vegetarian Plan</h3>
-                    <p class="text-green-100">Fresh & Healthy</p>
+            <th:block th:if="${#lists.isEmpty(mealPlans)}">
+                <div class="col-span-3 text-center text-gray-500 py-8">
+                    No meal plans found for this kitchen.
                 </div>
-                <div class="p-6">
-                    <div class="text-center mb-6">
-                        <p class="text-3xl font-bold text-gray-800">$49</p>
-                        <p class="text-gray-600">per week</p>
+            </th:block>
+            <th:block th:each="plan : ${mealPlans}">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-purple-500 text-white p-6 text-center">
+                        <i class="fas fa-utensils text-4xl mb-4"></i>
+                        <h3 class="text-2xl font-bold" th:text="${plan.planName}">Meal Plan Name</h3>
+                        <p class="text-purple-100" th:text="${plan.description}">Description</p>
                     </div>
-                    <ul class="space-y-3 mb-6">
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-3"></i>
-                            <span>7 meals per week</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-3"></i>
-                            <span>Fresh vegetables</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-3"></i>
-                            <span>Plant-based proteins</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-3"></i>
-                            <span>Free delivery</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-3"></i>
-                            <span>Nutritional info included</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg">
-                        Subscribe Now
-                    </button>
-                </div>
-            </div>
-
-            <!-- Protein Plan -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="bg-blue-500 text-white p-6 text-center">
-                    <i class="fas fa-dumbbell text-4xl mb-4"></i>
-                    <h3 class="text-2xl font-bold">Protein Plan</h3>
-                    <p class="text-blue-100">High Protein</p>
-                </div>
-                <div class="p-6">
-                    <div class="text-center mb-6">
-                        <p class="text-3xl font-bold text-gray-800">$59</p>
-                        <p class="text-gray-600">per week</p>
+                    <div class="p-6">
+                        <div class="text-center mb-6">
+                            <p class="text-3xl font-bold text-gray-800" th:text="'$' + ${plan.price}">Price</p>
+                            <p class="text-gray-600" th:text="${plan.durationType} + ' (' + ${plan.durationValue} + ')'">Duration</p>
+                        </div>
+                        <ul class="space-y-3 mb-6">
+                            <li th:if="${plan.breakfastMenu}" class="flex items-center">
+                                <i class="fas fa-coffee text-purple-500 mr-3"></i>
+                                <span th:text="'Breakfast: ' + ${plan.breakfastMenu}"></span>
+                            </li>
+                            <li th:if="${plan.lunchMenu}" class="flex items-center">
+                                <i class="fas fa-hamburger text-purple-500 mr-3"></i>
+                                <span th:text="'Lunch: ' + ${plan.lunchMenu}"></span>
+                            </li>
+                            <li th:if="${plan.dinnerMenu}" class="flex items-center">
+                                <i class="fas fa-drumstick-bite text-purple-500 mr-3"></i>
+                                <span th:text="'Dinner: ' + ${plan.dinnerMenu}"></span>
+                            </li>
+                            <li th:if="${plan.dietaryPreferences}" class="flex items-center">
+                                <i class="fas fa-leaf text-purple-500 mr-3"></i>
+                                <span th:text="'Dietary: ' + ${plan.dietaryPreferences}"></span>
+                            </li>
+                        </ul>
+                        <span th:if="${plan.available}" class="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold mb-2">Available</span>
+                        <span th:if="${!plan.available}" class="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-semibold mb-2">Not Available</span>
+                        <div th:if="${plan.available}" class="mt-4">
+                            <a th:href="@{'/cloud-kitchen/meal-plan/' + ${plan.id} + '/subscribe'}"
+                               class="w-full inline-block bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg text-center transition-colors">
+                                Subscribe
+                            </a>
+                        </div>
                     </div>
-                    <ul class="space-y-3 mb-6">
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-blue-500 mr-3"></i>
-                            <span>7 meals per week</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-blue-500 mr-3"></i>
-                            <span>Lean proteins</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-blue-500 mr-3"></i>
-                            <span>Muscle building focus</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-blue-500 mr-3"></i>
-                            <span>Free delivery</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-blue-500 mr-3"></i>
-                            <span>Macro tracking</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg">
-                        Subscribe Now
-                    </button>
                 </div>
-            </div>
-
-            <!-- Keto Plan -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="bg-red-500 text-white p-6 text-center">
-                    <i class="fas fa-heart text-4xl mb-4"></i>
-                    <h3 class="text-2xl font-bold">Keto Plan</h3>
-                    <p class="text-red-100">Low Carb</p>
-                </div>
-                <div class="p-6">
-                    <div class="text-center mb-6">
-                        <p class="text-3xl font-bold text-gray-800">$69</p>
-                        <p class="text-gray-600">per week</p>
-                    </div>
-                    <ul class="space-y-3 mb-6">
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-red-500 mr-3"></i>
-                            <span>7 meals per week</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-red-500 mr-3"></i>
-                            <span>Low carb options</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-red-500 mr-3"></i>
-                            <span>High fat content</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-red-500 mr-3"></i>
-                            <span>Free delivery</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-red-500 mr-3"></i>
-                            <span>Ketone tracking</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg">
-                        Subscribe Now
-                    </button>
-                </div>
-            </div>
-
-            <!-- Balanced Plan -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="bg-purple-500 text-white p-6 text-center">
-                    <i class="fas fa-balance-scale text-4xl mb-4"></i>
-                    <h3 class="text-2xl font-bold">Balanced Plan</h3>
-                    <p class="text-purple-100">Well Balanced</p>
-                </div>
-                <div class="p-6">
-                    <div class="text-center mb-6">
-                        <p class="text-3xl font-bold text-gray-800">$54</p>
-                        <p class="text-gray-600">per week</p>
-                    </div>
-                    <ul class="space-y-3 mb-6">
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-purple-500 mr-3"></i>
-                            <span>7 meals per week</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-purple-500 mr-3"></i>
-                            <span>Balanced nutrition</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-purple-500 mr-3"></i>
-                            <span>Variety of cuisines</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-purple-500 mr-3"></i>
-                            <span>Free delivery</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-purple-500 mr-3"></i>
-                            <span>Flexible options</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-purple-500 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg">
-                        Subscribe Now
-                    </button>
-                </div>
-            </div>
-
-            <!-- Vegan Plan -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="bg-teal-500 text-white p-6 text-center">
-                    <i class="fas fa-seedling text-4xl mb-4"></i>
-                    <h3 class="text-2xl font-bold">Vegan Plan</h3>
-                    <p class="text-teal-100">100% Plant Based</p>
-                </div>
-                <div class="p-6">
-                    <div class="text-center mb-6">
-                        <p class="text-3xl font-bold text-gray-800">$64</p>
-                        <p class="text-gray-600">per week</p>
-                    </div>
-                    <ul class="space-y-3 mb-6">
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-teal-500 mr-3"></i>
-                            <span>7 meals per week</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-teal-500 mr-3"></i>
-                            <span>100% plant-based</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-teal-500 mr-3"></i>
-                            <span>Organic ingredients</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-teal-500 mr-3"></i>
-                            <span>Free delivery</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-teal-500 mr-3"></i>
-                            <span>Eco-friendly packaging</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-teal-500 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg">
-                        Subscribe Now
-                    </button>
-                </div>
-            </div>
-
-            <!-- Weight Loss Plan -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="bg-orange-500 text-white p-6 text-center">
-                    <i class="fas fa-weight text-4xl mb-4"></i>
-                    <h3 class="text-2xl font-bold">Weight Loss Plan</h3>
-                    <p class="text-orange-100">Calorie Controlled</p>
-                </div>
-                <div class="p-6">
-                    <div class="text-center mb-6">
-                        <p class="text-3xl font-bold text-gray-800">$74</p>
-                        <p class="text-gray-600">per week</p>
-                    </div>
-                    <ul class="space-y-3 mb-6">
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-orange-500 mr-3"></i>
-                            <span>7 meals per week</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-orange-500 mr-3"></i>
-                            <span>Calorie controlled</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-orange-500 mr-3"></i>
-                            <span>Portion controlled</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-orange-500 mr-3"></i>
-                            <span>Free delivery</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-orange-500 mr-3"></i>
-                            <span>Progress tracking</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-orange-500 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg">
-                        Subscribe Now
-                    </button>
-                </div>
-            </div>
+            </th:block>
         </div>
     </div>
 
