@@ -68,6 +68,16 @@
                         <span th:text="${error}"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
+                    <!-- Field Errors -->
+                    <div th:if="${fieldErrors}" class="alert alert-warning">
+                        <ul>
+                            <li th:each="err : ${fieldErrors}" th:text="${err.defaultMessage}"></li>
+                        </ul>
+                    </div>
+                    <!-- Exception Stack Trace (for debugging only, remove in production) -->
+                    <div th:if="${exceptionStackTrace}" class="alert alert-danger">
+                        <pre th:text="${exceptionStackTrace}"></pre>
+                    </div>
 
                     <!-- Success Messages -->
                     <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
@@ -77,6 +87,25 @@
                     </div>
 
                     <form th:action="@{/cloud-kitchen/register}" method="post" th:object="${cloudKitchen}">
+                        <!-- Hidden Owner ID for debugging (remove in production) -->
+                        <input type="hidden" name="ownerId" th:value="${#authentication.principal.id}" />
+                        <!-- Owner Info (read-only) -->
+                        <div class="mb-4 p-3 bg-light rounded border">
+                            <div class="row">
+                                <div class="col-md-4 mb-2">
+                                    <label class="form-label fw-semibold"><i class="fas fa-user me-2"></i>Owner Name</label>
+                                    <input type="text" class="form-control" th:value="${#authentication.principal.name}" readonly>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <label class="form-label fw-semibold"><i class="fas fa-envelope me-2"></i>Email</label>
+                                    <input type="email" class="form-control" th:value="${#authentication.principal.username}" readonly>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <label class="form-label fw-semibold"><i class="fas fa-phone me-2"></i>Phone</label>
+                                    <input type="text" class="form-control" th:value="${#authentication.principal.phone}" readonly>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <!-- Kitchen Information -->
                             <div class="col-md-6 mb-3">
@@ -89,17 +118,7 @@
                                     <span th:errors="*{kitchenName}"></span>
                                 </div>
                             </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="ownerName" class="form-label fw-semibold">
-                                    <i class="fas fa-user me-2"></i>Owner Name
-                                </label>
-                                <input type="text" class="form-control" id="ownerName" 
-                                       th:field="*{ownerName}" required>
-                                <div th:if="${#fields.hasErrors('ownerName')}" class="text-danger small mt-1">
-                                    <span th:errors="*{ownerName}"></span>
-                                </div>
-                            </div>
+                            <!-- Removed ownerName field from form -->
                         </div>
 
                         <div class="row">
@@ -122,30 +141,6 @@
                                        th:field="*{address}" required>
                                 <div th:if="${#fields.hasErrors('address')}" class="text-danger small mt-1">
                                     <span th:errors="*{address}"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="phone" class="form-label fw-semibold">
-                                    <i class="fas fa-phone me-2"></i>Phone Number
-                                </label>
-                                <input type="tel" class="form-control" id="phone" 
-                                       th:field="*{phone}" required>
-                                <div th:if="${#fields.hasErrors('phone')}" class="text-danger small mt-1">
-                                    <span th:errors="*{phone}"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label fw-semibold">
-                                    <i class="fas fa-envelope me-2"></i>Email
-                                </label>
-                                <input type="email" class="form-control" id="email" 
-                                       th:field="*{email}" required>
-                                <div th:if="${#fields.hasErrors('email')}" class="text-danger small mt-1">
-                                    <span th:errors="*{email}"></span>
                                 </div>
                             </div>
                         </div>
