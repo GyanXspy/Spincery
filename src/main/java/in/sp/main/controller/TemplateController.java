@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,13 +21,9 @@ public class TemplateController {
     private final UserService userService;
     private final RestaurantService restaurantService;
     private final HotelService hotelService;
-    private final CloudKitchenService cloudKitchenService;
     private final FoodOrderService foodOrderService;
     private final RoomBookingService roomBookingService;
-    private final TableBookingService tableBookingService;
     private final MenuItemService menuItemService;
-    private final MealPlanService mealPlanService;
-    private final CloudKitchenSubscriptionService subscriptionService;
     
     // Error and Access Pages
     @GetMapping("/access-denied")

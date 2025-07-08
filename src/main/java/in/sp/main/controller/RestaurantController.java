@@ -634,6 +634,7 @@ public class RestaurantController {
     @PostMapping("/edit")
     public String updateRestaurant(@Valid @ModelAttribute("restaurant") Restaurant restaurant,
                                    BindingResult bindingResult,
+                                   @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                                    RedirectAttributes redirectAttributes,
                                    Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -648,16 +649,42 @@ public class RestaurantController {
                         model.addAttribute("error", "Please correct the errors in the form.");
                         return "restaurant/edit";
                     }
-                    
                     try {
-                        // Verify restaurant ownership
-                        List<Restaurant> userRestaurants = restaurantService.findByOwnerId(user.getId());
-                        if (!userRestaurants.isEmpty() && userRestaurants.get(0).getId().equals(restaurant.getId())) {
-                            // If coverPhotoUrl is empty but logoUrl is set, use logoUrl as coverPhotoUrl
-                            if ((restaurant.getCoverPhotoUrl() == null || restaurant.getCoverPhotoUrl().isBlank()) && restaurant.getLogoUrl() != null && !restaurant.getLogoUrl().isBlank()) {
-                                restaurant.setCoverPhotoUrl(restaurant.getLogoUrl());
+                        Optional<Restaurant> dbRestaurantOpt = restaurantService.findById(restaurant.getId());
+                        if (dbRestaurantOpt.isPresent() && dbRestaurantOpt.get().getOwner() != null && dbRestaurantOpt.get().getOwner().getId().equals(user.getId())) {
+                            Restaurant dbRestaurant = dbRestaurantOpt.get();
+                            // Update allowed fields
+                            dbRestaurant.setRestaurantName(restaurant.getRestaurantName());
+                            dbRestaurant.setOwnerName(restaurant.getOwnerName());
+                            dbRestaurant.setPhone(restaurant.getPhone());
+                            dbRestaurant.setWhatsappNumber(restaurant.getWhatsappNumber());
+                            dbRestaurant.setAlternateContact(restaurant.getAlternateContact());
+                            dbRestaurant.setBusinessRegistrationNumber(restaurant.getBusinessRegistrationNumber());
+                            dbRestaurant.setAddress(restaurant.getAddress());
+                            dbRestaurant.setCity(restaurant.getCity());
+                            dbRestaurant.setState(restaurant.getState());
+                            dbRestaurant.setZipCode(restaurant.getZipCode());
+                            dbRestaurant.setNearbyLandmark(restaurant.getNearbyLandmark());
+                            dbRestaurant.setFssaiLicenseNumber(restaurant.getFssaiLicenseNumber());
+                            dbRestaurant.setGstin(restaurant.getGstin());
+                            dbRestaurant.setDescription(restaurant.getDescription());
+                            dbRestaurant.setWorkingDays(restaurant.getWorkingDays());
+                            dbRestaurant.setWeeklyOff(restaurant.getWeeklyOff());
+                            dbRestaurant.setOpeningTime(restaurant.getOpeningTime());
+                            dbRestaurant.setClosingTime(restaurant.getClosingTime());
+                            dbRestaurant.setDeliveryRadius(restaurant.getDeliveryRadius());
+                            dbRestaurant.setPackagingCharges(restaurant.getPackagingCharges());
+                            dbRestaurant.setAvgPreparationTime(restaurant.getAvgPreparationTime());
+                            dbRestaurant.setDeliveryOffered(restaurant.isDeliveryOffered());
+                            // Handle image upload if a new file is provided
+                            if (imageFile != null && !imageFile.isEmpty()) {
+                                String imageUrl = cloudinaryService.uploadFile(imageFile, "restaurant");
+                                dbRestaurant.setCoverPhotoUrl(imageUrl);
+                                dbRestaurant.setLogoUrl(imageUrl);
+                            } else if ((dbRestaurant.getCoverPhotoUrl() == null || dbRestaurant.getCoverPhotoUrl().isBlank()) && dbRestaurant.getLogoUrl() != null && !dbRestaurant.getLogoUrl().isBlank()) {
+                                dbRestaurant.setCoverPhotoUrl(dbRestaurant.getLogoUrl());
                             }
-                            restaurantService.save(restaurant);
+                            restaurantService.save(dbRestaurant);
                             redirectAttributes.addFlashAttribute("success", "Restaurant updated successfully!");
                             return "redirect:/restaurant/edit";
                         } else {
