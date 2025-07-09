@@ -29,6 +29,10 @@ public class MenuItemController {
     private final RestaurantService restaurantService;
     private final UserService userService;
     
+    /**
+     * Displays the list of menu items, optionally filtered by restaurant.
+     * Adds menu items and restaurant info to the model.
+     */
     @GetMapping("/list")
     public String listMenuItems(@RequestParam(required = false) Long restaurantId,
                                 Model model) {
@@ -46,6 +50,10 @@ public class MenuItemController {
         return "menu-item/list";
     }
     
+    /**
+     * Displays the form to add a new menu item, optionally for a specific restaurant.
+     * Adds owned restaurants to the model for selection.
+     */
     @GetMapping("/add")
     public String addMenuItemForm(@RequestParam(required = false) Long restaurantId,
                                   Model model) {
@@ -73,6 +81,10 @@ public class MenuItemController {
         return "menu-item/add";
     }
     
+    /**
+     * Handles the submission of the add menu item form.
+     * Validates input, checks ownership, and saves the menu item if authorized.
+     */
     @PostMapping("/add")
     public String addMenuItem(@Valid @ModelAttribute("menuItem") MenuItem menuItem,
                               BindingResult bindingResult,
@@ -114,6 +126,10 @@ public class MenuItemController {
         return "redirect:/menu-item/add";
     }
     
+    /**
+     * Displays the form to edit an existing menu item by its ID.
+     * Checks ownership and loads the menu item and owned restaurants for editing.
+     */
     @GetMapping("/edit/{id}")
     public String editMenuItemForm(@PathVariable Long id, Model model) {
         Optional<MenuItem> menuItemOpt = menuItemService.findById(id);
@@ -138,6 +154,10 @@ public class MenuItemController {
         return "redirect:/access-denied";
     }
     
+    /**
+     * Handles the submission of the edit menu item form.
+     * Validates input, checks ownership, and updates the menu item if authorized.
+     */
     @PostMapping("/edit/{id}")
     public String editMenuItem(@PathVariable Long id,
                                @Valid @ModelAttribute("menuItem") MenuItem menuItem,
@@ -179,6 +199,10 @@ public class MenuItemController {
         return "redirect:/menu-item/edit/" + id;
     }
     
+    /**
+     * Deletes a menu item by its ID if the user is authorized.
+     * Checks ownership and removes the menu item if permitted.
+     */
     @PostMapping("/delete/{id}")
     public String deleteMenuItem(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -206,6 +230,10 @@ public class MenuItemController {
         return "redirect:/restaurant/menu";
     }
     
+    /**
+     * Displays menu items filtered by category.
+     * Adds the category and menu items to the model.
+     */
     @GetMapping("/category/{category}")
     public String menuItemsByCategory(@PathVariable String category, Model model) {
         List<MenuItem> menuItems = menuItemService.findByCategory(category);
@@ -214,6 +242,10 @@ public class MenuItemController {
         return "menu-item/category";
     }
     
+    /**
+     * Displays menu items for a specific restaurant and category.
+     * Adds the restaurant, category, and menu items to the model.
+     */
     @GetMapping("/restaurant/{restaurantId}/category/{category}")
     public String menuItemsByRestaurantAndCategory(@PathVariable Long restaurantId,
                                                    @PathVariable String category,

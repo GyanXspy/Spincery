@@ -28,6 +28,10 @@ public class RoomController {
     private final HotelService hotelService;
     private final UserService userService;
     
+    /**
+     * Displays a list of rooms, optionally filtered by hotel.
+     * Adds the rooms and hotel info to the model.
+     */
     @GetMapping("/list")
     public String listRooms(@RequestParam(required = false) Long hotelId,
                              Model model) {
@@ -45,6 +49,10 @@ public class RoomController {
         return "room/list";
     }
     
+    /**
+     * Displays the form to add a new room, optionally for a specific hotel.
+     * Adds available hotels to the model for selection.
+     */
     @GetMapping("/add")
     public String addRoomForm(@RequestParam(required = false) Long hotelId,
                                Model model) {
@@ -64,6 +72,10 @@ public class RoomController {
         return "room/add";
     }
     
+    /**
+     * Handles the submission of the add room form.
+     * Validates input, checks ownership, and saves the room if authorized.
+     */
     @PostMapping("/add")
     public String addRoom(@Valid @ModelAttribute("room") Room room,
                            BindingResult bindingResult,
@@ -97,6 +109,10 @@ public class RoomController {
         return "redirect:/room/add";
     }
     
+    /**
+     * Displays the form to edit an existing room by its ID.
+     * Checks ownership and loads the room and hotels for editing.
+     */
     @GetMapping("/edit/{id}")
     public String editRoomForm(@PathVariable Long id, Model model) {
         Optional<Room> roomOpt = roomService.findById(id);
@@ -121,6 +137,10 @@ public class RoomController {
         return "redirect:/access-denied";
     }
     
+    /**
+     * Handles the submission of the edit room form.
+     * Validates input, checks ownership, and updates the room if authorized.
+     */
     @PostMapping("/edit/{id}")
     public String editRoom(@PathVariable Long id,
                             @Valid @ModelAttribute("room") Room room,
@@ -155,6 +175,10 @@ public class RoomController {
         return "redirect:/room/edit/" + id;
     }
     
+    /**
+     * Deletes a room by its ID if the user is authorized.
+     * Checks ownership and removes the room if permitted.
+     */
     @PostMapping("/delete/{id}")
     public String deleteRoom(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -183,6 +207,10 @@ public class RoomController {
         return "redirect:/room/list";
     }
     
+    /**
+     * Displays available rooms for a specific hotel by hotel ID.
+     * Adds the hotel and available rooms to the model.
+     */
     @GetMapping("/available/{hotelId}")
     public String availableRooms(@PathVariable Long hotelId, Model model) {
         List<Room> rooms = roomService.findByHotelIdAndIsAvailableTrue(hotelId);
@@ -194,6 +222,10 @@ public class RoomController {
         return "room/available";
     }
     
+    /**
+     * Displays rooms filtered by room type.
+     * Adds the room type and rooms to the model.
+     */
     @GetMapping("/type/{roomType}")
     public String roomsByType(@PathVariable String roomType, Model model) {
         List<Room> rooms = roomService.findByRoomType(roomType);
@@ -202,6 +234,10 @@ public class RoomController {
         return "room/type";
     }
     
+    /**
+     * Displays rooms for a specific hotel and room type.
+     * Adds the hotel, room type, and rooms to the model.
+     */
     @GetMapping("/hotel/{hotelId}/type/{roomType}")
     public String roomsByHotelAndType(@PathVariable Long hotelId,
                                       @PathVariable String roomType,
@@ -216,6 +252,10 @@ public class RoomController {
         return "room/hotel-type";
     }
     
+    /**
+     * Displays rooms for a specific hotel within a price range.
+     * Adds the hotel, price range, and rooms to the model.
+     */
     @GetMapping("/price-range")
     public String roomsByPriceRange(@RequestParam Long hotelId,
                                     @RequestParam Double minPrice,
@@ -232,6 +272,10 @@ public class RoomController {
         return "room/price-range";
     }
     
+    /**
+     * Displays rooms for a specific hotel with minimum capacity.
+     * Adds the hotel, capacity, and rooms to the model.
+     */
     @GetMapping("/capacity/{hotelId}/{capacity}")
     public String roomsByCapacity(@PathVariable Long hotelId,
                                   @PathVariable Integer capacity,
@@ -246,6 +290,10 @@ public class RoomController {
         return "room/capacity";
     }
     
+    /**
+     * Displays available rooms for a specific hotel within a maximum price.
+     * Adds the hotel, max price, and rooms to the model.
+     */
     @GetMapping("/available-price/{hotelId}/{maxPrice}")
     public String availableRoomsByPrice(@PathVariable Long hotelId,
                                         @PathVariable Double maxPrice,

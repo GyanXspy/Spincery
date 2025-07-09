@@ -32,6 +32,10 @@ public class CloudKitchenController {
     private final UserService userService;
     private final CloudinaryService cloudinaryService;
     
+    /**
+     * Displays the cloud kitchen dashboard for the authenticated owner.
+     * Loads user info and their cloud kitchens for the dashboard view.
+     */
     @GetMapping("/dashboard")
     public String cloudKitchenDashboard(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -56,6 +60,10 @@ public class CloudKitchenController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the cloud kitchen registration form.
+     * Prepares a new CloudKitchen object for the form.
+     */
     @GetMapping("/register")
     public String cloudKitchenRegister(Model model) {
         if (!model.containsAttribute("cloudKitchen")) {
@@ -64,6 +72,10 @@ public class CloudKitchenController {
         return "cloud-kitchen/register";
     }
 
+    /**
+     * Handles cloud kitchen registration form submission.
+     * Associates the kitchen with the authenticated user and uploads the logo image.
+     */
     @PostMapping("/register")
     public String registerCloudKitchen(@ModelAttribute CloudKitchen cloudKitchen,
                                        @RequestParam("imageFile") MultipartFile imageFile,
@@ -91,6 +103,10 @@ public class CloudKitchenController {
         return "cloud-kitchen/register";
     }
     
+    /**
+     * Displays a list of cloud kitchens, optionally filtered by city.
+     * Adds the kitchens and city info to the model.
+     */
     @GetMapping("/list")
     public String cloudKitchenList(@RequestParam(required = false) String city, Model model) {
         List<CloudKitchen> kitchens;
@@ -109,6 +125,10 @@ public class CloudKitchenController {
         return "cloud-kitchen/kitchens";
     }
     
+    /**
+     * Displays the details of a specific cloud kitchen by its ID.
+     * Adds the kitchen to the model or redirects if not found.
+     */
     @GetMapping("/details")
     public String cloudKitchenDetails(@RequestParam(required = false) Long kitchenId, Model model) {
         if (kitchenId == null) {
@@ -126,6 +146,9 @@ public class CloudKitchenController {
         }
     }
     
+    /**
+     * Displays the main cloud kitchen page with a list of all cloud kitchens.
+     */
     @GetMapping("/cloud-kitchen")
     public String cloudKitchenPage(Model model) {
         try {
@@ -138,6 +161,9 @@ public class CloudKitchenController {
         return "cloud-kitchen/index";
     }
     
+    /**
+     * Displays the cloud kitchens page with a list of all cloud kitchens.
+     */
     @GetMapping("/cloud-kitchens")
     public String cloudKitchensPage(Model model) {
         try {
@@ -150,6 +176,9 @@ public class CloudKitchenController {
         return "cloud-kitchen/cloud-kitchens";
     }
     
+    /**
+     * Displays the details of a specific cloud kitchen by path variable ID, including its meal plans.
+     */
     @GetMapping("/cloud-kitchen-details/{id}")
     public String cloudKitchenDetailsById(@PathVariable Long id, Model model) {
         if (id == null) {
@@ -173,6 +202,9 @@ public class CloudKitchenController {
         return "redirect:/cloud-kitchens";
     }
     
+    /**
+     * Displays the meal plans for a specific cloud kitchen by its ID.
+     */
     @GetMapping("/{kitchenId}/meal-plans")
     public String mealPlans(@PathVariable Long kitchenId, Model model) {
         Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
@@ -187,6 +219,10 @@ public class CloudKitchenController {
         return "cloud-kitchen/meal-plans";
     }
     
+    /**
+     * Displays the subscription form for a specific meal plan.
+     * Adds the meal plan and a new subscription object to the model.
+     */
     @GetMapping("/meal-plan/{mealPlanId}/subscribe")
     public String subscribeToMealPlan(@PathVariable Long mealPlanId, Model model) {
         if (mealPlanId == null) {
@@ -203,6 +239,10 @@ public class CloudKitchenController {
         return "redirect:/cloud-kitchens";
     }
     
+    /**
+     * Handles the creation of a new cloud kitchen meal plan subscription.
+     * Associates the subscription with the authenticated user and saves it.
+     */
     @PostMapping("/subscription/create")
     public String createSubscription(
             @RequestParam Long mealPlanId,

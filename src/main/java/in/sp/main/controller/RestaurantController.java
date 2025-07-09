@@ -42,6 +42,10 @@ public class RestaurantController {
     private final MenuItemService menuItemService;
     private final CloudinaryService cloudinaryService;
     
+    /**
+     * Displays the restaurant dashboard for the authenticated owner.
+     * Loads user info and their restaurants for the dashboard view.
+     */
     @GetMapping("/dashboard")
     public String restaurantDashboard(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -62,6 +66,10 @@ public class RestaurantController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the restaurant registration form.
+     * Prepares a new Restaurant object for the form.
+     */
     @GetMapping("/register")
     public String restaurantRegister(Model model) {
         if (!model.containsAttribute("restaurant")) {
@@ -70,6 +78,10 @@ public class RestaurantController {
         return "restaurant/register";
     }
 
+    /**
+     * Handles restaurant registration form submission.
+     * Associates the restaurant with the authenticated user and uploads the logo image.
+     */
     @PostMapping("/register")
     public String registerRestaurant(@ModelAttribute Restaurant restaurant,
                                      @RequestParam("imageFile") MultipartFile imageFile,
@@ -98,6 +110,10 @@ public class RestaurantController {
         return "restaurant/register";
     }
     
+    /**
+     * Displays a list of restaurants, optionally filtered by city.
+     * Adds the restaurants and city info to the model.
+     */
     @GetMapping("/list")
     public String restaurantList(@RequestParam(required = false) String city, Model model) {
         List<Restaurant> restaurants;
@@ -117,6 +133,10 @@ public class RestaurantController {
         return "restaurant/list";
     }
     
+    /**
+     * Displays the menu for a specific restaurant by its ID.
+     * Adds the restaurant and its menu items to the model.
+     */
     @GetMapping("/menu")
     public String restaurantMenu(@RequestParam(required = false) Long restaurantId, Model model) {
         if (restaurantId == null) {
@@ -146,6 +166,10 @@ public class RestaurantController {
         }
     }
     
+    /**
+     * Displays the list of orders for the authenticated restaurant owner.
+     * Loads all orders for the owner's restaurant.
+     */
     @GetMapping("/orders")
     public String restaurantOrders(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -181,6 +205,10 @@ public class RestaurantController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the analytics page for the authenticated restaurant owner.
+     * Loads order statistics and analytics data for the owner's restaurant.
+     */
     @GetMapping("/analytics")
     public String restaurantAnalytics(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -306,6 +334,10 @@ public class RestaurantController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the restaurant settings page for the authenticated owner.
+     * Loads the restaurant details for the settings view.
+     */
     @GetMapping("/settings")
     public String restaurantSettings(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -338,6 +370,10 @@ public class RestaurantController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the restaurant hours management page for the authenticated owner.
+     * Loads the restaurant details for the hours management view.
+     */
     @GetMapping("/hours")
     public String restaurantHours(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -369,6 +405,10 @@ public class RestaurantController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the restaurant delivery settings page for the authenticated owner.
+     * Loads the restaurant details for the delivery settings view.
+     */
     @GetMapping("/delivery")
     public String restaurantDelivery(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -400,6 +440,10 @@ public class RestaurantController {
         return "redirect:/login";
     }
     
+    /**
+     * Handles the update of restaurant operating hours.
+     * Validates time formats and updates the restaurant's operating hours.
+     */
     @PostMapping("/hours/update")
     public String updateRestaurantHours(RedirectAttributes redirectAttributes,
                                        Model model,
@@ -461,6 +505,10 @@ public class RestaurantController {
         return "redirect:/login";
     }
     
+    /**
+     * Handles the update of restaurant delivery settings.
+     * Updates delivery options, radius, packaging charges, and preparation time.
+     */
     @PostMapping("/delivery/update")
     public String updateRestaurantDelivery(RedirectAttributes redirectAttributes,
                                           Model model,
@@ -510,6 +558,10 @@ public class RestaurantController {
         return "redirect:/login";
     }
     
+    /**
+     * Handles the comprehensive update of restaurant settings.
+     * Updates all restaurant details including contact info, address, business details, and operational settings.
+     */
     @PostMapping("/settings/update")
     public String updateRestaurantSettings(RedirectAttributes redirectAttributes,
                                           Model model,
@@ -607,6 +659,10 @@ public class RestaurantController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the restaurant edit form for the authenticated owner.
+     * Loads the restaurant details for editing and checks ownership.
+     */
     @GetMapping("/edit")
     public String restaurantEdit(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -631,6 +687,10 @@ public class RestaurantController {
         return "redirect:/login";
     }
     
+    /**
+     * Handles the restaurant edit form submission.
+     * Validates input, checks ownership, and updates the restaurant with new image if provided.
+     */
     @PostMapping("/edit")
     public String updateRestaurant(@Valid @ModelAttribute("restaurant") Restaurant restaurant,
                                    BindingResult bindingResult,

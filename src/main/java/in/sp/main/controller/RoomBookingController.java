@@ -32,6 +32,10 @@ public class RoomBookingController {
     private final HotelService hotelService;
     private final UserService userService;
     
+    /**
+     * Displays a list of room bookings, filtered by user, room, or hotel if provided.
+     * Adds the bookings to the model.
+     */
     @GetMapping("/list")
     public String listBookings(@RequestParam(required = false) Long userId,
                                 @RequestParam(required = false) Long roomId,
@@ -53,6 +57,10 @@ public class RoomBookingController {
         return "room-booking/list";
     }
     
+    /**
+     * Displays the form to add a new room booking, optionally for a specific room.
+     * Adds available rooms to the model for selection.
+     */
     @GetMapping("/add")
     public String addBookingForm(@RequestParam(required = false) Long roomId,
                                   Model model) {
@@ -72,6 +80,10 @@ public class RoomBookingController {
         return "room-booking/add";
     }
     
+    /**
+     * Handles the submission of the add booking form.
+     * Associates the booking with the authenticated user and saves it.
+     */
     @PostMapping("/add")
     public String addBooking(@Valid @ModelAttribute("booking") RoomBooking booking,
                               BindingResult bindingResult,
@@ -102,6 +114,10 @@ public class RoomBookingController {
         return "redirect:/room-booking/add";
     }
     
+    /**
+     * Displays the form to edit an existing booking by its ID.
+     * Checks ownership or admin rights and loads the booking for editing.
+     */
     @GetMapping("/edit/{id}")
     public String editBookingForm(@PathVariable Long id, Model model) {
         Optional<RoomBooking> bookingOpt = roomBookingService.findById(id);
@@ -127,6 +143,10 @@ public class RoomBookingController {
         return "redirect:/access-denied";
     }
     
+    /**
+     * Handles the submission of the edit booking form.
+     * Checks ownership or admin rights and updates the booking if authorized.
+     */
     @PostMapping("/edit/{id}")
     public String editBooking(@PathVariable Long id,
                                @Valid @ModelAttribute("booking") RoomBooking booking,
@@ -164,6 +184,10 @@ public class RoomBookingController {
         return "redirect:/room-booking/edit/" + id;
     }
     
+    /**
+     * Deletes a booking by its ID if the user is authorized.
+     * Checks ownership or admin rights and removes the booking if permitted.
+     */
     @PostMapping("/delete/{id}")
     public String deleteBooking(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -193,6 +217,10 @@ public class RoomBookingController {
         return "redirect:/room-booking/list";
     }
     
+    /**
+     * Displays bookings filtered by status.
+     * Adds the status and bookings to the model.
+     */
     @GetMapping("/status/{status}")
     public String bookingsByStatus(@PathVariable RoomBooking.BookingStatus status,
                                    Model model) {
@@ -202,6 +230,10 @@ public class RoomBookingController {
         return "room-booking/status";
     }
     
+    /**
+     * Displays bookings for a specific user by user ID.
+     * Adds the user and their bookings to the model.
+     */
     @GetMapping("/user/{userId}")
     public String bookingsByUser(@PathVariable Long userId, Model model) {
         List<RoomBooking> bookings = roomBookingService.findByUserId(userId);
@@ -213,6 +245,10 @@ public class RoomBookingController {
         return "room-booking/user-bookings";
     }
     
+    /**
+     * Displays bookings for a specific room by room ID.
+     * Adds the room and its bookings to the model.
+     */
     @GetMapping("/room/{roomId}")
     public String bookingsByRoom(@PathVariable Long roomId, Model model) {
         List<RoomBooking> bookings = roomBookingService.findByRoomId(roomId);
@@ -224,6 +260,10 @@ public class RoomBookingController {
         return "room-booking/room-bookings";
     }
     
+    /**
+     * Displays bookings for a specific hotel by hotel ID.
+     * Adds the hotel and its bookings to the model.
+     */
     @GetMapping("/hotel/{hotelId}")
     public String bookingsByHotel(@PathVariable Long hotelId, Model model) {
         List<RoomBooking> bookings = roomBookingService.findByHotelId(hotelId);
@@ -235,6 +275,10 @@ public class RoomBookingController {
         return "room-booking/hotel-bookings";
     }
     
+    /**
+     * Displays bookings within a specific date range.
+     * Adds the date range and bookings to the model.
+     */
     @GetMapping("/date-range")
     public String bookingsByDateRange(@RequestParam LocalDate startDate,
                                       @RequestParam LocalDate endDate,
@@ -246,6 +290,10 @@ public class RoomBookingController {
         return "room-booking/date-range";
     }
     
+    /**
+     * Checks the availability of a specific room for given dates.
+     * Adds the room, dates, and availability status to the model.
+     */
     @GetMapping("/room/{roomId}/availability")
     public String checkRoomAvailability(@PathVariable Long roomId,
                                        @RequestParam LocalDate checkIn,
@@ -263,6 +311,10 @@ public class RoomBookingController {
         return "room-booking/availability";
     }
     
+    /**
+     * Displays the details of a specific booking by its ID.
+     * Adds the booking to the model or redirects if not found.
+     */
     @GetMapping("/details/{id}")
     public String bookingDetails(@PathVariable Long id, Model model) {
         Optional<RoomBooking> bookingOpt = roomBookingService.findById(id);

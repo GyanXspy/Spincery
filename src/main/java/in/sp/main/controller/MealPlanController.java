@@ -28,6 +28,10 @@ public class MealPlanController {
     private final CloudKitchenService cloudKitchenService;
     private final UserService userService;
     
+    /**
+     * Displays a list of meal plans, optionally filtered by cloud kitchen.
+     * Adds the meal plans and cloud kitchen info to the model.
+     */
     @GetMapping("/list")
     public String listMealPlans(@RequestParam(required = false) Long cloudKitchenId,
                                  Model model) {
@@ -45,6 +49,10 @@ public class MealPlanController {
         return "meal-plan/list";
     }
     
+    /**
+     * Displays the form to add a new meal plan, optionally for a specific cloud kitchen.
+     * Adds available cloud kitchens to the model for selection.
+     */
     @GetMapping("/add")
     public String addMealPlanForm(@RequestParam(required = false) Long cloudKitchenId,
                                    Model model) {
@@ -64,6 +72,10 @@ public class MealPlanController {
         return "meal-plan/add";
     }
     
+    /**
+     * Handles the submission of the add meal plan form.
+     * Validates input, checks ownership, and saves the meal plan if authorized.
+     */
     @PostMapping("/add")
     public String addMealPlan(@Valid @ModelAttribute("mealPlan") MealPlan mealPlan,
                                BindingResult bindingResult,
@@ -97,6 +109,10 @@ public class MealPlanController {
         return "redirect:/meal-plan/add";
     }
     
+    /**
+     * Displays the form to edit an existing meal plan by its ID.
+     * Checks ownership and loads the meal plan and cloud kitchens for editing.
+     */
     @GetMapping("/edit/{id}")
     public String editMealPlanForm(@PathVariable Long id, Model model) {
         Optional<MealPlan> mealPlanOpt = mealPlanService.findById(id);
@@ -121,6 +137,10 @@ public class MealPlanController {
         return "redirect:/access-denied";
     }
     
+    /**
+     * Handles the submission of the edit meal plan form.
+     * Validates input, checks ownership, and updates the meal plan if authorized.
+     */
     @PostMapping("/edit/{id}")
     public String editMealPlan(@PathVariable Long id,
                                 @Valid @ModelAttribute("mealPlan") MealPlan mealPlan,
@@ -155,6 +175,10 @@ public class MealPlanController {
         return "redirect:/meal-plan/edit/" + id;
     }
     
+    /**
+     * Deletes a meal plan by its ID if the user is authorized.
+     * Checks ownership and removes the meal plan if permitted.
+     */
     @PostMapping("/delete/{id}")
     public String deleteMealPlan(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -183,6 +207,10 @@ public class MealPlanController {
         return "redirect:/meal-plan/list";
     }
     
+    /**
+     * Displays meal plans filtered by price range.
+     * Adds the price range and meal plans to the model.
+     */
     @GetMapping("/price-range")
     public String mealPlansByPriceRange(@RequestParam Double minPrice,
                                         @RequestParam Double maxPrice,
@@ -194,6 +222,10 @@ public class MealPlanController {
         return "meal-plan/price-range";
     }
     
+    /**
+     * Displays meal plans filtered by duration type.
+     * Adds the duration type and meal plans to the model.
+     */
     @GetMapping("/duration/{durationType}")
     public String mealPlansByDuration(@PathVariable MealPlan.DurationType durationType,
                                       Model model) {
@@ -203,6 +235,10 @@ public class MealPlanController {
         return "meal-plan/duration";
     }
     
+    /**
+     * Displays meal plans for a specific cloud kitchen and duration type.
+     * Adds the cloud kitchen, duration type, and meal plans to the model.
+     */
     @GetMapping("/cloud-kitchen/{cloudKitchenId}/duration/{durationType}")
     public String mealPlansByCloudKitchenAndDuration(@PathVariable Long cloudKitchenId,
                                                      @PathVariable MealPlan.DurationType durationType,

@@ -20,6 +20,10 @@ public class OrderItemController {
     private final OrderItemService orderItemService;
     private final FoodOrderService foodOrderService;
     
+    /**
+     * Displays a list of order items, filtered by order, restaurant, or user if provided.
+     * Adds the relevant order, restaurant, or user info to the model.
+     */
     @GetMapping("/list")
     public String listOrderItems(@RequestParam(required = false) Long orderId,
                                  @RequestParam(required = false) Long restaurantId,
@@ -45,6 +49,10 @@ public class OrderItemController {
         return "order-item/list";
     }
     
+    /**
+     * Displays order items for a specific order by order ID.
+     * Adds the order and its items to the model.
+     */
     @GetMapping("/order/{orderId}")
     public String orderItemsByOrder(@PathVariable Long orderId, Model model) {
         List<OrderItem> orderItems = orderItemService.findByFoodOrderId(orderId);
@@ -57,6 +65,10 @@ public class OrderItemController {
         return "order-item/order-items";
     }
     
+    /**
+     * Displays order items for a specific restaurant by restaurant ID.
+     * Adds the restaurant's order items to the model.
+     */
     @GetMapping("/restaurant/{restaurantId}")
     public String orderItemsByRestaurant(@PathVariable Long restaurantId, Model model) {
         List<OrderItem> orderItems = orderItemService.findByRestaurantId(restaurantId);
@@ -65,6 +77,10 @@ public class OrderItemController {
         return "order-item/restaurant-items";
     }
     
+    /**
+     * Displays order items for a specific user by user ID.
+     * Adds the user's order items to the model.
+     */
     @GetMapping("/user/{userId}")
     public String orderItemsByUser(@PathVariable Long userId, Model model) {
         List<OrderItem> orderItems = orderItemService.findByUserId(userId);
@@ -73,6 +89,10 @@ public class OrderItemController {
         return "order-item/user-items";
     }
     
+    /**
+     * Displays order items for a specific menu item by menu item ID.
+     * Adds the menu item's order items to the model.
+     */
     @GetMapping("/menu-item/{menuItemId}")
     public String orderItemsByMenuItem(@PathVariable Long menuItemId, Model model) {
         List<OrderItem> orderItems = orderItemService.findByMenuItemId(menuItemId);
@@ -81,6 +101,10 @@ public class OrderItemController {
         return "order-item/menu-item-orders";
     }
     
+    /**
+     * Displays the details of a specific order item by its ID.
+     * Adds the order item to the model or redirects if not found.
+     */
     @GetMapping("/details/{id}")
     public String orderItemDetails(@PathVariable Long id, Model model) {
         Optional<OrderItem> orderItemOpt = orderItemService.findById(id);

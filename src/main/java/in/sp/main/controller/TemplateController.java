@@ -25,18 +25,28 @@ public class TemplateController {
     private final RoomBookingService roomBookingService;
     private final MenuItemService menuItemService;
     
-    // Error and Access Pages
+    /**
+     * Displays the access denied page.
+     * Returns the access denied view for unauthorized users.
+     */
     @GetMapping("/access-denied")
     public String accessDenied() {
         return "access-denied";
     }
     
+    /**
+     * Displays the error page.
+     * Returns the error view for general errors.
+     */
     @GetMapping("/error")
     public String error() {
         return "error";
     }
     
-    // Main Dashboard
+    /**
+     * Displays the main dashboard with user information.
+     * Loads authenticated user details and adds them to the model.
+     */
     @GetMapping("/main-dashboard")
     public String mainDashboard(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -55,7 +65,10 @@ public class TemplateController {
         return "dashboard";
     }
     
-    // Food Delivery Templates - Only missing endpoints
+    /**
+     * Displays the food delivery index page.
+     * Loads user information for the food delivery interface.
+     */
     @GetMapping("/food-delivery/index")
     public String foodDeliveryIndex(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -72,6 +85,10 @@ public class TemplateController {
         return "food-delivery/index";
     }
     
+    /**
+     * Displays the list of restaurants for food delivery.
+     * Loads verified restaurants and adds them to the model.
+     */
     @GetMapping("/food-delivery/restaurants")
     public String foodDeliveryRestaurants(Model model) {
         try {
@@ -84,6 +101,10 @@ public class TemplateController {
         return "food-delivery/restaurants";
     }
     
+    /**
+     * Displays the details of a specific restaurant for food delivery.
+     * Loads restaurant details and menu items for the food delivery interface.
+     */
     @GetMapping("/food-delivery/restaurant-details/{id}")
     public String foodDeliveryRestaurantDetails(@PathVariable Long id, Model model) {
         try {
@@ -104,6 +125,10 @@ public class TemplateController {
         return "food-delivery/restaurant-details";
     }
     
+    /**
+     * Displays the menu for food delivery, optionally for a specific restaurant.
+     * Loads menu items and restaurant information for the food delivery interface.
+     */
     @GetMapping("/food-delivery/menu")
     public String foodDeliveryMenu(@RequestParam(required = false) Long restaurantId, Model model) {
         try {
@@ -121,6 +146,10 @@ public class TemplateController {
         return "food-delivery/menu";
     }
     
+    /**
+     * Displays the list of food orders for the authenticated user.
+     * Loads user's food orders for the food delivery interface.
+     */
     @GetMapping("/food-delivery/orders")
     public String foodDeliveryOrders(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -140,6 +169,10 @@ public class TemplateController {
         return "food-delivery/orders";
     }
     
+    /**
+     * Displays the details of a specific food order for food delivery.
+     * Loads order details and order items for the food delivery interface.
+     */
     @GetMapping("/food-delivery/order-details/{id}")
     public String foodDeliveryOrderDetails(@PathVariable Long id, Model model) {
         try {
@@ -160,16 +193,28 @@ public class TemplateController {
         return "food-delivery/order-details";
     }
     
+    /**
+     * Displays the food delivery order confirmation page.
+     * Returns the order confirmation view for food delivery.
+     */
     @GetMapping("/food-delivery/order-confirmation")
     public String foodDeliveryOrderConfirmation(Model model) {
         return "food-delivery/order-confirmation";
     }
     
+    /**
+     * Displays the food delivery order tracking page.
+     * Returns the order tracking view for food delivery.
+     */
     @GetMapping("/food-delivery/track-order")
     public String foodDeliveryTrackOrder(Model model) {
         return "food-delivery/track-order";
     }
     
+    /**
+     * Displays the food delivery order tracking details.
+     * Loads order tracking information for the food delivery interface.
+     */
     @GetMapping("/food-delivery/tracking")
     public String foodDeliveryTracking(@RequestParam(required = false) Long orderId, Model model) {
         if (orderId != null) {
@@ -185,12 +230,19 @@ public class TemplateController {
         return "food-delivery/tracking";
     }
     
-    // Hotel Booking Templates - Only missing endpoints
+    /**
+     * Displays the hotel booking index page.
+     * Returns the main hotel booking view.
+     */
     @GetMapping("/hotel-booking/index")
     public String hotelBookingIndex(Model model) {
         return "hotel-booking/index";
     }
     
+    /**
+     * Displays the list of hotels for hotel booking.
+     * Loads all hotels and adds them to the model.
+     */
     @GetMapping("/hotel-booking/hotels")
     public String hotelBookingHotels(Model model) {
         try {
@@ -203,6 +255,10 @@ public class TemplateController {
         return "hotel-booking/hotels";
     }
     
+    /**
+     * Displays the details of a specific hotel for hotel booking.
+     * Loads hotel details and room information for the hotel booking interface.
+     */
     @GetMapping("/hotel-booking/hotel-details/{id}")
     public String hotelBookingHotelDetails(@PathVariable Long id, Model model) {
         try {
@@ -223,6 +279,10 @@ public class TemplateController {
         return "hotel-booking/hotel-details";
     }
     
+    /**
+     * Displays the room booking form for hotel booking.
+     * Returns the room booking view for hotel booking.
+     */
     @GetMapping("/hotel-booking/book-room")
     public String hotelBookingBookRoom(@RequestParam(required = false) Long roomId, Model model) {
         // Note: Room functionality would need to be implemented
@@ -230,6 +290,10 @@ public class TemplateController {
         return "hotel-booking/book-room";
     }
     
+    /**
+     * Displays the list of hotel bookings for the authenticated user.
+     * Loads user's hotel bookings for the hotel booking interface.
+     */
     @GetMapping("/hotel-booking/bookings")
     public String hotelBookingBookings(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

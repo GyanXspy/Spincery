@@ -33,6 +33,10 @@ public class HotelBookingController {
     private final UserService userService;
     private final CloudinaryService cloudinaryService;
     
+    /**
+     * Displays the main hotel booking page with a list of all hotels.
+     * Handles errors in loading hotels gracefully.
+     */
     @GetMapping("/booking")
     public String hotelBookingPage(Model model) {
         try {
@@ -45,6 +49,10 @@ public class HotelBookingController {
         return "hotel-booking/index";
     }
     
+    /**
+     * Displays the list of all hotels for booking.
+     * Handles errors in loading hotels gracefully.
+     */
     @GetMapping("/hotels")
     public String hotelsPage(Model model) {
         try {
@@ -57,6 +65,10 @@ public class HotelBookingController {
         return "hotel-booking/hotels";
     }
     
+    /**
+     * Displays the details of a specific hotel, including its rooms.
+     * Handles errors in loading rooms gracefully.
+     */
     @GetMapping("/hotel-details/{id}")
     public String hotelDetails(@PathVariable Long id, Model model) {
         if (id == null) {
@@ -80,6 +92,10 @@ public class HotelBookingController {
         return "redirect:/hotel/hotels";
     }
     
+    /**
+     * Displays the rooms for a specific hotel by its ID.
+     * Handles errors in loading rooms gracefully.
+     */
     @GetMapping("/hotel/{hotelId}/rooms")
     public String hotelRooms(@PathVariable Long hotelId, Model model) {
         if (hotelId == null) {
@@ -104,6 +120,10 @@ public class HotelBookingController {
         return "redirect:/hotel/hotels";
     }
     
+    /**
+     * Displays the room booking form for a specific room by its ID.
+     * Adds the room and a new booking object to the model.
+     */
     @GetMapping("/room/{roomId}/book")
     public String bookRoom(@PathVariable Long roomId, Model model) {
         if (roomId == null) {
@@ -120,6 +140,10 @@ public class HotelBookingController {
         return "redirect:/hotel/hotels";
     }
     
+    /**
+     * Handles room booking creation.
+     * Associates the booking with the authenticated user and saves it.
+     */
     @PostMapping("/booking/create")
     public String createBooking(@ModelAttribute RoomBooking booking, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -142,6 +166,10 @@ public class HotelBookingController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the list of bookings for the authenticated user.
+     * Loads all room bookings placed by the user.
+     */
     @GetMapping("/bookings")
     public String userBookings(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -163,6 +191,10 @@ public class HotelBookingController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the details of a specific booking by its ID.
+     * Shows booking details or redirects if not found.
+     */
     @GetMapping("/booking/{id}")
     public String bookingDetails(@PathVariable Long id, Model model) {
         if (id == null) {
@@ -178,6 +210,10 @@ public class HotelBookingController {
         return "redirect:/hotel/bookings";
     }
     
+    /**
+     * Searches for hotels by city and optional date parameters.
+     * Adds the search criteria and results to the model.
+     */
     @GetMapping("/search-hotels")
     public String searchHotels(@RequestParam String city, 
                               @RequestParam(required = false) LocalDate checkIn, 
@@ -196,6 +232,10 @@ public class HotelBookingController {
         return "hotel-booking/search-results";
     }
 
+    /**
+     * Displays the hotel dashboard for the authenticated owner.
+     * Loads user info for the dashboard view.
+     */
     @GetMapping("/dashboard")
     public String hotelDashboard(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -215,6 +255,10 @@ public class HotelBookingController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the hotel registration form.
+     * Prepares a new Hotel object for the form.
+     */
     @GetMapping("/register")
     public String hotelRegister(Model model) {
         if (!model.containsAttribute("hotel")) {
@@ -223,6 +267,10 @@ public class HotelBookingController {
         return "hotel/register";
     }
 
+    /**
+     * Handles hotel registration form submission.
+     * Associates the hotel with the authenticated user and uploads the logo image.
+     */
     @PostMapping("/register")
     public String registerHotel(@ModelAttribute Hotel hotel,
                                 @RequestParam("imageFile") MultipartFile imageFile,

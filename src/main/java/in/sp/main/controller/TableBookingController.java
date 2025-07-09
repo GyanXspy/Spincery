@@ -31,6 +31,10 @@ public class TableBookingController {
     private final UserService userService;
     private final CloudinaryService cloudinaryService;
     
+    /**
+     * Displays the main table booking page with a list of all restaurants.
+     * Handles errors in loading restaurants gracefully.
+     */
     @GetMapping("")
     public String tableBookingHome(Model model) {
         try {
@@ -43,6 +47,10 @@ public class TableBookingController {
         return "table-booking/index";
     }
     
+    /**
+     * Displays the list of restaurants available for table booking.
+     * Handles errors in loading restaurants gracefully.
+     */
     @GetMapping("/restaurants/table-booking")
     public String restaurantsForTableBooking(Model model) {
         try {
@@ -55,6 +63,10 @@ public class TableBookingController {
         return "table-booking/restaurants";
     }
     
+    /**
+     * Displays the table booking form for a specific restaurant by its ID.
+     * Adds the restaurant and a new booking object to the model.
+     */
     @GetMapping("/restaurant/{restaurantId}/table-booking")
     public String restaurantTableBooking(@PathVariable Long restaurantId, Model model) {
         if (restaurantId == null) {
@@ -71,6 +83,10 @@ public class TableBookingController {
         return "redirect:/restaurants/table-booking";
     }
     
+    /**
+     * Handles table booking creation.
+     * Associates the booking with the authenticated user and saves it.
+     */
     @PostMapping("/create")
     public String createTableBooking(@ModelAttribute TableBooking booking, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -93,6 +109,10 @@ public class TableBookingController {
         return "redirect:/login";
     }
     
+    /**
+     * Handles table booking registration with image upload.
+     * Uploads the image and saves the booking with the image URL.
+     */
     @PostMapping("/register")
     public String registerTableBooking(@ModelAttribute TableBooking tableBooking,
                                        @RequestParam("imageFile") MultipartFile imageFile,
@@ -108,6 +128,10 @@ public class TableBookingController {
         return "table-booking/book-table";
     }
     
+    /**
+     * Displays the list of table bookings for the authenticated user.
+     * Loads all table bookings placed by the user.
+     */
     @GetMapping("/bookings")
     public String userTableBookings(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -129,6 +153,10 @@ public class TableBookingController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the details of a specific table booking by its ID.
+     * Shows booking details or redirects if not found.
+     */
     @GetMapping("/{id}")
     public String tableBookingDetails(@PathVariable Long id, Model model) {
         if (id == null) {
@@ -144,6 +172,10 @@ public class TableBookingController {
         return "redirect:/bookings";
     }
     
+    /**
+     * Checks the availability of tables for a specific restaurant on given date and time.
+     * Adds the restaurant, date, time, guest count, and availability status to the model.
+     */
     @GetMapping("/restaurant/{restaurantId}/available-tables")
     public String checkAvailableTables(@PathVariable Long restaurantId, 
                                      @RequestParam LocalDate date,
@@ -177,6 +209,10 @@ public class TableBookingController {
         return "redirect:/restaurants/table-booking";
     }
     
+    /**
+     * Searches for restaurants by city and optional booking parameters.
+     * Adds the search criteria and results to the model.
+     */
     @GetMapping("/search-restaurants-table-booking")
     public String searchRestaurantsForTableBooking(@RequestParam String city, 
                                                  @RequestParam(required = false) LocalDate date,

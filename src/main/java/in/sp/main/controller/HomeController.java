@@ -19,6 +19,12 @@ public class HomeController {
     
     private final UserService userService;
     
+    /**
+     * Handles the root ("/") GET request.
+     * Loads the home page and, if the user is authenticated, adds user info to the model for display.
+     * Retrieves the authenticated user's details and their initial for UI personalization.
+     * Handles errors in user info retrieval gracefully.
+     */
     @GetMapping("/")
     public String home(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -37,6 +43,11 @@ public class HomeController {
         return "index";
     }
     
+    /**
+     * Handles email verification via a GET request to "/verify".
+     * Checks the provided token, verifies the user via the UserService, and redirects to login with a success or error message.
+     * If the token is invalid or verification fails, an error message is shown.
+     */
     @GetMapping("/verify")
     public String verifyEmail(@RequestParam(required = false) String token, RedirectAttributes redirectAttributes) {
         if (token == null || token.trim().isEmpty()) {

@@ -19,11 +19,19 @@ public class AuthController {
     
     private final UserService userService;
     
+    /**
+     * Displays the login page.
+     * Handles GET requests to "/login" and returns the login view.
+     */
     @GetMapping("/login")
     public String loginPage() {
         return "login";
     }
     
+    /**
+     * Displays the registration page.
+     * Handles GET requests to "/register" and prepares a new User object for the form.
+     */
     @GetMapping("/register")
     public String registerPage(Model model) {
         if (!model.containsAttribute("user")) {
@@ -32,6 +40,11 @@ public class AuthController {
         return "register";
     }
     
+    /**
+     * Handles user registration form submission.
+     * Validates input fields, checks password and role, and registers the user via UserService.
+     * On success, redirects to login; on error, returns to registration with error messages.
+     */
     @PostMapping("/register")
     public String registerUser(@ModelAttribute("user") User user, 
                                @RequestParam("role") String role,
@@ -90,6 +103,10 @@ public class AuthController {
         }
     }
     
+    /**
+     * Redirects authenticated users to their respective dashboards based on their role.
+     * Handles GET requests to "/dashboard" and checks the user's role to determine the redirect target.
+     */
     @GetMapping("/dashboard")
     public String dashboard() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -118,6 +135,11 @@ public class AuthController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the dashboard for users with the CUSTOMER role.
+     * Handles GET requests to "/user/dashboard" and adds user info to the model.
+     * Redirects to access denied if the user is not a CUSTOMER.
+     */
     @GetMapping("/user/dashboard")
     public String userDashboard(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -138,7 +160,11 @@ public class AuthController {
         return "redirect:/login";
     }
     
-    // Development endpoint to verify all users
+    /**
+     * Development endpoint to verify all users.
+     * Sets all users as verified for development/testing purposes.
+     * Only accessible in development environments.
+     */
     @GetMapping("/dev/verify-all-users")
     public String verifyAllUsers(RedirectAttributes redirectAttributes) {
         try {
@@ -155,7 +181,11 @@ public class AuthController {
         return "redirect:/login";
     }
     
-    // Environment-based admin creation (ONLY for development)
+    /**
+     * Development endpoint to create an initial admin user.
+     * Only available in development mode and if no admin exists.
+     * Registers a new admin user with the provided credentials.
+     */
     @GetMapping("/dev/create-admin")
     public String createInitialAdmin(@RequestParam String email, 
                                    @RequestParam String password,

@@ -20,6 +20,11 @@ public class UserController {
     
     private final UserService userService;
     
+    /**
+     * Displays the user's profile page.
+     * Loads the authenticated user's details and adds them to the model.
+     * Redirects to login if not authenticated.
+     */
     @GetMapping("/profile")
     public String userProfile(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -34,6 +39,11 @@ public class UserController {
         return "redirect:/login";
     }
     
+    /**
+     * Handles profile update form submission.
+     * Updates allowed fields for the authenticated user and saves changes.
+     * Shows success or error messages as appropriate.
+     */
     @PostMapping("/profile/update")
     public String updateProfile(@ModelAttribute("user") User user, 
                                RedirectAttributes redirectAttributes) {
@@ -59,11 +69,19 @@ public class UserController {
         return "redirect:/user/profile";
     }
     
+    /**
+     * Displays the change password page for the user.
+     * Returns the view for changing the user's password.
+     */
     @GetMapping("/change-password")
     public String changePasswordPage(Model model) {
         return "user/change-password";
     }
     
+    /**
+     * Handles password change form submission.
+     * Validates old and new passwords, updates the password if valid, and shows messages.
+     */
     @PostMapping("/change-password")
     public String changePassword(@RequestParam("oldPassword") String oldPassword,
                                 @RequestParam("newPassword") String newPassword,
@@ -100,11 +118,19 @@ public class UserController {
         return "redirect:/user/change-password";
     }
     
+    /**
+     * Displays the reset password page.
+     * Returns the view for resetting the user's password.
+     */
     @GetMapping("/reset-password")
     public String resetPasswordPage() {
         return "user/reset-password";
     }
     
+    /**
+     * Handles password reset form submission.
+     * Sends a password reset link to the user's email address.
+     */
     @PostMapping("/reset-password")
     public String resetPassword(@RequestParam("email") String email,
                                RedirectAttributes redirectAttributes) {
@@ -117,6 +143,10 @@ public class UserController {
         return "redirect:/login";
     }
     
+    /**
+     * Handles email verification for the user.
+     * Verifies the user using the provided token and shows a message.
+     */
     @GetMapping("/verify")
     public String verifyUser(@RequestParam("token") String token,
                              RedirectAttributes redirectAttributes) {
@@ -129,7 +159,10 @@ public class UserController {
         return "redirect:/login";
     }
     
-    // Admin endpoints for user management
+    /**
+     * Displays the list of all users for admin management.
+     * Only accessible by admin users.
+     */
     @GetMapping("/admin/users")
     public String listUsers(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -144,6 +177,10 @@ public class UserController {
         return "redirect:/access-denied";
     }
     
+    /**
+     * Deletes a user by their ID (admin only).
+     * Handles user deletion and shows a success or error message.
+     */
     @PostMapping("/admin/users/{id}/delete")
     public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

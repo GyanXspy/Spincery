@@ -28,6 +28,10 @@ public class FoodDeliveryController {
     private final FoodOrderService foodOrderService;
     private final UserService userService;
     
+    /**
+     * Displays the main food delivery page with a list of all restaurants.
+     * Handles errors in loading restaurants gracefully.
+     */
     @GetMapping("/food-delivery")
     public String foodDeliveryPage(Model model) {
         try {
@@ -40,6 +44,10 @@ public class FoodDeliveryController {
         return "food-delivery/index";
     }
     
+    /**
+     * Displays the list of all restaurants for food delivery.
+     * Handles errors in loading restaurants gracefully.
+     */
     @GetMapping("/restaurants")
     public String restaurantsPage(Model model) {
         try {
@@ -52,6 +60,10 @@ public class FoodDeliveryController {
         return "food-delivery/restaurants";
     }
     
+    /**
+     * Displays the details of a specific restaurant, including its menu items.
+     * Handles errors in loading menu items gracefully.
+     */
     @GetMapping("/restaurant-details/{id}")
     public String restaurantDetails(@PathVariable Long id, Model model) {
         if (id == null) {
@@ -75,6 +87,10 @@ public class FoodDeliveryController {
         return "redirect:/restaurants";
     }
     
+    /**
+     * Displays the menu for a specific restaurant by its ID.
+     * Handles errors in loading menu items gracefully.
+     */
     @GetMapping("/restaurant/{restaurantId}/menu")
     public String restaurantMenu(@PathVariable Long restaurantId, Model model) {
         if (restaurantId == null) {
@@ -99,6 +115,11 @@ public class FoodDeliveryController {
         return "redirect:/restaurants";
     }
     
+    /**
+     * Handles order creation for food delivery.
+     * Associates the order with the authenticated user and saves it.
+     * Displays order confirmation or error messages as appropriate.
+     */
     @PostMapping("/order/create")
     public String createOrder(@ModelAttribute FoodOrder order, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -121,6 +142,10 @@ public class FoodDeliveryController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the list of orders for the authenticated user.
+     * Loads all food orders placed by the user.
+     */
     @GetMapping("/orders")
     public String userOrders(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -142,6 +167,10 @@ public class FoodDeliveryController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the details of a specific food order by its ID.
+     * Shows order details or redirects if not found.
+     */
     @GetMapping("/order-details/{id}")
     public String orderDetails(@PathVariable Long id, Model model) {
         if (id == null) {
@@ -157,11 +186,18 @@ public class FoodDeliveryController {
         return "redirect:/orders";
     }
     
+    /**
+     * Displays the order tracking page (form for entering order ID).
+     */
     @GetMapping("/track-order")
     public String trackOrderPage() {
         return "food-delivery/track-order";
     }
     
+    /**
+     * Displays the tracking details for a specific order by its ID.
+     * Shows order tracking info or redirects if not found.
+     */
     @GetMapping("/track-order/{orderId}")
     public String trackOrder(@PathVariable Long orderId, Model model) {
         if (orderId == null) {

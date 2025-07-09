@@ -24,6 +24,11 @@ public class AdminController {
     private final UserService userService;
     private final RestaurantService restaurantService;
 
+    /**
+     * Displays the admin dashboard page.
+     * Loads admin user info and statistics for the dashboard view.
+     * Redirects to login or access denied if not authorized.
+     */
     @GetMapping("/dashboard")
     public String adminDashboard(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -43,6 +48,11 @@ public class AdminController {
         return "redirect:/login";
     }
 
+    /**
+     * Displays the admin control panel page.
+     * Loads admin user info for the control panel view.
+     * Redirects to login or access denied if not authorized.
+     */
     @GetMapping("/control-panel")
     public String controlPanel(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -62,6 +72,10 @@ public class AdminController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the list of pending and verified restaurants for admin review.
+     * Loads all restaurants, separates them by verification status, and adds statistics to the model.
+     */
     @GetMapping("/restaurants")
     public String pendingRestaurants(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -98,6 +112,11 @@ public class AdminController {
         return "redirect:/login";
     }
     
+    /**
+     * Verifies a restaurant by its ID.
+     * Sets the restaurant as verified and shows a success message.
+     * Only accessible by admin users.
+     */
     @PostMapping("/restaurants/verify")
     public String verifyRestaurant(@RequestParam Long restaurantId, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -128,6 +147,11 @@ public class AdminController {
         return "redirect:/login";
     }
     
+    /**
+     * Rejects (deactivates) a restaurant by its ID.
+     * Sets the restaurant as inactive and shows a success message.
+     * Only accessible by admin users.
+     */
     @PostMapping("/restaurants/reject")
     public String rejectRestaurant(@RequestParam Long restaurantId, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -158,6 +182,10 @@ public class AdminController {
         return "redirect:/login";
     }
     
+    /**
+     * Displays the list of all users, grouped by role, for admin management.
+     * Loads all users and adds statistics for each role to the model.
+     */
     @GetMapping("/users")
     public String adminUsers(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -209,6 +237,11 @@ public class AdminController {
         return "redirect:/login";
     }
     
+    /**
+     * Promotes a user to admin by their user ID.
+     * Sets the user's role to ADMIN and verifies them.
+     * Only accessible by admin users.
+     */
     @PostMapping("/users/make-admin")
     public String makeUserAdmin(@RequestParam Long userId, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -240,6 +273,11 @@ public class AdminController {
         return "redirect:/login";
     }
     
+    /**
+     * Removes admin privileges from a user by their user ID.
+     * Sets the user's role to CUSTOMER and prevents removing the last admin.
+     * Only accessible by admin users.
+     */
     @PostMapping("/users/remove-admin")
     public String removeUserAdmin(@RequestParam Long userId, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
