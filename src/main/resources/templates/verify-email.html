@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification - Spincery</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-purple-100">
+                <i class="fas fa-envelope text-purple-600 text-xl"></i>
+            </div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Verify Your Email
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                We've sent a verification code to your email address
+            </p>
+        </div>
+        
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline" th:text="${success}"></span>
+        </div>
+        
+        <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline" th:text="${error}"></span>
+        </div>
+        
+        <form class="mt-8 space-y-6" action="/verify-email" method="POST">
+            <div class="space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input id="email" name="email" type="email" required 
+                           th:value="${email}"
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm" 
+                           placeholder="Enter your email address">
+                </div>
+                
+                <div>
+                    <label for="otp" class="block text-sm font-medium text-gray-700">Verification Code</label>
+                    <input id="otp" name="otp" type="text" required maxlength="6"
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm text-center text-lg font-mono tracking-widest" 
+                           placeholder="Enter 6-digit code">
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" 
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                        <i class="fas fa-check text-purple-500 group-hover:text-purple-400"></i>
+                    </span>
+                    Verify Email
+                </button>
+            </div>
+            
+            <div class="text-center">
+                <form action="/resend-otp" method="POST" class="inline">
+                    <input type="hidden" name="email" th:value="${email}">
+                    <button type="submit" 
+                            class="text-purple-600 hover:text-purple-500 text-sm font-medium">
+                        <i class="fas fa-redo mr-1"></i>Resend Code
+                    </button>
+                </form>
+            </div>
+        </form>
+        
+        <div class="text-center">
+            <a href="/login" class="text-purple-600 hover:text-purple-500">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Login
+            </a>
+        </div>
+        
+        <div class="mt-6 text-center text-xs text-gray-500">
+            <p>Didn't receive the code? Check your spam folder or</p>
+            <p>contact support if the problem persists.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-focus on OTP input
+        document.getElementById('otp').focus();
+        
+        // Auto-format OTP input (only numbers, max 6 digits)
+        document.getElementById('otp').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
+        });
+        
+        // Auto-submit when 6 digits are entered
+        document.getElementById('otp').addEventListener('input', function() {
+            if (this.value.length === 6) {
+                document.querySelector('form').submit();
+            }
+        });
+        
+        // Email validation
+        document.getElementById('email').addEventListener('input', function() {
+            const email = this.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (email && !emailRegex.test(email)) {
+                this.setCustomValidity('Please enter a valid email address');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    </script>
+</body>
+</html> 

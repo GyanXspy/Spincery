@@ -66,6 +66,12 @@ public class User implements UserDetails {
     @Column(name = "verification_token")
     private String verificationToken;
     
+    @Column(name = "otp")
+    private String otp;
+    
+    @Column(name = "otp_expiry")
+    private LocalDateTime otpExpiry;
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     

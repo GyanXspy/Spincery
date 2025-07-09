@@ -93,9 +93,14 @@ public class AuthController {
                 return "register";
             }
             
-            userService.registerUser(user);
-            redirectAttributes.addFlashAttribute("success", "Registration successful! Please login.");
-            return "redirect:/login";
+            User registeredUser = userService.registerUser(user);
+            System.out.println("=== REGISTRATION SUCCESS ===");
+            System.out.println("User registered: " + registeredUser.getEmail());
+            System.out.println("Redirecting to: /verify-email");
+            System.out.println("=============================");
+            redirectAttributes.addFlashAttribute("success", "Registration successful! Please check your email for OTP verification.");
+            redirectAttributes.addFlashAttribute("email", registeredUser.getEmail());
+            return "redirect:/verify-email";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("user", user);

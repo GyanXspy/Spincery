@@ -36,4 +36,23 @@ public interface UserService {
     boolean changePassword(Long userId, String oldPassword, String newPassword);
     
     void resetPassword(String email);
+    
+    /**
+     * Sends OTP to all unverified users
+     */
+    void sendOTPToAllUnverifiedUsers();
+    
+    /**
+     * Validates OTP for a user
+     * @param email User's email
+     * @param otp OTP to validate
+     * @return true if OTP is valid, false otherwise
+     */
+    boolean validateOTP(String email, String otp);
+    
+    /**
+     * Resends OTP to a specific user
+     * @param email User's email
+     */
+    void resendOTP(String email);
 } 

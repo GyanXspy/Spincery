@@ -2,6 +2,7 @@ package in.sp.main.service.impl;
 
 import in.sp.main.entity.User;
 import in.sp.main.repository.UserRepository;
+import in.sp.main.service.OTPService;
 import in.sp.main.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,7 @@ public class UserServiceImpl implements UserService {
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final OTPService otpService;
     
     @Override
     public User registerUser(User user) {
@@ -30,12 +32,8 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Phone number already registered");
         }
         
-        // Generate verification token
-        String verificationToken = generateVerificationToken();
-        user.setVerificationToken(verificationToken);
-        
-        // For development, automatically verify users
-        user.setVerified(true);
+        // Set user as unverified initially
+        user.setVerified(false);
         
         // Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -43,8 +41,9 @@ public class UserServiceImpl implements UserService {
         // Save user
         User savedUser = userRepository.save(user);
         
-        // Send verification email (for development, just print)
-        sendVerificationEmail(savedUser, verificationToken);
+        // Send OTP for email verification
+        String otp = otpService.generateOTP();
+        otpService.sendOTPEmail(savedUser, otp);
         
         return savedUser;
     }
@@ -182,5 +181,24 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new RuntimeException("User not found with email: " + email);
         }
+    }
+    
+    @Override
+    public void sendOTPToAllUnverifiedUsers() {
+        otpService.sendOTPToAllUnverifiedUsers();
+    }
+    
+    @Override
+    public boolean validateOTP(String email, String otp) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            return otpService.validateOTP(userOpt.get(), otp);
+        }
+        return false;
+    }
+    
+    @Override
+    public void resendOTP(String email) {
+        otpService.resendOTP(email);
     }
 } 
