@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmation - Spincery Food Delivery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-xl mx-auto px-4 py-16 text-center">
+        <i class="fas fa-check-circle text-green-500 text-6xl mb-6"></i>
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">Payment Successful!</h1>
+        <p class="text-lg text-gray-700 mb-4" th:text="${message}">Thank you for your order.</p>
+        <div th:if="${selectedPaymentMethod != null}" class="mb-4">
+            <p class="font-semibold">Payment Method: <span th:text="${selectedPaymentMethod}"></span></p>
+        </div>
+        <div th:if="${payerUpiId != null}">
+            <p class="font-semibold">Your UPI ID: <span th:text="${payerUpiId}"></span></p>
+        </div>
+        <a href="/food-delivery" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg mt-4 inline-block">Back to Food Delivery</a>
+    </div>
+</body>
+</html> 

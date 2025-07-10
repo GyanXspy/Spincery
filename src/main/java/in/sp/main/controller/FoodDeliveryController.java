@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequiredArgsConstructor
@@ -211,5 +212,234 @@ public class FoodDeliveryController {
             return "food-delivery/tracking";
         }
         return "redirect:/track-order";
+    }
+
+    /**
+     * Handles adding a menu item to the user's cart (session-based).
+     */
+    @PostMapping("/food-delivery/cart/add")
+    public String addToCart(@RequestParam Long menuItemId, @RequestParam(defaultValue = "1") Integer quantity, HttpSession session, @RequestHeader(value = "referer", required = false) String referer) {
+        // Retrieve or create cart from session
+        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
+        if (cart == null) {
+            cart = new ArrayList<>();
+        }
+        // Check if item already in cart
+        boolean found = false;
+        for (CartItem item : cart) {
+            if (item.getMenuItemId().equals(menuItemId)) {
+                item.setQuantity(item.getQuantity() + quantity);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            cart.add(new CartItem(menuItemId, quantity));
+        }
+        session.setAttribute("cart", cart);
+        // Redirect back to previous page or restaurant details
+        if (referer != null) {
+            return "redirect:" + referer;
+        }
+        return "redirect:/food-delivery";
+    }
+
+    /**
+     * Remove an item from the cart.
+     */
+    @PostMapping("/food-delivery/cart/remove")
+    public String removeFromCart(@RequestParam Long menuItemId, HttpSession session) {
+        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
+        if (cart != null) {
+            cart.removeIf(item -> item.getMenuItemId().equals(menuItemId));
+            session.setAttribute("cart", cart);
+        }
+        return "redirect:/food-delivery/cart";
+    }
+
+    /**
+     * Update the quantity of an item in the cart.
+     */
+    @PostMapping("/food-delivery/cart/update")
+    public String updateCartItem(@RequestParam Long menuItemId, @RequestParam Integer quantity, HttpSession session) {
+        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
+        if (cart != null) {
+            for (CartItem item : cart) {
+                if (item.getMenuItemId().equals(menuItemId)) {
+                    item.setQuantity(quantity);
+                    break;
+                }
+            }
+            session.setAttribute("cart", cart);
+        }
+        return "redirect:/food-delivery/cart";
+    }
+
+    /**
+     * Checkout: clear the cart and show a confirmation page.
+     */
+    @PostMapping("/food-delivery/cart/checkout")
+    public String checkoutCart(HttpSession session, Model model) {
+        // Get user details
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication != null ? authentication.getName() : null;
+        User user = null;
+        if (email != null && !"anonymousUser".equals(email)) {
+            user = userService.findByEmail(email).orElse(null);
+        }
+        // Get payment methods from the first restaurant in the cart
+        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
+        String paymentMethods = null;
+        if (cart != null && !cart.isEmpty()) {
+            MenuItem menuItem = menuItemService.findById(cart.get(0).getMenuItemId()).orElse(null);
+            if (menuItem != null && menuItem.getRestaurant() != null) {
+                paymentMethods = menuItem.getRestaurant().getAcceptedPaymentMethods();
+            }
+        }
+        // Do NOT clear the cart here
+        model.addAttribute("message", "Order placed successfully! Thank you for your purchase.");
+        model.addAttribute("user", user);
+        model.addAttribute("paymentMethods", paymentMethods);
+        return "food-delivery/checkout-confirmation";
+    }
+
+    @PostMapping("/food-delivery/checkout-confirmation")
+    public String confirmPaymentMethod(@RequestParam String paymentMethod, Model model, HttpSession session) {
+        if ("Online Payment".equals(paymentMethod)) {
+            return "redirect:/food-delivery/payment";
+        }
+        // Get user details
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication != null ? authentication.getName() : null;
+        User user = null;
+        if (email != null && !"anonymousUser".equals(email)) {
+            user = userService.findByEmail(email).orElse(null);
+        }
+        // Get payment methods and bank/UPI details from the first restaurant in the cart
+        String paymentMethods = null;
+        String bankAccountHolder = null;
+        String bankName = null;
+        String accountNumber = null;
+        String ifscCode = null;
+        String upiId = null;
+        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
+        if (cart != null && !cart.isEmpty()) {
+            MenuItem menuItem = menuItemService.findById(cart.get(0).getMenuItemId()).orElse(null);
+            if (menuItem != null && menuItem.getRestaurant() != null) {
+                Restaurant restaurant = menuItem.getRestaurant();
+                paymentMethods = restaurant.getAcceptedPaymentMethods();
+                bankAccountHolder = restaurant.getBankAccountHolder();
+                bankName = restaurant.getBankName();
+                accountNumber = restaurant.getAccountNumber();
+                ifscCode = restaurant.getIfscCode();
+                upiId = restaurant.getUpiId();
+            }
+        }
+        model.addAttribute("user", user);
+        model.addAttribute("paymentMethods", paymentMethods);
+        model.addAttribute("selectedPaymentMethod", paymentMethod);
+        if ("Online Payment".equals(paymentMethod)) {
+            model.addAttribute("bankAccountHolder", bankAccountHolder);
+            model.addAttribute("bankName", bankName);
+            model.addAttribute("accountNumber", accountNumber);
+            model.addAttribute("ifscCode", ifscCode);
+            model.addAttribute("upiId", upiId);
+        }
+        return "food-delivery/checkout-confirmation";
+    }
+
+    @GetMapping("/food-delivery/cart")
+    public String viewCart(HttpSession session, Model model) {
+        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
+        if (cart == null) cart = new ArrayList<>();
+        List<CartItemWithMenuItem> cartItems = new ArrayList<>();
+        double total = 0;
+        for (CartItem item : cart) {
+            MenuItem menuItem = menuItemService.findById(item.getMenuItemId()).orElse(null);
+            if (menuItem != null) {
+                cartItems.add(new CartItemWithMenuItem(menuItem, item.getQuantity()));
+                total += menuItem.getPrice() * item.getQuantity();
+            }
+        }
+        model.addAttribute("cartItems", cartItems);
+        model.addAttribute("total", total);
+        return "food-delivery/cart";
+    }
+
+    @GetMapping("/food-delivery/payment")
+    public String paymentPage(HttpSession session, Model model) {
+        // Get user details
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication != null ? authentication.getName() : null;
+        User user = null;
+        if (email != null && !"anonymousUser".equals(email)) {
+            user = userService.findByEmail(email).orElse(null);
+        }
+        // Get total and owner payment details from cart
+        List<CartItem> cartRaw = (List<CartItem>) session.getAttribute("cart");
+        double total = 0;
+        String upiId = null, bankAccountHolder = null, bankName = null, accountNumber = null, ifscCode = null;
+        List<CartItemWithMenuItem> cart = new ArrayList<>();
+        if (cartRaw != null && !cartRaw.isEmpty()) {
+            for (CartItem item : cartRaw) {
+                MenuItem menuItem = menuItemService.findById(item.getMenuItemId()).orElse(null);
+                if (menuItem != null) {
+                    total += menuItem.getPrice() * item.getQuantity();
+                    cart.add(new CartItemWithMenuItem(menuItem, item.getQuantity()));
+                    if (upiId == null && menuItem.getRestaurant() != null) {
+                        Restaurant r = menuItem.getRestaurant();
+                        upiId = r.getUpiId();
+                        bankAccountHolder = r.getBankAccountHolder();
+                        bankName = r.getBankName();
+                        accountNumber = r.getAccountNumber();
+                        ifscCode = r.getIfscCode();
+                    }
+                }
+            }
+        }
+        model.addAttribute("user", user);
+        model.addAttribute("total", total);
+        model.addAttribute("cart", cart);
+        model.addAttribute("upiId", upiId);
+        model.addAttribute("bankAccountHolder", bankAccountHolder);
+        model.addAttribute("bankName", bankName);
+        model.addAttribute("accountNumber", accountNumber);
+        model.addAttribute("ifscCode", ifscCode);
+        return "food-delivery/payment";
+    }
+
+    @PostMapping("/food-delivery/payment")
+    public String confirmPayment(@RequestParam String paymentMethod, @RequestParam(required = false) String payerUpiId, Model model, HttpSession session) {
+        // Clear the cart only after payment is confirmed
+        session.removeAttribute("cart");
+        model.addAttribute("selectedPaymentMethod", paymentMethod);
+        model.addAttribute("payerUpiId", payerUpiId);
+        model.addAttribute("message", "Payment successful! Thank you for your order.");
+        return "food-delivery/payment-confirmation";
+    }
+
+    // Helper class for cart items
+    public static class CartItem {
+        private Long menuItemId;
+        private Integer quantity;
+        public CartItem(Long menuItemId, Integer quantity) {
+            this.menuItemId = menuItemId;
+            this.quantity = quantity;
+        }
+        public Long getMenuItemId() { return menuItemId; }
+        public void setMenuItemId(Long menuItemId) { this.menuItemId = menuItemId; }
+        public Integer getQuantity() { return quantity; }
+        public void setQuantity(Integer quantity) { this.quantity = quantity; }
+    }
+
+    public static class CartItemWithMenuItem {
+        private MenuItem menuItem;
+        private int quantity;
+        public CartItemWithMenuItem(MenuItem menuItem, int quantity) {
+            this.menuItem = menuItem;
+            this.quantity = quantity;
+        }
+        public MenuItem getMenuItem() { return menuItem; }
+        public int getQuantity() { return quantity; }
     }
 } 

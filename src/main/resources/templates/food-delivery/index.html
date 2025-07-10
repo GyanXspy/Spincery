@@ -73,7 +73,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div th:each="restaurant : ${restaurants}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                 <div class="h-48 bg-gray-200 flex items-center justify-center">
-                    <i class="fas fa-utensils text-4xl text-gray-400"></i>
+                    <img th:if="${restaurant.coverPhotoUrl != null && !#strings.isEmpty(restaurant.coverPhotoUrl)}" th:src="${restaurant.coverPhotoUrl}" alt="Restaurant Image" class="object-cover w-full h-48"/>
+                    <img th:if="${restaurant.coverPhotoUrl == null || #strings.isEmpty(restaurant.coverPhotoUrl)}" src="/images/default-restaurant.jpg" alt="Default Restaurant" class="object-cover w-full h-48"/>
                 </div>
                 <div class="p-6">
                     <h3 class="text-xl font-semibold text-gray-800 mb-2" th:text="${restaurant.restaurantName}">Restaurant Name</h3>

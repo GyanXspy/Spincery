@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Spincery Food Delivery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-orange-600">Spincery Food Delivery</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-700 hover:text-orange-600">Dashboard</a>
+                    <a href="/orders" class="text-gray-700 hover:text-orange-600">My Orders</a>
+                    <a href="/food-delivery/cart" class="relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span th:if="${session.cart != null}" th:text="${#lists.size(session.cart)}"
+                              class="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full px-1"></span>
+                    </a>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-3xl mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">Your Cart</h2>
+        <div th:if="${#lists.isEmpty(cartItems)}" class="text-center py-12">
+            <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-2xl font-bold text-gray-600 mb-2">Your cart is empty</h3>
+            <a href="/food-delivery" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg mt-4 inline-block">Browse Restaurants</a>
+        </div>
+        <div th:if="${!#lists.isEmpty(cartItems)}">
+            <table class="min-w-full bg-white rounded-lg shadow-md mb-8">
+                <thead>
+                    <tr>
+                        <th class="py-3 px-6 text-left">Item</th>
+                        <th class="py-3 px-6 text-center">Quantity</th>
+                        <th class="py-3 px-6 text-right">Price</th>
+                        <th class="py-3 px-6 text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="cartItem : ${cartItems}">
+                        <td class="py-4 px-6">
+                            <span th:text="${cartItem.menuItem.dishName}">Dish Name</span>
+                        </td>
+                        <td class="py-4 px-6 text-center">
+                            <form th:action="@{/food-delivery/cart/update}" method="post" class="inline-flex items-center">
+                                <input type="hidden" name="menuItemId" th:value="${cartItem.menuItem.id}" />
+                                <input type="number" name="quantity" min="1" th:value="${cartItem.quantity}" class="w-16 border rounded px-2 py-1 mr-2 text-center" />
+                                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded">Update</button>
+                            </form>
+                        </td>
+                        <td class="py-4 px-6 text-right">
+                            <span th:text="${'₹' + cartItem.menuItem.price}">₹0.00</span>
+                        </td>
+                        <td class="py-4 px-6 text-right">
+                            <span th:text="${'₹' + (cartItem.menuItem.price * cartItem.quantity)}">₹0.00</span>
+                            <form th:action="@{/food-delivery/cart/remove}" method="post" class="inline ml-2">
+                                <input type="hidden" name="menuItemId" th:value="${cartItem.menuItem.id}" />
+                                <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="flex justify-between items-center mb-8">
+                <a href="/food-delivery" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">Continue Shopping</a>
+                <div class="text-right">
+                    <p class="text-lg font-semibold text-gray-800">Total: <span th:text="${'₹' + total}">₹0.00</span></p>
+                    <form th:action="@{/food-delivery/cart/checkout}" method="post">
+                        <button type="submit" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-6 rounded mt-2">Checkout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

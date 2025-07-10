@@ -148,18 +148,28 @@
                         </div>
                         <div class="card-body">
                             <form th:action="@{/menu-item/add}" th:object="${menuItem}" method="post">
-                                <!-- Restaurant Selection (if not pre-selected) -->
+                                <!-- If restaurant is pre-selected, show as read-only and hidden input -->
+                                <div class="row" th:if="${menuItem.restaurant != null}">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">Restaurant *</label>
+                                        <input type="text" class="form-control"
+                                               th:value="${menuItem.restaurant.restaurantName + ' (' + menuItem.restaurant.city + ', ' + menuItem.restaurant.address + (menuItem.restaurant.verified ? ', Verified' : '') + ')'}"
+                                               readonly>
+                                        <input type="hidden" name="restaurant.id" th:value="${menuItem.restaurant.id}">
+                                    </div>
+                                </div>
+                                <!-- Otherwise, show dropdown -->
                                 <div class="row" th:if="${menuItem.restaurant == null and !#lists.isEmpty(restaurants)}">
                                     <div class="col-md-12 mb-3">
                                         <label for="restaurant" class="form-label">Restaurant *</label>
-                                        <select class="form-select" id="restaurant" th:field="*{restaurant}" required>
+                                        <select class="form-select" id="restaurant" name="restaurant.id" required>
                                             <option value="">Select Restaurant</option>
                                             <option th:each="restaurant : ${restaurants}"
                                                     th:value="${restaurant.id}"
                                                     th:text="${restaurant.restaurantName + ' (' + restaurant.city + ', ' + restaurant.address + (restaurant.verified ? ', Verified' : '') + ')'}">
                                             </option>
                                         </select>
-                                        <div th:if="${#fields.hasErrors('restaurant')}" class="text-danger">
+                                        <div th:if="${#fields.hasErrors('restaurant')}">
                                             <span th:errors="*{restaurant}"></span>
                                         </div>
                                     </div>
@@ -175,8 +185,29 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="category" class="form-label">Category</label>
-                                        <input type="text" class="form-control" id="category" th:field="*{category}" th:value="${menuItem.category}">
+                                        <label for="category" class="form-label">Category *</label>
+                                        <select class="form-select" id="category" th:field="*{category}" required>
+                                            <option value="">Select Category</option>
+                                            <option value="STARTERS">Starters</option>
+                                            <option value="MAIN_COURSE">Main Course</option>
+                                            <option value="DESSERTS">Desserts</option>
+                                            <option value="BEVERAGES">Beverages</option>
+                                            <option value="SIDES">Sides</option>
+                                            <option value="SALADS">Salads</option>
+                                            <option value="SOUPS">Soups</option>
+                                            <option value="BREADS">Breads</option>
+                                            <option value="RICE">Rice</option>
+                                            <option value="CURRIES">Curries</option>
+                                            <option value="GRILLED">Grilled</option>
+                                            <option value="SEAFOOD">Seafood</option>
+                                            <option value="VEGETARIAN">Vegetarian</option>
+                                            <option value="NON_VEGETARIAN">Non-Vegetarian</option>
+                                            <option value="FAST_FOOD">Fast Food</option>
+                                            <option value="HEALTHY">Healthy</option>
+                                            <option value="KIDS_MENU">Kids Menu</option>
+                                            <option value="SPECIALS">Specials</option>
+                                            <option value="OTHERS">Others</option>
+                                        </select>
                                     </div>
                                 </div>
 

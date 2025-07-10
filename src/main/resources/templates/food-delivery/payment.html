@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Spincery Food Delivery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-xl mx-auto px-4 py-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Payments</h2>
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <span class="font-semibold text-gray-700">Total Amount</span>
+                <span class="text-2xl font-bold text-blue-600" th:text="'₹' + ${total}">₹0</span>
+            </div>
+            <div th:if="${cart != null && !#lists.isEmpty(cart)}" class="mb-6">
+                <h3 class="font-semibold text-gray-800 mb-2">Order Summary</h3>
+                <table class="min-w-full text-sm mb-2">
+                    <thead>
+                        <tr>
+                            <th class="text-left py-1">Item</th>
+                            <th class="text-center py-1">Qty</th>
+                            <th class="text-right py-1">Price</th>
+                            <th class="text-right py-1">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${cart}">
+                            <td class="py-1" th:text="${item.menuItem.dishName}">Dish</td>
+                            <td class="py-1 text-center" th:text="${item.quantity}">1</td>
+                            <td class="py-1 text-right" th:text="${'₹' + item.menuItem.price}">₹0</td>
+                            <td class="py-1 text-right" th:text="${'₹' + (item.menuItem.price * item.quantity)}">₹0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <form th:action="@{/food-delivery/payment}" method="post" id="paymentForm">
+                <div class="mb-6">
+                    <label class="block font-semibold mb-2">Select Payment Method</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="paymentMethod" value="UPI" checked class="mr-2 payment-method-radio" />
+                            <span>UPI</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="paymentMethod" value="Card/NetBanking" class="mr-2 payment-method-radio" />
+                            <span>Card / Net Banking</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="paymentMethod" value="Cash on Delivery" class="mr-2 payment-method-radio" />
+                            <span>Cash on Delivery</span>
+                        </label>
+                    </div>
+                </div>
+                <!-- UPI Section -->
+                <div id="upiSection">
+                    <div class="mb-2">
+                        <span class="font-semibold">Restaurant UPI ID:</span>
+                        <span th:text="${upiId}">upi@bank</span>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block mb-1">Your UPI ID</label>
+                        <input type="text" name="payerUpiId" placeholder="Enter your UPI ID" class="w-full border rounded px-3 py-2" required />
+                    </div>
+                </div>
+                <!-- Card/NetBanking Section -->
+                <div id="cardSection" style="display:none;">
+                    <div class="mb-2">
+                        <span class="font-semibold">Account Holder:</span> <span th:text="${bankAccountHolder}">Name</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="font-semibold">Bank Name:</span> <span th:text="${bankName}">Bank</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="font-semibold">Account Number:</span> <span th:text="${accountNumber}">1234567890</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="font-semibold">IFSC Code:</span> <span th:text="${ifscCode}">IFSC0001</span>
+                    </div>
+                    <div class="mb-4 text-sm text-gray-500">(Please use these details to transfer via your bank app or net banking.)</div>
+                </div>
+                <!-- Cash on Delivery Section -->
+                <div id="codSection" style="display:none;">
+                    <div class="mb-4 text-green-700 font-semibold">You will pay in cash when your order is delivered.</div>
+                </div>
+                <button type="submit" class="w-full bg-orange-500 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg mt-4">Pay Now</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        const upiSection = document.getElementById('upiSection');
+        const cardSection = document.getElementById('cardSection');
+        const codSection = document.getElementById('codSection');
+        const radios = document.querySelectorAll('.payment-method-radio');
+        radios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'UPI') {
+                    upiSection.style.display = '';
+                    cardSection.style.display = 'none';
+                    codSection.style.display = 'none';
+                } else if (this.value === 'Card/NetBanking') {
+                    upiSection.style.display = 'none';
+                    cardSection.style.display = '';
+                    codSection.style.display = 'none';
+                } else {
+                    upiSection.style.display = 'none';
+                    cardSection.style.display = 'none';
+                    codSection.style.display = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

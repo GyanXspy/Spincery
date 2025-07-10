@@ -55,13 +55,13 @@ public class MenuItemController {
      * Adds owned restaurants to the model for selection.
      */
     @GetMapping("/add")
-    public String addMenuItemForm(@RequestParam(required = false) Long restaurantId,
-                                  Model model) {
+    public String addMenuItemForm(@RequestParam(required = false) Long restaurantId, Model model) {
         MenuItem menuItem = new MenuItem();
         if (restaurantId != null) {
             Optional<Restaurant> restaurantOpt = restaurantService.findById(restaurantId);
             if (restaurantOpt.isPresent()) {
                 menuItem.setRestaurant(restaurantOpt.get());
+                model.addAttribute("selectedRestaurantId", restaurantOpt.get().getId());
             }
         }
         model.addAttribute("menuItem", menuItem);
@@ -106,6 +106,11 @@ public class MenuItemController {
         }
         
         try {
+            // Fetch the full Restaurant entity to ensure owner is set
+            if (menuItem.getRestaurant() != null && menuItem.getRestaurant().getId() != null) {
+                Optional<Restaurant> restaurantOpt = restaurantService.findById(menuItem.getRestaurant().getId());
+                restaurantOpt.ifPresent(menuItem::setRestaurant);
+            }
             // Check if user is restaurant owner
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
