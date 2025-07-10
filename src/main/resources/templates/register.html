@@ -158,6 +158,29 @@
                 this.setCustomValidity('');
             }
         });
+
+        // Email validation for @gmail.com only
+        document.getElementById('email').addEventListener('input', function() {
+            const email = this.value;
+            if (!email.endsWith('@gmail.com')) {
+                this.setCustomValidity('Email must end with @gmail.com');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        // Password validation: at least one special character, no spaces
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/g;
+            if (password.indexOf(' ') !== -1) {
+                this.setCustomValidity('Password must not contain spaces');
+            } else if (!specialCharRegex.test(password)) {
+                this.setCustomValidity('Password must include at least one special character');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
     </script>
 </body>
 </html> 

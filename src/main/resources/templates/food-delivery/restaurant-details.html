@@ -28,7 +28,12 @@
         </div>
     </nav>
 
-    <!-- Restaurant Header -->
+    <!-- Error Message Display -->
+    <div th:if="${error}" class="max-w-2xl mx-auto mt-6 mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        <span th:text="${error}">An error occurred.</span>
+    </div>
+
+    <!-- Restaurant Header (with null/default checks) -->
     <div class="bg-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-8">
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
@@ -37,13 +42,13 @@
                         <i class="fas fa-utensils text-3xl text-gray-400"></i>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-800 mb-2" th:text="${restaurant.restaurantName}">Restaurant Name</h1>
-                        <p class="text-gray-600 mb-2" th:text="${restaurant.cuisineType}">Cuisine Type</p>
-                        <p class="text-gray-500 mb-2" th:text="${restaurant.address}">Address</p>
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2" th:text="${restaurant != null && restaurant.restaurantName != null ? restaurant.restaurantName : 'Restaurant Name'}">Restaurant Name</h1>
+                        <p class="text-gray-600 mb-2" th:text="${restaurant != null && restaurant.description != null ? restaurant.description : 'Description'}">Description</p>
+                        <p class="text-gray-500 mb-2" th:text="${restaurant != null && restaurant.address != null ? restaurant.address : 'Address'}">Address</p>
                         <div class="flex items-center space-x-4">
                             <div class="flex items-center">
                                 <span class="text-yellow-500">★</span>
-                                <span class="text-gray-600 ml-1" th:text="${restaurant.rating}">4.5</span>
+                                <span class="text-gray-600 ml-1" th:text="${restaurant != null && restaurant.rating != null ? restaurant.rating : 'N/A'}">4.5</span>
                                 <span class="text-gray-500 ml-2">(150 reviews)</span>
                             </div>
                             <div class="text-green-600 font-semibold">
@@ -88,14 +93,14 @@
                                 <i class="fas fa-utensils text-xl text-gray-400"></i>
                             </div>
                             <div class="flex-1">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-2" th:text="${menuItem.dishName}">Dish Name</h3>
-                                <p class="text-gray-600 mb-2" th:text="${menuItem.description}">Description</p>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2" th:text="${menuItem != null && menuItem.dishName != null ? menuItem.dishName : 'Dish Name'}">Dish Name</h3>
+                                <p class="text-gray-600 mb-2" th:text="${menuItem != null && menuItem.description != null ? menuItem.description : 'Description'}">Description</p>
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-2">
                                         <span class="text-yellow-500">★</span>
-                                        <span class="text-gray-600 text-sm" th:text="${menuItem.rating}">4.5</span>
+                                        <span class="text-gray-600 text-sm" th:text="${menuItem != null && menuItem.rating != null ? menuItem.rating : 'N/A'}">4.5</span>
                                     </div>
-                                    <div class="text-lg font-semibold text-gray-800" th:text="${'$' + menuItem.price}">$12.99</div>
+                                    <div class="text-lg font-semibold text-gray-800" th:text="${menuItem != null && menuItem.price != null ? '$' + menuItem.price : '$0.00'}">$12.99</div>
                                 </div>
                                 <div class="mt-4">
                                     <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
