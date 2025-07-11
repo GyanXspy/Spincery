@@ -34,21 +34,24 @@
             <h2 class="text-2xl font-bold text-gray-800 mb-4">Find Restaurants</h2>
             <form action="/restaurants" method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <input type="text" name="city" placeholder="Enter your city" 
+                       th:value="${city}"
                        class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
                 <select name="cuisine" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
                     <option value="">All Cuisines</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Chinese">Chinese</option>
-                    <option value="Indian">Indian</option>
-                    <option value="Mexican">Mexican</option>
-                    <option value="American">American</option>
-                    <option value="Japanese">Japanese</option>
+                    <option value="Italian" th:selected="${cuisine == 'Italian'}">Italian</option>
+                    <option value="Chinese" th:selected="${cuisine == 'Chinese'}">Chinese</option>
+                    <option value="Indian" th:selected="${cuisine == 'Indian'}">Indian</option>
+                    <option value="Mexican" th:selected="${cuisine == 'Mexican'}">Mexican</option>
+                    <option value="American" th:selected="${cuisine == 'American'}">American</option>
+                    <option value="Japanese" th:selected="${cuisine == 'Japanese'}">Japanese</option>
+                    <option value="Thai" th:selected="${cuisine == 'Thai'}">Thai</option>
+                    <option value="Mediterranean" th:selected="${cuisine == 'Mediterranean'}">Mediterranean</option>
                 </select>
                 <select name="rating" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
                     <option value="">All Ratings</option>
-                    <option value="4">4+ Stars</option>
-                    <option value="3">3+ Stars</option>
-                    <option value="2">2+ Stars</option>
+                    <option value="4" th:selected="${rating == '4'}">4+ Stars</option>
+                    <option value="3" th:selected="${rating == '3'}">3+ Stars</option>
+                    <option value="2" th:selected="${rating == '2'}">2+ Stars</option>
                 </select>
                 <button type="submit" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg">
                     Search
@@ -56,25 +59,41 @@
             </form>
         </div>
 
+        <!-- Error Message -->
+        <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <span th:text="${error}"></span>
+        </div>
+
         <!-- Restaurants Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div th:each="restaurant : ${restaurants}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div class="h-48 bg-gray-200 flex items-center justify-center">
-                    <i class="fas fa-utensils text-4xl text-gray-400"></i>
+                <div class="h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
+                    <img th:if="${restaurant.coverPhotoUrl != null && !#strings.isEmpty(restaurant.coverPhotoUrl)}" 
+                         th:src="${restaurant.coverPhotoUrl}" 
+                         th:alt="${restaurant.restaurantName}" 
+                         class="object-cover w-full h-48"/>
+                    <img th:if="${restaurant.coverPhotoUrl == null || #strings.isEmpty(restaurant.coverPhotoUrl)}" 
+                         src="/images/default-restaurant.jpg" 
+                         th:alt="${restaurant.restaurantName}" 
+                         class="object-cover w-full h-48"/>
                 </div>
                 <div class="p-6">
                     <h3 class="text-xl font-semibold text-gray-800 mb-2" th:text="${restaurant.restaurantName}">Restaurant Name</h3>
-                    <p class="text-gray-600 mb-2" th:text="${restaurant.description != null ? restaurant.description : 'Restaurant'}">Cuisine Type</p>
+                    <p class="text-gray-600 mb-2" th:text="${restaurant.cuisine != null ? restaurant.cuisine : (restaurant.description != null ? restaurant.description : 'Restaurant')}">Cuisine Type</p>
                     <p class="text-gray-500 mb-2" th:text="${restaurant.city}">City</p>
                     <p class="text-gray-500 mb-4" th:text="${restaurant.address}">Address</p>
                     
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center">
                             <span class="text-yellow-500">★</span>
-                            <span class="text-gray-600 ml-1" th:text="${restaurant.rating}">4.5</span>
-                            <span class="text-gray-500 ml-2">(150 reviews)</span>
+                            <span class="text-gray-600 ml-1" th:text="${restaurant.rating != null ? restaurant.rating : '0.0'}">4.5</span>
+                            <span class="text-gray-500 ml-2" th:text="'(' + ${restaurant.totalReviews != null ? restaurant.totalReviews : 0} + ' reviews)'">(150 reviews)</span>
                         </div>
-                        <div class="text-green-600 font-semibold">
+                        <div class="text-green-600 font-semibold" th:if="${restaurant.avgPreparationTime != null}">
+                            <i class="fas fa-clock mr-1"></i>
+                            <span th:text="${restaurant.avgPreparationTime + '-45 min'}">30-45 min</span>
+                        </div>
+                        <div class="text-green-600 font-semibold" th:if="${restaurant.avgPreparationTime == null}">
                             <i class="fas fa-clock mr-1"></i>
                             <span>30-45 min</span>
                         </div>
@@ -82,7 +101,9 @@
                     
                     <div class="flex items-center justify-between">
                         <div class="text-sm text-gray-500">
-                            <span class="font-semibold">Delivery Fee:</span> $2.99
+                            <span class="font-semibold">Delivery Fee:</span> 
+                            <span th:if="${restaurant.packagingCharges != null}" th:text="'$' + ${restaurant.packagingCharges}">$2.99</span>
+                            <span th:if="${restaurant.packagingCharges == null}">$2.99</span>
                         </div>
                         <a th:href="@{/restaurant-details/{id}(id=${restaurant.id})}" 
                            class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">

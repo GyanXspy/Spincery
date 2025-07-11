@@ -47,16 +47,67 @@ public class FoodDeliveryController {
     
     /**
      * Displays the list of all restaurants for food delivery.
-     * Handles errors in loading restaurants gracefully.
+     * Handles search parameters and filters restaurants accordingly.
      */
     @GetMapping("/restaurants")
-    public String restaurantsPage(Model model) {
+    public String restaurantsPage(@RequestParam(required = false) String city,
+                                @RequestParam(required = false) String cuisine,
+                                @RequestParam(required = false) String rating,
+                                Model model) {
         try {
-            List<Restaurant> restaurants = restaurantService.findAll();
+            List<Restaurant> restaurants;
+            
+            // Handle different search combinations
+            if (city != null && !city.trim().isEmpty() && cuisine != null && !cuisine.trim().isEmpty() && rating != null && !rating.trim().isEmpty()) {
+                // All three parameters
+                Double minRating = Double.parseDouble(rating);
+                restaurants = restaurantService.findByCityAndCuisineAndRatingGreaterThanEqual(city.trim(), cuisine.trim(), minRating);
+            } else if (city != null && !city.trim().isEmpty() && cuisine != null && !cuisine.trim().isEmpty()) {
+                // City and cuisine
+                restaurants = restaurantService.findByCityAndCuisine(city.trim(), cuisine.trim());
+            } else if (city != null && !city.trim().isEmpty() && rating != null && !rating.trim().isEmpty()) {
+                // City and rating
+                Double minRating = Double.parseDouble(rating);
+                restaurants = restaurantService.findByCityAndRatingGreaterThanEqual(city.trim(), minRating);
+            } else if (cuisine != null && !cuisine.trim().isEmpty() && rating != null && !rating.trim().isEmpty()) {
+                // Cuisine and rating
+                Double minRating = Double.parseDouble(rating);
+                List<Restaurant> cuisineRestaurants = restaurantService.findByCuisine(cuisine.trim());
+                restaurants = cuisineRestaurants.stream()
+                    .filter(r -> r.getRating() >= minRating)
+                    .toList();
+            } else if (city != null && !city.trim().isEmpty()) {
+                // Only city
+                restaurants = restaurantService.findByCity(city.trim());
+            } else if (cuisine != null && !cuisine.trim().isEmpty()) {
+                // Only cuisine
+                restaurants = restaurantService.findByCuisine(cuisine.trim());
+            } else if (rating != null && !rating.trim().isEmpty()) {
+                // Only rating
+                Double minRating = Double.parseDouble(rating);
+                restaurants = restaurantService.findByRatingGreaterThanEqual(minRating);
+            } else {
+                // No filters - get all verified restaurants
+                restaurants = restaurantService.findByIsVerifiedTrue();
+            }
+            
+            // Filter to only show active and verified restaurants
+            restaurants = restaurants.stream()
+                .filter(Restaurant::isActive)
+                .filter(Restaurant::isVerified)
+                .toList();
+            
             model.addAttribute("restaurants", restaurants);
+            model.addAttribute("city", city != null ? city : "");
+            model.addAttribute("cuisine", cuisine != null ? cuisine : "");
+            model.addAttribute("rating", rating != null ? rating : "");
+            
         } catch (Exception e) {
             model.addAttribute("restaurants", new ArrayList<>());
             model.addAttribute("error", "Error loading restaurants: " + e.getMessage());
+            model.addAttribute("city", city != null ? city : "");
+            model.addAttribute("cuisine", cuisine != null ? cuisine : "");
+            model.addAttribute("rating", rating != null ? rating : "");
         }
         return "food-delivery/restaurants";
     }

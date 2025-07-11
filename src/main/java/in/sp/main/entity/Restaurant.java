@@ -144,6 +144,9 @@ public class Restaurant {
     @Column(name = "description")
     private String description;
     
+    @Column(name = "cuisine")
+    private String cuisine;
+    
     @Column(name = "offers_discounts")
     private String offersDiscounts;
     

@@ -38,6 +38,19 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query("SELECT r FROM Restaurant r WHERE r.rating >= :minRating AND r.isActive = true ORDER BY r.rating DESC")
     List<Restaurant> findByRatingGreaterThanEqual(@Param("minRating") Double minRating);
     
+    // New methods for dynamic filtering
+    @Query("SELECT r FROM Restaurant r WHERE r.city = :city AND r.rating >= :minRating AND r.isActive = true ORDER BY r.rating DESC")
+    List<Restaurant> findByCityAndRatingGreaterThanEqual(@Param("city") String city, @Param("minRating") Double minRating);
+    
+    @Query("SELECT r FROM Restaurant r WHERE r.city = :city AND r.cuisine = :cuisine AND r.isActive = true")
+    List<Restaurant> findByCityAndCuisine(@Param("city") String city, @Param("cuisine") String cuisine);
+    
+    @Query("SELECT r FROM Restaurant r WHERE r.cuisine = :cuisine AND r.isActive = true")
+    List<Restaurant> findByCuisine(@Param("cuisine") String cuisine);
+    
+    @Query("SELECT r FROM Restaurant r WHERE r.city = :city AND r.cuisine = :cuisine AND r.rating >= :minRating AND r.isActive = true ORDER BY r.rating DESC")
+    List<Restaurant> findByCityAndCuisineAndRatingGreaterThanEqual(@Param("city") String city, @Param("cuisine") String cuisine, @Param("minRating") Double minRating);
+    
     Optional<Restaurant> findByEmail(String email);
     
     boolean existsByEmail(String email);

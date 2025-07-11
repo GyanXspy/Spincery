@@ -30,4 +30,13 @@ public interface RestaurantService {
     List<Restaurant> findByRatingGreaterThanEqual(Double minRating);
     
     List<Restaurant> findByIsVerifiedTrue();
+    
+    // New methods for dynamic filtering
+    List<Restaurant> findByCityAndRatingGreaterThanEqual(String city, Double minRating);
+    
+    List<Restaurant> findByCityAndCuisine(String city, String cuisine);
+    
+    List<Restaurant> findByCuisine(String cuisine);
+    
+    List<Restaurant> findByCityAndCuisineAndRatingGreaterThanEqual(String city, String cuisine, Double minRating);
 } 
