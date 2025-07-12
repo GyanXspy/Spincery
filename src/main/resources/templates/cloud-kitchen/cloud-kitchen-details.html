@@ -82,29 +82,25 @@
                     <div class="space-y-2">
                         <div class="flex items-center">
                             <i class="fas fa-clock text-purple-600 w-5"></i>
-                            <span class="ml-3" th:text="${cloudKitchen.workingHours}">Working Hours</span>
+                            <span class="ml-3">24/7 Available</span>
                         </div>
                         <div class="flex items-center">
                             <i class="fas fa-calendar text-purple-600 w-5"></i>
-                            <span class="ml-3" th:text="${cloudKitchen.workingDays}">Working Days</span>
+                            <span class="ml-3">Daily Service</span>
                         </div>
                         <div class="flex items-center">
                             <i class="fas fa-truck text-purple-600 w-5"></i>
-                            <span class="ml-3" th:text="${cloudKitchen.deliveryRadius + ' km delivery radius'}">Delivery Radius</span>
+                            <span class="ml-3" th:text="${cloudKitchen.deliveryRadius != null ? cloudKitchen.deliveryRadius + ' km delivery radius' : 'Standard delivery'}">Delivery Radius</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="border-t pt-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-3">Specialties</h3>
-                <div class="flex flex-wrap gap-2">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800" 
-                          th:each="specialty : ${cloudKitchen.specialties?.split(',')}">
-                        <i class="fas fa-utensils mr-1"></i>
-                        <span th:text="${specialty}">Specialty</span>
-                    </span>
-                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Description</h3>
+                <p class="text-gray-600" th:text="${cloudKitchen.description != null ? cloudKitchen.description : 'No description available'}">
+                    Cloud kitchen description and specialties.
+                </p>
             </div>
         </div>
 

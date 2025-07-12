@@ -118,8 +118,8 @@
                         <span class="text-gray-800 font-medium" th:text="${subscription.cloudKitchen.kitchenName}">Healthy Bites</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-600">Cuisine:</span>
-                        <span class="text-gray-800" th:text="${subscription.cloudKitchen.cuisineType}">Healthy</span>
+                        <span class="text-gray-600">Location:</span>
+                        <span class="text-gray-800" th:text="${subscription.cloudKitchen.city + ', ' + subscription.cloudKitchen.state}">Location</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-600">Rating:</span>

@@ -16,13 +16,22 @@
                     <h1 class="text-2xl font-bold text-purple-600">Spincery Cloud Kitchen</h1>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="/cloud-kitchen/dashboard" class="text-gray-700 hover:text-purple-600">Dashboard</a>
-                    <a href="/cloud-kitchen/subscriptions" class="text-gray-700 hover:text-purple-600">My Subscriptions</a>
-                    <form th:action="@{/logout}" method="post" class="inline">
-                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                            Logout
-                        </button>
-                    </form>
+                    <th:block th:if="${user != null}">
+                        <a th:if="${user.role.name() == 'CLOUD_KITCHEN_OWNER'}" href="/cloud-kitchen/dashboard" class="text-gray-700 hover:text-purple-600">Dashboard</a>
+                        <a th:if="${user.role.name() != 'CLOUD_KITCHEN_OWNER'}" href="/dashboard" class="text-gray-700 hover:text-purple-600">Dashboard</a>
+                        <span class="text-gray-700 font-semibold" th:text="${user.name}"></span>
+                        <span class="text-gray-500 text-sm" th:text="${user.role.name()}"></span>
+                        <a href="/cloud-kitchen/subscriptions" class="text-gray-700 hover:text-purple-600">My Subscriptions</a>
+                        <form th:action="@{/logout}" method="post" class="inline">
+                            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                Logout
+                            </button>
+                        </form>
+                    </th:block>
+                    <th:block th:if="${user == null}">
+                        <a href="/login" class="text-gray-700 hover:text-purple-600">Login</a>
+                        <a href="/register" class="text-gray-700 hover:text-purple-600">Register</a>
+                    </th:block>
                 </div>
             </div>
         </div>
@@ -70,35 +79,38 @@
     <div class="max-w-7xl mx-auto px-4 py-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-8">Featured Cloud Kitchens</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div th:each="kitchen : ${cloudKitchens}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div class="h-48 bg-gray-200 flex items-center justify-center">
-                    <i class="fas fa-cloud text-4xl text-gray-400"></i>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2" th:text="${kitchen.kitchenName}">Kitchen Name</h3>
-                    <p class="text-gray-600 mb-2" th:text="${kitchen.description != null ? kitchen.description : 'Cloud Kitchen'}">Cuisine Type</p>
-                    <p class="text-gray-500 mb-4" th:text="${kitchen.address + ', ' + kitchen.city}">Location</p>
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center">
-                            <span class="text-yellow-500">★</span>
-                            <span class="text-gray-600 ml-1" th:text="${kitchen.rating}">4.5</span>
-                            <span class="text-gray-500 ml-2">(90 reviews)</span>
+            <th:block th:each="kitchen : ${cloudKitchens}">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="h-48 bg-gray-200 flex items-center justify-center">
+                        <img th:if="${kitchen.kitchenLogoUrl != null}" th:src="${kitchen.kitchenLogoUrl}" class="object-cover h-48 w-full" alt="Kitchen Image" />
+                        <i th:if="${kitchen.kitchenLogoUrl == null}" class="fas fa-cloud text-4xl text-gray-400"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2" th:text="${kitchen.kitchenName}">Kitchen Name</h3>
+                        <p class="text-gray-600 mb-2" th:text="${kitchen.description != null ? kitchen.description : 'Cloud Kitchen'}">Cuisine Type</p>
+                        <p class="text-gray-500 mb-4" th:text="${kitchen.address + ', ' + kitchen.city}">Location</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <span class="text-yellow-500">★</span>
+                                <span class="text-gray-600 ml-1" th:text="${kitchen.rating}">4.5</span>
+                                <span class="text-gray-500 ml-2" th:text="'(' + ${kitchen.totalReviews} + ' reviews)'">(90 reviews)</span>
+                            </div>
+                            <div class="text-green-600 font-semibold">
+                                <span>Contact for price</span>
+                            </div>
                         </div>
-                        <div class="text-green-600 font-semibold">
-                            <span th:text="${'Contact for price'}">Contact for price</span>
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm text-gray-500">
+                                <span class="font-semibold">Delivery Time:</span> 25-35 min
+                            </div>
+                            <a th:href="@{'/cloud-kitchen/cloud-kitchen-details/' + ${kitchen.id}}"
+                               class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                                View Menu
+                            </a>
                         </div>
                     </div>
-                    <div class="flex items-center justify-between">
-                        <div class="text-sm text-gray-500">
-                            <span class="font-semibold">Delivery Time:</span> 25-35 min
-                        </div>
-                        <a th:href="@{/cloud-kitchen/cloud-kitchen-details/{id}(id=${kitchen.id})}" 
-                           class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-                            View Menu
-                        </a>
-                    </div>
                 </div>
-            </div>
+            </th:block>
         </div>
     </div>
 

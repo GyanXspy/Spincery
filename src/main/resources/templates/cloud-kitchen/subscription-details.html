@@ -56,8 +56,8 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-semibold text-gray-800" th:text="${subscription.cloudKitchen.kitchenName}">Cloud Kitchen Name</h3>
-                        <p class="text-gray-600 mb-2" th:text="${subscription.cloudKitchen.location}">Kitchen Location</p>
-                        <p class="text-gray-500 mb-2" th:text="${subscription.cloudKitchen.cuisineType}">Cuisine Type</p>
+                        <p class="text-gray-600 mb-2" th:text="${subscription.cloudKitchen.city + ', ' + subscription.cloudKitchen.state}">Kitchen Location</p>
+                        <p class="text-gray-500 mb-2" th:text="${subscription.cloudKitchen.description != null ? subscription.cloudKitchen.description : 'Cloud Kitchen'}">Description</p>
                         <div class="flex items-center space-x-4">
                             <div class="flex items-center">
                                 <span class="text-yellow-500">★</span>

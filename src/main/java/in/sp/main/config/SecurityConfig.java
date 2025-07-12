@@ -27,6 +27,7 @@ public class SecurityConfig {
                 .requestMatchers("/admin/control-panel").hasRole("ADMIN")
                 .requestMatchers("/restaurant/**").hasAnyRole("RESTAURANT_OWNER", "ADMIN")
                 .requestMatchers("/hotel/**").hasAnyRole("HOTEL_OWNER", "ADMIN")
+                .requestMatchers("/cloud-kitchen/dashboard", "/cloud-kitchen/register", "/cloud-kitchen/settings/**", "/cloud-kitchen/schedule/**", "/cloud-kitchen/delivery/**", "/cloud-kitchen/analytics/**", "/cloud-kitchen/*/meal-plans/add").hasRole("CLOUD_KITCHEN_OWNER")
                 .requestMatchers("/cloud-kitchen/**").authenticated()
                 .requestMatchers("/table-booking/**").authenticated()
                 .requestMatchers("/admin/**").hasRole("ADMIN")

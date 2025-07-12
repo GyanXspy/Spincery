@@ -62,45 +62,61 @@ public class CloudKitchenController {
     
     /**
      * Displays the cloud kitchen registration form.
-     * Prepares a new CloudKitchen object for the form.
+     * Only accessible by CLOUD_KITCHEN_OWNER role.
      */
     @GetMapping("/register")
     public String cloudKitchenRegister(Model model) {
-        if (!model.containsAttribute("cloudKitchen")) {
-            model.addAttribute("cloudKitchen", new CloudKitchen());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                if (user.getRole() == User.UserRole.CLOUD_KITCHEN_OWNER) {
+                    if (!model.containsAttribute("cloudKitchen")) {
+                        model.addAttribute("cloudKitchen", new CloudKitchen());
+                    }
+                    return "cloud-kitchen/register";
+                } else {
+                    return "redirect:/access-denied";
+                }
+            }
         }
-        return "cloud-kitchen/register";
+        return "redirect:/login";
     }
 
     /**
      * Handles cloud kitchen registration form submission.
-     * Associates the kitchen with the authenticated user and uploads the logo image.
+     * Only accessible by CLOUD_KITCHEN_OWNER role.
      */
     @PostMapping("/register")
     public String registerCloudKitchen(@ModelAttribute CloudKitchen cloudKitchen,
                                        @RequestParam("imageFile") MultipartFile imageFile,
                                        Model model) {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
             Optional<User> userOpt = userService.findByEmail(auth.getName());
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
-                cloudKitchen.setOwner(user);
-                cloudKitchen.setOwnerName(user.getName());
-                cloudKitchen.setEmail(user.getEmail());
-                cloudKitchen.setPhone(user.getPhone());
-            } else {
-                model.addAttribute("error", "Could not determine owner for this cloud kitchen.");
-                return "cloud-kitchen/register";
+                if (user.getRole() == User.UserRole.CLOUD_KITCHEN_OWNER) {
+                    try {
+                        cloudKitchen.setOwner(user);
+                        cloudKitchen.setOwnerName(user.getName());
+                        cloudKitchen.setEmail(user.getEmail());
+                        cloudKitchen.setPhone(user.getPhone());
+                        String imageUrl = cloudinaryService.uploadFile(imageFile, "cloudkitchen");
+                        cloudKitchen.setKitchenLogoUrl(imageUrl);
+                        cloudKitchenService.save(cloudKitchen);
+                        model.addAttribute("success", "Cloud Kitchen registered successfully!");
+                    } catch (Exception e) {
+                        model.addAttribute("error", "Error registering Cloud Kitchen: " + e.getMessage());
+                    }
+                    return "cloud-kitchen/register";
+                } else {
+                    return "redirect:/access-denied";
+                }
             }
-            String imageUrl = cloudinaryService.uploadFile(imageFile, "cloudkitchen");
-            cloudKitchen.setKitchenLogoUrl(imageUrl);
-            cloudKitchenService.save(cloudKitchen);
-            model.addAttribute("success", "Cloud Kitchen registered successfully!");
-        } catch (Exception e) {
-            model.addAttribute("error", "Error registering Cloud Kitchen: " + e.getMessage());
         }
-        return "cloud-kitchen/register";
+        return "redirect:/login";
     }
     
     /**
@@ -157,6 +173,12 @@ public class CloudKitchenController {
         } catch (Exception e) {
             model.addAttribute("cloudKitchens", new ArrayList<>());
             model.addAttribute("error", "Error loading cloud kitchens: " + e.getMessage());
+        }
+        // Add logged-in user to the model
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            userOpt.ifPresent(user -> model.addAttribute("user", user));
         }
         return "cloud-kitchen/index";
     }
@@ -359,35 +381,71 @@ public class CloudKitchenController {
 
     @GetMapping("/settings")
     public String cloudKitchenSettings(@RequestParam("kitchenId") Long kitchenId, Model model) {
-        Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
-        if (kitchenOpt.isPresent()) {
-            model.addAttribute("cloudKitchen", kitchenOpt.get());
-            return "cloud-kitchen/settings";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                if (user.getRole() == User.UserRole.CLOUD_KITCHEN_OWNER) {
+                    Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
+                    if (kitchenOpt.isPresent()) {
+                        model.addAttribute("cloudKitchen", kitchenOpt.get());
+                        return "cloud-kitchen/settings";
+                    }
+                    model.addAttribute("error", "Cloud kitchen not found.");
+                    return "cloud-kitchen/settings";
+                } else {
+                    return "redirect:/access-denied";
+                }
+            }
         }
-        model.addAttribute("error", "Cloud kitchen not found.");
-        return "cloud-kitchen/settings";
+        return "redirect:/login";
     }
 
     @GetMapping("/schedule")
     public String cloudKitchenSchedule(@RequestParam("kitchenId") Long kitchenId, Model model) {
-        Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
-        if (kitchenOpt.isPresent()) {
-            model.addAttribute("cloudKitchen", kitchenOpt.get());
-            return "cloud-kitchen/schedule";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                if (user.getRole() == User.UserRole.CLOUD_KITCHEN_OWNER) {
+                    Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
+                    if (kitchenOpt.isPresent()) {
+                        model.addAttribute("cloudKitchen", kitchenOpt.get());
+                        return "cloud-kitchen/schedule";
+                    }
+                    model.addAttribute("error", "Cloud kitchen not found.");
+                    return "cloud-kitchen/schedule";
+                } else {
+                    return "redirect:/access-denied";
+                }
+            }
         }
-        model.addAttribute("error", "Cloud kitchen not found.");
-        return "cloud-kitchen/schedule";
+        return "redirect:/login";
     }
 
     @GetMapping("/delivery")
     public String cloudKitchenDelivery(@RequestParam("kitchenId") Long kitchenId, Model model) {
-        Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
-        if (kitchenOpt.isPresent()) {
-            model.addAttribute("cloudKitchen", kitchenOpt.get());
-            return "cloud-kitchen/delivery";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                if (user.getRole() == User.UserRole.CLOUD_KITCHEN_OWNER) {
+                    Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
+                    if (kitchenOpt.isPresent()) {
+                        model.addAttribute("cloudKitchen", kitchenOpt.get());
+                        return "cloud-kitchen/delivery";
+                    }
+                    model.addAttribute("error", "Cloud kitchen not found.");
+                    return "cloud-kitchen/delivery";
+                } else {
+                    return "redirect:/access-denied";
+                }
+            }
         }
-        model.addAttribute("error", "Cloud kitchen not found.");
-        return "cloud-kitchen/delivery";
+        return "redirect:/login";
     }
 
     @GetMapping("/meal-plans")
@@ -404,26 +462,50 @@ public class CloudKitchenController {
 
     @GetMapping("/{kitchenId}/meal-plans/add")
     public String showAddMealPlanForm(@PathVariable Long kitchenId, Model model) {
-        Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
-        if (kitchenOpt.isEmpty()) {
-            model.addAttribute("error", "Cloud kitchen not found.");
-            return "redirect:/cloud-kitchen/" + kitchenId + "/meal-plans";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                if (user.getRole() == User.UserRole.CLOUD_KITCHEN_OWNER) {
+                    Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
+                    if (kitchenOpt.isEmpty()) {
+                        model.addAttribute("error", "Cloud kitchen not found.");
+                        return "redirect:/cloud-kitchen/" + kitchenId + "/meal-plans";
+                    }
+                    model.addAttribute("cloudKitchen", kitchenOpt.get());
+                    model.addAttribute("mealPlan", new MealPlan());
+                    model.addAttribute("durationTypes", MealPlan.DurationType.values());
+                    return "cloud-kitchen/meal-plan/add";
+                } else {
+                    return "redirect:/access-denied";
+                }
+            }
         }
-        model.addAttribute("cloudKitchen", kitchenOpt.get());
-        model.addAttribute("mealPlan", new MealPlan());
-        model.addAttribute("durationTypes", MealPlan.DurationType.values());
-        return "cloud-kitchen/meal-plan/add";
+        return "redirect:/login";
     }
 
     @PostMapping("/{kitchenId}/meal-plans/add")
     public String addMealPlan(@PathVariable Long kitchenId, @ModelAttribute("mealPlan") MealPlan mealPlan, Model model) {
-        Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
-        if (kitchenOpt.isEmpty()) {
-            model.addAttribute("error", "Cloud kitchen not found.");
-            return "redirect:/cloud-kitchen/" + kitchenId + "/meal-plans";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                if (user.getRole() == User.UserRole.CLOUD_KITCHEN_OWNER) {
+                    Optional<CloudKitchen> kitchenOpt = cloudKitchenService.findById(kitchenId);
+                    if (kitchenOpt.isEmpty()) {
+                        model.addAttribute("error", "Cloud kitchen not found.");
+                        return "redirect:/cloud-kitchen/" + kitchenId + "/meal-plans";
+                    }
+                    mealPlan.setCloudKitchen(kitchenOpt.get());
+                    mealPlanService.save(mealPlan);
+                    return "redirect:/cloud-kitchen/" + kitchenId + "/meal-plans";
+                } else {
+                    return "redirect:/access-denied";
+                }
+            }
         }
-        mealPlan.setCloudKitchen(kitchenOpt.get());
-        mealPlanService.save(mealPlan);
-        return "redirect:/cloud-kitchen/" + kitchenId + "/meal-plans";
+        return "redirect:/login";
     }
 } 
