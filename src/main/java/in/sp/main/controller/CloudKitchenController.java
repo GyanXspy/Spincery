@@ -128,10 +128,11 @@ public class CloudKitchenController {
         List<CloudKitchen> kitchens;
         try {
             if (city != null && !city.trim().isEmpty()) {
-                kitchens = cloudKitchenService.findByCity(city);
+                kitchens = cloudKitchenService.findActiveVerifiedByCity(city);
             } else {
-                kitchens = cloudKitchenService.findAll();
+                kitchens = cloudKitchenService.findByIsVerifiedTrue();
             }
+            kitchens = kitchens.stream().filter(CloudKitchen::isActive).toList();
         } catch (Exception e) {
             kitchens = new ArrayList<>();
             model.addAttribute("error", "Error loading cloud kitchens: " + e.getMessage());
@@ -168,7 +169,8 @@ public class CloudKitchenController {
     @GetMapping("/cloud-kitchen")
     public String cloudKitchenPage(Model model) {
         try {
-            List<CloudKitchen> cloudKitchens = cloudKitchenService.findAll();
+            List<CloudKitchen> cloudKitchens = cloudKitchenService.findByIsVerifiedTrue();
+            cloudKitchens = cloudKitchens.stream().filter(CloudKitchen::isActive).toList();
             model.addAttribute("cloudKitchens", cloudKitchens);
         } catch (Exception e) {
             model.addAttribute("cloudKitchens", new ArrayList<>());
@@ -189,7 +191,8 @@ public class CloudKitchenController {
     @GetMapping("/cloud-kitchens")
     public String cloudKitchensPage(Model model) {
         try {
-            List<CloudKitchen> cloudKitchens = cloudKitchenService.findAll();
+            List<CloudKitchen> cloudKitchens = cloudKitchenService.findByIsVerifiedTrue();
+            cloudKitchens = cloudKitchens.stream().filter(CloudKitchen::isActive).toList();
             model.addAttribute("cloudKitchens", cloudKitchens);
         } catch (Exception e) {
             model.addAttribute("cloudKitchens", new ArrayList<>());

@@ -24,4 +24,9 @@ public interface HotelService {
     List<Hotel> findActiveVerifiedByCity(String city);
     
     List<Hotel> findByHotelNameContaining(String name);
+    
+    List<Hotel> findByIsVerified(boolean isVerified);
+    void verifyHotel(Long hotelId);
+    void rejectHotel(Long hotelId);
+    List<Hotel> findByIsVerifiedTrue();
 } 

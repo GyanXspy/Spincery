@@ -54,4 +54,27 @@ public class CloudKitchenServiceImpl implements CloudKitchenService {
     public List<CloudKitchen> findByKitchenNameContaining(String name) {
         return cloudKitchenRepository.findByKitchenNameContaining(name);
     }
+
+    @Override
+    public List<CloudKitchen> findByIsVerified(boolean isVerified) {
+        return cloudKitchenRepository.findByIsVerified(isVerified);
+    }
+
+    @Override
+    public List<CloudKitchen> findByIsVerifiedTrue() {
+        return cloudKitchenRepository.findByIsVerifiedTrue();
+    }
+
+    @Override
+    public void verifyCloudKitchen(Long kitchenId) {
+        CloudKitchen kitchen = cloudKitchenRepository.findById(kitchenId).orElseThrow(() -> new RuntimeException("Cloud Kitchen not found"));
+        kitchen.setIsVerified(true);
+        cloudKitchenRepository.save(kitchen);
+    }
+
+    @Override
+    public void rejectCloudKitchen(Long kitchenId) {
+        CloudKitchen kitchen = cloudKitchenRepository.findById(kitchenId).orElseThrow(() -> new RuntimeException("Cloud Kitchen not found"));
+        cloudKitchenRepository.delete(kitchen);
+    }
 } 

@@ -101,17 +101,23 @@
                             </div>
                         </div>
 
+                        <div th:if="${user != null and user.role.name() == 'HOTEL_OWNER' and hotel.owner != null and user.id == hotel.owner.id}" class="text-end mb-3">
+                            <a th:href="@{/hotel/edit(hotelId=${hotel.id})}" class="btn btn-warning btn-custom">
+                                <i class="fas fa-edit me-2"></i>Edit Hotel
+                            </a>
+                        </div>
+
                         <!-- Hotel Image and Basic Info -->
                         <div class="row mb-4">
                             <div class="col-md-8">
-                                <img th:src="${hotel.imageUrl != null ? hotel.imageUrl : '/images/default-hotel.jpg'}" 
+                                <img th:src="${hotel.hotelLogoUrl != null and !#strings.isEmpty(hotel.hotelLogoUrl) ? hotel.hotelLogoUrl : '/images/default-hotel.jpg'}" 
                                      class="hotel-image" alt="Hotel Image">
                             </div>
                             <div class="col-md-4">
                                 <div class="price-card">
                                     <h4 class="fw-bold mb-2">
                                         <i class="fas fa-rupee-sign me-2"></i>
-                                        <span th:text="${hotel.pricePerNight}">Price</span>
+                                        <!-- <span th:text="${hotel.pricePerNight}">Price</span> -->
                                         <small>/night</small>
                                     </h4>
                                     <div class="rating-stars mb-2">
@@ -119,7 +125,7 @@
                                         <i class="far fa-star" th:each="i : ${#numbers.sequence(hotel.rating + 1, 5)}"></i>
                                     </div>
                                     <p class="mb-2" th:text="${hotel.rating + ' out of 5 stars'}">Rating</p>
-                                    <span class="badge bg-light text-dark" th:text="${hotel.hotelType}">Type</span>
+                                    <!-- <span class="badge bg-light text-dark" th:text="${hotel.hotelType}">Type</span> -->
                                 </div>
                             </div>
                         </div>
@@ -133,36 +139,76 @@
                                 <p class="text-muted" th:text="${hotel.description != null ? hotel.description : 'No description available'}">
                                     Hotel description
                                 </p>
-                                
                                 <div class="mt-4">
                                     <h5 class="fw-bold text-dark mb-3">
-                                        <i class="fas fa-phone me-2"></i>Contact Information
+                                        <i class="fas fa-user me-2"></i>Owner Information
                                     </h5>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <p><strong>Phone:</strong> <span th:text="${hotel.phone}">Phone</span></p>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <p><strong>Email:</strong> <span th:text="${hotel.email}">Email</span></p>
-                                        </div>
-                                    </div>
-                                    <p><strong>Address:</strong> <span th:text="${hotel.address}">Address</span></p>
+                                    <p><strong>Owner Name:</strong> <span th:text="${hotel.ownerName}">Owner</span></p>
+                                    <p><strong>Email:</strong> <span th:text="${hotel.email}">Email</span></p>
+                                    <p><strong>Phone:</strong> <span th:text="${hotel.phone}">Phone</span></p>
+                                    <p th:if="${hotel.whatsappNumber != null}"><strong>WhatsApp:</strong> <span th:text="${hotel.whatsappNumber}">WhatsApp</span></p>
+                                    <p th:if="${hotel.alternateContact != null}"><strong>Alternate Contact:</strong> <span th:text="${hotel.alternateContact}">Alternate</span></p>
                                 </div>
-
                                 <div class="mt-4">
                                     <h5 class="fw-bold text-dark mb-3">
-                                        <i class="fas fa-concierge-bell me-2"></i>Amenities
+                                        <i class="fas fa-map-marker-alt me-2"></i>Address
                                     </h5>
-                                    <div>
-                                        <span class="amenity-badge">WiFi</span>
-                                        <span class="amenity-badge">Parking</span>
-                                        <span class="amenity-badge">Restaurant</span>
-                                        <span class="amenity-badge">Room Service</span>
-                                        <span class="amenity-badge">Gym</span>
-                                        <span class="amenity-badge">Pool</span>
-                                        <span class="amenity-badge">Spa</span>
-                                        <span class="amenity-badge">Business Center</span>
+                                    <p><strong>Address:</strong> <span th:text="${hotel.address}">Address</span></p>
+                                    <p><strong>City:</strong> <span th:text="${hotel.city}">City</span></p>
+                                    <p><strong>State:</strong> <span th:text="${hotel.state}">State</span></p>
+                                    <p><strong>Zip Code:</strong> <span th:text="${hotel.zipCode}">Zip</span></p>
+                                    <p th:if="${hotel.nearbyLandmark != null}"><strong>Nearby Landmark:</strong> <span th:text="${hotel.nearbyLandmark}">Landmark</span></p>
+                                    <p th:if="${hotel.googleMapsLink != null}"><strong>Google Maps:</strong> <a th:href="${hotel.googleMapsLink}" target="_blank">View Map</a></p>
+                                </div>
+                                <!-- Timings, Amenities, Payment, Bank, GST: Only for hotel owner -->
+                                <div th:if="${user != null and user.role.name() == 'HOTEL_OWNER' and hotel.owner != null and user.id == hotel.owner.id}">
+                                    <div class="mt-4">
+                                        <h5 class="fw-bold text-dark mb-3">
+                                            <i class="fas fa-clock me-2"></i>Timings
+                                        </h5>
+                                        <p th:if="${hotel.checkInTime != null}"><strong>Check-in Time:</strong> <span th:text="${hotel.checkInTime}">Check-in</span></p>
+                                        <p th:if="${hotel.checkOutTime != null}"><strong>Check-out Time:</strong> <span th:text="${hotel.checkOutTime}">Check-out</span></p>
                                     </div>
+                                    <div class="mt-4">
+                                        <h5 class="fw-bold text-dark mb-3">
+                                            <i class="fas fa-concierge-bell me-2"></i>Amenities
+                                        </h5>
+                                        <p th:if="${hotel.amenities != null}"><span th:text="${hotel.amenities}">Amenities</span></p>
+                                    </div>
+                                    <div class="mt-4">
+                                        <h5 class="fw-bold text-dark mb-3">
+                                            <i class="fas fa-credit-card me-2"></i>Accepted Payment Methods
+                                        </h5>
+                                        <p th:if="${hotel.acceptedPaymentMethods != null}"><span th:text="${hotel.acceptedPaymentMethods}">Payments</span></p>
+                                    </div>
+                                    <div class="mt-4">
+                                        <h5 class="fw-bold text-dark mb-3">
+                                            <i class="fas fa-university me-2"></i>Bank Details (Owner Only)
+                                        </h5>
+                                        <p th:if="${hotel.bankAccountHolder != null}"><strong>Account Holder:</strong> <span th:text="${hotel.bankAccountHolder}">Holder</span></p>
+                                        <p th:if="${hotel.bankName != null}"><strong>Bank Name:</strong> <span th:text="${hotel.bankName}">Bank</span></p>
+                                        <p th:if="${hotel.accountNumber != null}"><strong>Account Number:</strong> <span th:text="${hotel.accountNumber}">Account</span></p>
+                                        <p th:if="${hotel.ifscCode != null}"><strong>IFSC Code:</strong> <span th:text="${hotel.ifscCode}">IFSC</span></p>
+                                        <p th:if="${hotel.upiId != null}"><strong>UPI ID:</strong> <span th:text="${hotel.upiId}">UPI</span></p>
+                                    </div>
+                                    <div class="mt-4">
+                                        <h5 class="fw-bold text-dark mb-3">
+                                            <i class="fas fa-file-invoice me-2"></i>GST Information (Owner Only)
+                                        </h5>
+                                        <p th:if="${hotel.gstin != null}"><strong>GSTIN:</strong> <span th:text="${hotel.gstin}">GSTIN</span></p>
+                                        <p th:if="${hotel.gstCertificateUrl != null}"><strong>GST Certificate:</strong> <a th:href="${hotel.gstCertificateUrl}" target="_blank">View Certificate</a></p>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <h5 class="fw-bold text-dark mb-3">
+                                        <i class="fas fa-info-circle me-2"></i>Other Details
+                                    </h5>
+                                    <p><strong>Rating:</strong> <span th:text="${hotel.rating}">0.0</span> / 5</p>
+                                    <p><strong>Total Reviews:</strong> <span th:text="${hotel.totalReviews}">0</span></p>
+                                    <p><strong>Verified:</strong> <span th:text="${hotel.isVerified ? 'Yes' : 'No'}">No</span></p>
+                                    <p><strong>Active:</strong> <span th:text="${hotel.isActive ? 'Yes' : 'No'}">Yes</span></p>
+                                    <p><strong>Created At:</strong> <span th:text="${#temporals.format(hotel.createdAt, 'yyyy-MM-dd HH:mm')}">Created</span></p>
+                                    <p><strong>Updated At:</strong> <span th:text="${#temporals.format(hotel.updatedAt, 'yyyy-MM-dd HH:mm')}">Updated</span></p>
                                 </div>
                             </div>
                             
@@ -173,8 +219,8 @@
                                             <i class="fas fa-bed me-2"></i>Room Information
                                         </h5>
                                         <div class="mb-3">
-                                            <p><strong>Total Rooms:</strong> <span th:text="${hotel.totalRooms}">Rooms</span></p>
-                                            <p><strong>Available Rooms:</strong> <span th:text="${hotel.availableRooms != null ? hotel.availableRooms : 'N/A'}">Available</span></p>
+                                            <!-- <p><strong>Total Rooms:</strong> <span th:text="${hotel.totalRooms}">Rooms</span></p> -->
+                                            <!-- <p><strong>Available Rooms:</strong> <span th:text="${hotel.availableRooms != null ? hotel.availableRooms : 'N/A'}">Available</span></p> -->
                                         </div>
                                         <a href="/hotel/rooms/${hotel.id}" class="btn btn-primary btn-custom w-100">
                                             <i class="fas fa-eye me-2"></i>View Rooms

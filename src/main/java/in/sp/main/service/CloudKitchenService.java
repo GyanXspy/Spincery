@@ -22,4 +22,9 @@ public interface CloudKitchenService {
     List<CloudKitchen> findActiveVerifiedByCity(String city);
     
     List<CloudKitchen> findByKitchenNameContaining(String name);
+    
+    List<CloudKitchen> findByIsVerified(boolean isVerified);
+    void verifyCloudKitchen(Long kitchenId);
+    void rejectCloudKitchen(Long kitchenId);
+    List<CloudKitchen> findByIsVerifiedTrue();
 } 

@@ -148,12 +148,12 @@
                     <div th:if="${hotels != null and !hotels.empty}" class="row">
                         <div th:each="hotel : ${hotels}" class="col-md-6 col-lg-4 mb-4">
                             <div class="card hotel-card">
-                                <img th:src="${hotel.imageUrl != null ? hotel.imageUrl : '/images/default-hotel.jpg'}" 
+                                <img th:src="${hotel.hotelLogoUrl != null and !#strings.isEmpty(hotel.hotelLogoUrl) ? hotel.hotelLogoUrl : '/images/default-hotel.jpg'}" 
                                      class="card-img-top hotel-image" alt="Hotel Image">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <h5 class="card-title fw-bold text-dark mb-1" th:text="${hotel.hotelName}">Hotel Name</h5>
-                                        <span class="badge bg-primary" th:text="${hotel.hotelType}">Type</span>
+                                        <!-- <span class="badge bg-primary" th:text="${hotel.hotelType}">Type</span> -->
                                     </div>
                                     
                                     <div class="mb-2">
@@ -180,10 +180,10 @@
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="price-tag">
                                             <i class="fas fa-rupee-sign me-1"></i>
-                                            <span th:text="${hotel.pricePerNight}">Price</span>
+                                            <!-- <span th:text="${hotel.pricePerNight}">Price</span> -->
                                             <small>/night</small>
                                         </div>
-                                        <a th:href="@{/hotel/details/{id}(id=${hotel.id})}" 
+                                        <a th:href="@{/hotel/details(hotelId=${hotel.id})}" 
                                            class="btn btn-outline-primary btn-sm btn-custom">
                                             <i class="fas fa-eye me-1"></i>View Details
                                         </a>
@@ -207,15 +207,15 @@
                     <div th:if="${hotels != null and !hotels.empty}" class="d-flex justify-content-center mt-4">
                         <nav aria-label="Hotel pagination">
                             <ul class="pagination">
-                                <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                                    <a class="page-link" th:href="@{/hotel/list(page=${currentPage - 1})}">Previous</a>
+                                <li class="page-item" th:classappend="${(currentPage ?: 0) == 0 ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{/hotel/list(page=${(currentPage ?: 0) - 1})}">Previous</a>
                                 </li>
-                                <li class="page-item" th:each="page : ${#numbers.sequence(0, totalPages - 1)}"
-                                    th:classappend="${page == currentPage ? 'active' : ''}">
+                                <li class="page-item" th:each="page : ${#numbers.sequence(0, (totalPages ?: 1) - 1)}"
+                                    th:classappend="${page == (currentPage ?: 0) ? 'active' : ''}">
                                     <a class="page-link" th:href="@{/hotel/list(page=${page})}" th:text="${page + 1}">1</a>
                                 </li>
-                                <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
-                                    <a class="page-link" th:href="@{/hotel/list(page=${currentPage + 1})}">Next</a>
+                                <li class="page-item" th:classappend="${(currentPage ?: 0) == ((totalPages ?: 1) - 1) ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{/hotel/list(page=${(currentPage ?: 0) + 1})}">Next</a>
                                 </li>
                             </ul>
                         </nav>

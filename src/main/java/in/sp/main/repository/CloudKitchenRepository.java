@@ -19,6 +19,8 @@ public interface CloudKitchenRepository extends JpaRepository<CloudKitchen, Long
     
     List<CloudKitchen> findByIsActiveTrue();
     
+    List<CloudKitchen> findByIsVerified(boolean isVerified);
+    
     @Query("SELECT ck FROM CloudKitchen ck WHERE ck.city = :city AND ck.isActive = true AND ck.isVerified = true")
     List<CloudKitchen> findActiveVerifiedByCity(@Param("city") String city);
     

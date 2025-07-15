@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Hotel Management - Spincery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-purple-600 to-purple-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-hotel text-2xl"></i>
+                    <h1 class="text-xl font-bold">Spincery Admin</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/admin/dashboard" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                    </a>
+                    <a href="/admin/control-panel" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-cog mr-2"></i>Control Panel
+                    </a>
+                    <a href="/admin/hotels" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-hotel mr-2"></i>Hotels
+                    </a>
+                    <a href="/dashboard" class="hover:text-purple-200 transition-colors">
+                        <i class="fas fa-user mr-2"></i>Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Hotel Management</h2>
+            <p class="text-gray-600">Review and manage hotel registrations</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <i class="fas fa-hotel text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Hotels</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${totalHotels != null ? totalHotels : '0'}">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                        <i class="fas fa-clock text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Pending Review</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${pendingCount != null ? pendingCount : '0'}">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100 text-green-600">
+                        <i class="fas fa-check-circle text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Verified</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${verifiedCount != null ? verifiedCount : '0'}">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                        <i class="fas fa-percentage text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Verification Rate</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${totalHotels != null and totalHotels > 0 ? (verifiedCount != null ? (verifiedCount * 100 / totalHotels) : 0) : 0} + '%'">0%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Hotels -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-clock text-yellow-600 mr-2"></i>
+                Pending Verification (<span th:text="${pendingCount != null ? pendingCount : '0'}">0</span>)
+            </h3>
+            <div th:if="${pendingHotels != null and !#lists.isEmpty(pendingHotels)}" class="space-y-4">
+                <div th:each="hotel : ${pendingHotels}" class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h4 class="text-lg font-semibold text-gray-800" th:text="${hotel.hotelName}">Hotel Name</h4>
+                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">
+                                    <i class="fas fa-clock mr-1"></i>Pending
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                                <div>
+                                    <p><strong>Owner:</strong> <span th:text="${hotel.ownerName}">Owner Name</span></p>
+                                    <p><strong>Email:</strong> <span th:text="${hotel.email}">email@example.com</span></p>
+                                    <p><strong>Phone:</strong> <span th:text="${hotel.phone}">1234567890</span></p>
+                                </div>
+                                <div>
+                                    <p><strong>Address:</strong> <span th:text="${hotel.address}">Address</span></p>
+                                    <p><strong>City:</strong> <span th:text="${hotel.city}">City</span>, <span th:text="${hotel.state}">State</span></p>
+                                    <p><strong>Registered:</strong> <span th:text="${hotel.createdAt != null ? hotel.createdAt.toString() : 'N/A'}">Date</span></p>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-sm text-gray-500">
+                                <p th:if="${hotel.description != null}" th:text="${hotel.description}">Description</p>
+                                <p th:unless="${hotel.description != null}">No description provided</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col space-y-2 ml-4">
+                            <form th:action="@{/admin/hotels/verify}" method="post" class="inline">
+                                <input type="hidden" name="hotelId" th:value="${hotel.id}">
+                                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center">
+                                    <i class="fas fa-check mr-2"></i>Verify
+                                </button>
+                            </form>
+                            <form th:action="@{/admin/hotels/reject}" method="post" class="inline">
+                                <input type="hidden" name="hotelId" th:value="${hotel.id}">
+                                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center">
+                                    <i class="fas fa-times mr-2"></i>Reject
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${pendingHotels == null or #lists.isEmpty(pendingHotels)}" class="text-center text-gray-500 py-8">
+                <i class="fas fa-check-circle text-3xl mb-2"></i>
+                <p>No pending hotels to review</p>
+            </div>
+        </div>
+
+        <!-- Verified Hotels -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                Verified Hotels (<span th:text="${verifiedCount != null ? verifiedCount : '0'}">0</span>)
+            </h3>
+            <div th:if="${verifiedHotels != null and !#lists.isEmpty(verifiedHotels)}" class="space-y-4">
+                <div th:each="hotel : ${verifiedHotels}" class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h4 class="text-lg font-semibold text-gray-800" th:text="${hotel.hotelName}">Hotel Name</h4>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                                    <i class="fas fa-check-circle mr-1"></i>Verified
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                                <div>
+                                    <p><strong>Owner:</strong> <span th:text="${hotel.ownerName}">Owner Name</span></p>
+                                    <p><strong>Email:</strong> <span th:text="${hotel.email}">email@example.com</span></p>
+                                    <p><strong>Phone:</strong> <span th:text="${hotel.phone}">1234567890</span></p>
+                                </div>
+                                <div>
+                                    <p><strong>Address:</strong> <span th:text="${hotel.address}">Address</span></p>
+                                    <p><strong>City:</strong> <span th:text="${hotel.city}">City</span>, <span th:text="${hotel.state}">State</span></p>
+                                    <p><strong>Verified:</strong> <span th:text="${hotel.updatedAt != null ? hotel.updatedAt.toString() : 'N/A'}">Date</span></p>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-sm text-gray-500">
+                                <p th:if="${hotel.description != null}" th:text="${hotel.description}">Description</p>
+                                <p th:unless="${hotel.description != null}">No description provided</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col space-y-2 ml-4">
+                            <span class="text-green-600 text-sm font-medium">
+                                <i class="fas fa-check-circle mr-1"></i>Verified
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${verifiedHotels == null or #lists.isEmpty(verifiedHotels)}" class="text-center text-gray-500 py-8">
+                <i class="fas fa-hotel text-3xl mb-2"></i>
+                <p>No verified hotels yet</p>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; 2024 Spincery. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html> 

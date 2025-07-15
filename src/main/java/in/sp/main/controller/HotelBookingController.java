@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/hotel")
@@ -56,7 +57,8 @@ public class HotelBookingController {
     @GetMapping("/hotels")
     public String hotelsPage(Model model) {
         try {
-            List<Hotel> hotels = hotelService.findAll();
+            List<Hotel> hotels = hotelService.findByIsVerifiedTrue();
+            hotels = hotels.stream().filter(Hotel::isActive).toList();
             model.addAttribute("hotels", hotels);
         } catch (Exception e) {
             model.addAttribute("hotels", new ArrayList<>());
@@ -332,10 +334,11 @@ public class HotelBookingController {
         List<Hotel> hotels;
         try {
             if (city != null && !city.trim().isEmpty()) {
-                hotels = hotelService.findByCity(city);
+                hotels = hotelService.findActiveVerifiedByCity(city);
             } else {
-                hotels = hotelService.findAll();
+                hotels = hotelService.findByIsVerifiedTrue();
             }
+            hotels = hotels.stream().filter(Hotel::isActive).toList();
         } catch (Exception e) {
             hotels = new ArrayList<>();
             model.addAttribute("error", "Error loading hotels: " + e.getMessage());
@@ -350,10 +353,15 @@ public class HotelBookingController {
         if (hotelId == null) {
             return "redirect:/hotel/list";
         }
-        
         Optional<Hotel> hotelOpt = hotelService.findById(hotelId);
         if (hotelOpt.isPresent()) {
             Hotel hotel = hotelOpt.get();
+            // Add current user to the model for dynamic edit button
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+                Optional<User> userOpt = userService.findByEmail(auth.getName());
+                userOpt.ifPresent(user -> model.addAttribute("user", user));
+            }
             model.addAttribute("hotel", hotel);
             return "hotel/details";
         } else {
@@ -379,5 +387,82 @@ public class HotelBookingController {
             }
         }
         return "redirect:/login";
+    }
+
+    @GetMapping("/edit")
+    public String editHotelForm(@RequestParam Long hotelId, Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                Optional<Hotel> hotelOpt = hotelService.findById(hotelId);
+                if (hotelOpt.isPresent()) {
+                    Hotel hotel = hotelOpt.get();
+                    if (hotel.getOwner() != null && hotel.getOwner().getId().equals(user.getId()) && user.getRole() == User.UserRole.HOTEL_OWNER) {
+                        model.addAttribute("hotel", hotel);
+                        model.addAttribute("user", user);
+                        return "hotel/edit";
+                    }
+                }
+            }
+        }
+        return "redirect:/access-denied";
+    }
+
+    @PostMapping("/edit")
+    public String editHotelSubmit(@ModelAttribute Hotel hotel,
+                                  @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+                                  Model model, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                Optional<Hotel> dbHotelOpt = hotelService.findById(hotel.getId());
+                if (dbHotelOpt.isPresent()) {
+                    Hotel dbHotel = dbHotelOpt.get();
+                    if (dbHotel.getOwner() != null && dbHotel.getOwner().getId().equals(user.getId()) && user.getRole() == User.UserRole.HOTEL_OWNER) {
+                        // Update allowed fields
+                        dbHotel.setHotelName(hotel.getHotelName());
+                        dbHotel.setCity(hotel.getCity());
+                        dbHotel.setAddress(hotel.getAddress());
+                        dbHotel.setState(hotel.getState());
+                        dbHotel.setZipCode(hotel.getZipCode());
+                        dbHotel.setWhatsappNumber(hotel.getWhatsappNumber());
+                        dbHotel.setAlternateContact(hotel.getAlternateContact());
+                        dbHotel.setAmenities(hotel.getAmenities());
+                        dbHotel.setAcceptedPaymentMethods(hotel.getAcceptedPaymentMethods());
+                        dbHotel.setBankAccountHolder(hotel.getBankAccountHolder());
+                        dbHotel.setBankName(hotel.getBankName());
+                        dbHotel.setAccountNumber(hotel.getAccountNumber());
+                        dbHotel.setIfscCode(hotel.getIfscCode());
+                        dbHotel.setUpiId(hotel.getUpiId());
+                        dbHotel.setGstin(hotel.getGstin());
+                        dbHotel.setGstCertificateUrl(hotel.getGstCertificateUrl());
+                        dbHotel.setGoogleMapsLink(hotel.getGoogleMapsLink());
+                        dbHotel.setCheckInTime(hotel.getCheckInTime());
+                        dbHotel.setCheckOutTime(hotel.getCheckOutTime());
+                        dbHotel.setDescription(hotel.getDescription());
+                        // Handle image upload if a new file is provided
+                        try {
+                            if (imageFile != null && !imageFile.isEmpty()) {
+                                String imageUrl = cloudinaryService.uploadFile(imageFile, "hotel");
+                                dbHotel.setHotelLogoUrl(imageUrl);
+                            }
+                            hotelService.save(dbHotel);
+                            redirectAttributes.addFlashAttribute("success", "Hotel updated successfully!");
+                            return "redirect:/hotel/details?hotelId=" + dbHotel.getId();
+                        } catch (Exception e) {
+                            model.addAttribute("hotel", dbHotel);
+                            model.addAttribute("user", user);
+                            model.addAttribute("error", "Error updating hotel: " + e.getMessage());
+                            return "hotel/edit";
+                        }
+                    }
+                }
+            }
+        }
+        return "redirect:/access-denied";
     }
 } 

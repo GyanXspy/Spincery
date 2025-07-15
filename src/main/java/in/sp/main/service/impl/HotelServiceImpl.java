@@ -59,4 +59,27 @@ public class HotelServiceImpl implements HotelService {
     public List<Hotel> findByHotelNameContaining(String name) {
         return hotelRepository.findByHotelNameContaining(name);
     }
+
+    @Override
+    public List<Hotel> findByIsVerified(boolean isVerified) {
+        return hotelRepository.findByIsVerified(isVerified);
+    }
+
+    @Override
+    public List<Hotel> findByIsVerifiedTrue() {
+        return hotelRepository.findByIsVerifiedTrue();
+    }
+
+    @Override
+    public void verifyHotel(Long hotelId) {
+        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new RuntimeException("Hotel not found"));
+        hotel.setIsVerified(true);
+        hotelRepository.save(hotel);
+    }
+
+    @Override
+    public void rejectHotel(Long hotelId) {
+        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new RuntimeException("Hotel not found"));
+        hotelRepository.delete(hotel);
+    }
 } 

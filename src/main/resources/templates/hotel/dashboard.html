@@ -92,7 +92,14 @@
                     <h3 class="text-xl font-semibold text-gray-800">Room Management</h3>
                 </div>
                 <p class="text-gray-600 mb-4">Add, edit, and manage your hotel rooms, amenities, and pricing.</p>
-                <a href="/hotel/rooms" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <div th:if="${hotels != null and #lists.size(hotels) > 0}">
+                    <div th:each="hotel : ${hotels}">
+                        <a th:href="@{'/hotel/details?hotelId=' + ${hotel.id}}" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-2">
+                            Manage Rooms (<span th:text="${hotel.name}">Hotel</span>)
+                        </a>
+                    </div>
+                </div>
+                <a th:if="${hotels == null or #lists.size(hotels) == 0}" href="/hotel/list" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Manage Rooms
                 </a>
             </div>
@@ -104,57 +111,57 @@
                     <h3 class="text-xl font-semibold text-gray-800">Booking Management</h3>
                 </div>
                 <p class="text-gray-600 mb-4">View and manage all hotel bookings, check-ins, and check-outs.</p>
-                <a href="/hotel/bookings" class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                <a href="/hotel-booking/bookings" class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                     View Bookings
                 </a>
             </div>
 
-            <!-- Revenue Analytics -->
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <!-- Revenue Analytics (Disabled) -->
+            <div class="bg-gray-200 rounded-lg shadow-md p-6 opacity-50 cursor-not-allowed">
                 <div class="flex items-center mb-4">
-                    <i class="fas fa-chart-line text-3xl text-purple-500 mr-3"></i>
-                    <h3 class="text-xl font-semibold text-gray-800">Revenue Analytics</h3>
+                    <i class="fas fa-chart-line text-3xl text-purple-300 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-400">Revenue Analytics</h3>
                 </div>
-                <p class="text-gray-600 mb-4">Track your hotel's performance, revenue, and occupancy rates.</p>
-                <a href="/hotel/analytics" class="inline-block bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                <p class="text-gray-400 mb-4">Coming soon.</p>
+                <button class="inline-block bg-purple-300 text-white font-bold py-2 px-4 rounded cursor-not-allowed" disabled>
                     View Analytics
-                </a>
+                </button>
             </div>
 
-            <!-- Guest Services -->
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <!-- Guest Services (Disabled) -->
+            <div class="bg-gray-200 rounded-lg shadow-md p-6 opacity-50 cursor-not-allowed">
                 <div class="flex items-center mb-4">
-                    <i class="fas fa-concierge-bell text-3xl text-orange-500 mr-3"></i>
-                    <h3 class="text-xl font-semibold text-gray-800">Guest Services</h3>
+                    <i class="fas fa-concierge-bell text-3xl text-orange-300 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-400">Guest Services</h3>
                 </div>
-                <p class="text-gray-600 mb-4">Manage guest requests, housekeeping, and special services.</p>
-                <a href="/hotel/services" class="inline-block bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+                <p class="text-gray-400 mb-4">Coming soon.</p>
+                <button class="inline-block bg-orange-300 text-white font-bold py-2 px-4 rounded cursor-not-allowed" disabled>
                     Manage Services
-                </a>
+                </button>
             </div>
 
-            <!-- Hotel Settings -->
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <!-- Hotel Settings (Disabled) -->
+            <div class="bg-gray-200 rounded-lg shadow-md p-6 opacity-50 cursor-not-allowed">
                 <div class="flex items-center mb-4">
-                    <i class="fas fa-cog text-3xl text-gray-500 mr-3"></i>
-                    <h3 class="text-xl font-semibold text-gray-800">Hotel Settings</h3>
+                    <i class="fas fa-cog text-3xl text-gray-300 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-400">Hotel Settings</h3>
                 </div>
-                <p class="text-gray-600 mb-4">Configure hotel information, policies, and operational settings.</p>
-                <a href="/hotel/settings" class="inline-block bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                <p class="text-gray-400 mb-4">Coming soon.</p>
+                <button class="inline-block bg-gray-300 text-white font-bold py-2 px-4 rounded cursor-not-allowed" disabled>
                     Settings
-                </a>
+                </button>
             </div>
 
-            <!-- Reports -->
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <!-- Reports (Disabled) -->
+            <div class="bg-gray-200 rounded-lg shadow-md p-6 opacity-50 cursor-not-allowed">
                 <div class="flex items-center mb-4">
-                    <i class="fas fa-file-alt text-3xl text-indigo-500 mr-3"></i>
-                    <h3 class="text-xl font-semibold text-gray-800">Reports</h3>
+                    <i class="fas fa-file-alt text-3xl text-indigo-300 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-400">Reports</h3>
                 </div>
-                <p class="text-gray-600 mb-4">Generate detailed reports on occupancy, revenue, and guest satisfaction.</p>
-                <a href="/hotel/reports" class="inline-block bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                <p class="text-gray-400 mb-4">Coming soon.</p>
+                <button class="inline-block bg-indigo-300 text-white font-bold py-2 px-4 rounded cursor-not-allowed" disabled>
                     Generate Reports
-                </a>
+                </button>
             </div>
         </div>
 

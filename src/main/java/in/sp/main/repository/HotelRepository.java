@@ -20,6 +20,8 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
     
     List<Hotel> findByIsActiveTrue();
     
+    List<Hotel> findByIsVerified(boolean isVerified);
+    
     @Query("SELECT h FROM Hotel h WHERE h.city = :city AND h.isActive = true AND h.isVerified = true")
     List<Hotel> findActiveVerifiedByCity(@Param("city") String city);
     

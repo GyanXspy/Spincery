@@ -128,6 +128,13 @@ public class CloudKitchen {
     @Column(name = "is_verified")
     private boolean isVerified = false;
     
+    public boolean getIsVerified() {
+        return isVerified;
+    }
+    public void setIsVerified(boolean isVerified) {
+        this.isVerified = isVerified;
+    }
+    
     @Column(name = "is_active")
     private boolean isActive = true;
     
