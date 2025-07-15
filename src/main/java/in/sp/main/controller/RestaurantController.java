@@ -4,11 +4,13 @@ import in.sp.main.entity.Restaurant;
 import in.sp.main.entity.User;
 import in.sp.main.entity.FoodOrder;
 import in.sp.main.entity.MenuItem;
+import in.sp.main.entity.OrderItem;
 import in.sp.main.service.RestaurantService;
 import in.sp.main.service.UserService;
 import in.sp.main.service.FoodOrderService;
 import in.sp.main.service.MenuItemService;
 import in.sp.main.service.CloudinaryService;
+import in.sp.main.service.OrderItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,6 +43,7 @@ public class RestaurantController {
     private final FoodOrderService foodOrderService;
     private final MenuItemService menuItemService;
     private final CloudinaryService cloudinaryService;
+    private final OrderItemService orderItemService;
     
     /**
      * Displays the restaurant dashboard for the authenticated owner.
@@ -171,7 +174,7 @@ public class RestaurantController {
      * Loads all orders for the owner's restaurant.
      */
     @GetMapping("/orders")
-    public String restaurantOrders(Model model) {
+    public String restaurantOrders(@RequestParam(value = "status", required = false) String status, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
             Optional<User> userOpt = userService.findByEmail(auth.getName());
@@ -179,13 +182,19 @@ public class RestaurantController {
                 User user = userOpt.get();
                 if (user.getRole() == User.UserRole.RESTAURANT_OWNER) {
                     try {
-                        // Get the restaurant owned by this user
                         List<Restaurant> restaurants = restaurantService.findByOwnerId(user.getId());
                         if (!restaurants.isEmpty()) {
                             Restaurant restaurant = restaurants.get(0); // Get the first restaurant
                             List<FoodOrder> orders = foodOrderService.findByRestaurantId(restaurant.getId());
-                            model.addAttribute("orders", orders);
+                            List<FoodOrder> filteredOrders = orders;
+                            if (status != null && !status.isEmpty() && !status.equalsIgnoreCase("ALL")) {
+                                filteredOrders = orders.stream()
+                                    .filter(o -> o.getStatus().name().equalsIgnoreCase(status))
+                                    .toList();
+                            }
+                            model.addAttribute("orders", filteredOrders);
                             model.addAttribute("restaurant", restaurant);
+                            model.addAttribute("selectedStatus", status != null ? status.toUpperCase() : "ALL");
                         } else {
                             model.addAttribute("orders", new ArrayList<>());
                             model.addAttribute("restaurant", null);
@@ -218,13 +227,11 @@ public class RestaurantController {
                 User user = userOpt.get();
                 if (user.getRole() == User.UserRole.RESTAURANT_OWNER) {
                     try {
-                        // Get the restaurant owned by this user
                         List<Restaurant> restaurants = restaurantService.findByOwnerId(user.getId());
                         if (!restaurants.isEmpty()) {
                             Restaurant restaurant = restaurants.get(0);
-                            
-                            // Get orders for analytics
                             List<FoodOrder> orders = foodOrderService.findByRestaurantId(restaurant.getId());
+                            List<OrderItem> orderItems = orderItemService.findByRestaurantId(restaurant.getId());
                             
                             // Calculate analytics data
                             long totalOrders = orders.size();
@@ -266,6 +273,69 @@ public class RestaurantController {
                             String ratingGrowth = "+0.2";
                             String customerGrowth = "+15%";
                             
+                            // --- Revenue trend (last 6 months) ---
+                            java.time.YearMonth now = java.time.YearMonth.now();
+                            List<Double> revenueTrend = new java.util.ArrayList<>();
+                            for (int i = 5; i >= 0; i--) {
+                                java.time.YearMonth ym = now.minusMonths(i);
+                                double monthRevenue = orders.stream()
+                                    .filter(o -> o.getStatus() == FoodOrder.OrderStatus.DELIVERED &&
+                                        o.getCreatedAt() != null &&
+                                        java.time.YearMonth.from(o.getCreatedAt()).equals(ym))
+                                    .mapToDouble(o -> o.getTotalAmount() != null ? o.getTotalAmount() : 0.0)
+                                    .sum();
+                                revenueTrend.add(monthRevenue);
+                            }
+                            // --- Orders by status ---
+                            long pending = orders.stream().filter(o -> o.getStatus() == FoodOrder.OrderStatus.PENDING).count();
+                            long confirmed = orders.stream().filter(o -> o.getStatus() == FoodOrder.OrderStatus.CONFIRMED).count();
+                            long preparing = orders.stream().filter(o -> o.getStatus() == FoodOrder.OrderStatus.PREPARING).count();
+                            long ready = orders.stream().filter(o -> o.getStatus() == FoodOrder.OrderStatus.READY_FOR_PICKUP).count();
+                            long delivered = orders.stream().filter(o -> o.getStatus() == FoodOrder.OrderStatus.DELIVERED).count();
+                            List<Long> ordersByStatus = java.util.Arrays.asList(pending, confirmed, preparing, ready, delivered);
+                            // --- Popular items (top 2 by order count) ---
+                            java.util.Map<Long, Long> itemOrderCounts = new java.util.HashMap<>();
+                            for (OrderItem oi : orderItems) {
+                                Long menuItemId = oi.getMenuItem().getId();
+                                itemOrderCounts.put(menuItemId, itemOrderCounts.getOrDefault(menuItemId, 0L) + 1);
+                            }
+                            List<MenuItem> menuItems = menuItemService.findByRestaurantId(restaurant.getId());
+                            List<java.util.Map<String, Object>> popularItems = menuItems.stream()
+                                .filter(mi -> itemOrderCounts.containsKey(mi.getId()))
+                                .sorted((a, b) -> Long.compare(itemOrderCounts.get(b.getId()), itemOrderCounts.get(a.getId())))
+                                .limit(2)
+                                .map(mi -> {
+                                    java.util.Map<String, Object> map = new java.util.HashMap<>();
+                                    map.put("name", mi.getDishName());
+                                    map.put("price", mi.getPrice());
+                                    map.put("orders", itemOrderCounts.get(mi.getId()));
+                                    map.put("growth", 10); // Dummy growth
+                                    return map;
+                                })
+                                .toList();
+                            // --- Recent orders (last 2) ---
+                            List<java.util.Map<String, Object>> recentOrdersList = orders.stream()
+                                .sorted((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()))
+                                .limit(2)
+                                .map(o -> {
+                                    java.util.Map<String, Object> map = new java.util.HashMap<>();
+                                    map.put("id", o.getOrderNumber());
+                                    map.put("items", o.getOrderItems() != null ? o.getOrderItems().size() : 0);
+                                    map.put("amount", o.getTotalAmount() != null ? o.getTotalAmount() : 0.0);
+                                    String status = o.getStatus().name();
+                                    map.put("status", status.substring(0,1) + status.substring(1).toLowerCase());
+                                    String statusClass = switch (o.getStatus()) {
+                                        case DELIVERED -> "bg-green-100 text-green-800";
+                                        case CONFIRMED -> "bg-blue-100 text-blue-800";
+                                        case PREPARING -> "bg-yellow-100 text-yellow-800";
+                                        case PENDING -> "bg-gray-100 text-gray-800";
+                                        default -> "bg-gray-100 text-gray-800";
+                                    };
+                                    map.put("statusClass", statusClass);
+                                    return map;
+                                })
+                                .toList();
+                            
                             model.addAttribute("restaurant", restaurant);
                             model.addAttribute("orders", orders);
                             model.addAttribute("recentOrders", recentOrders);
@@ -283,7 +353,10 @@ public class RestaurantController {
                             model.addAttribute("revenueGrowth", revenueGrowth);
                             model.addAttribute("ratingGrowth", ratingGrowth);
                             model.addAttribute("customerGrowth", customerGrowth);
-                            model.addAttribute("popularItems", new ArrayList<>()); // Placeholder for popular items
+                            model.addAttribute("popularItems", popularItems);
+                            model.addAttribute("revenueTrend", revenueTrend);
+                            model.addAttribute("ordersByStatus", ordersByStatus);
+                            model.addAttribute("recentOrders", recentOrdersList);
                         } else {
                             model.addAttribute("restaurant", null);
                             model.addAttribute("error", "No restaurant found for this user");
@@ -339,7 +412,7 @@ public class RestaurantController {
      * Loads the restaurant details for the settings view.
      */
     @GetMapping("/settings")
-    public String restaurantSettings(Model model) {
+    public String restaurantSettings(@RequestParam(value = "restaurantId", required = false) Long restaurantId, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
             Optional<User> userOpt = userService.findByEmail(auth.getName());
@@ -347,13 +420,22 @@ public class RestaurantController {
                 User user = userOpt.get();
                 if (user.getRole() == User.UserRole.RESTAURANT_OWNER) {
                     try {
-                        // Get the restaurant owned by this user
                         List<Restaurant> restaurants = restaurantService.findByOwnerId(user.getId());
-                        if (!restaurants.isEmpty()) {
-                            Restaurant restaurant = restaurants.get(0);
-                            model.addAttribute("restaurant", restaurant);
-                        } else {
-                            model.addAttribute("restaurant", null);
+                        model.addAttribute("restaurants", restaurants);
+                        Restaurant restaurant = null;
+                        if (restaurantId != null) {
+                            for (Restaurant r : restaurants) {
+                                if (r.getId().equals(restaurantId)) {
+                                    restaurant = r;
+                                    break;
+                                }
+                            }
+                        }
+                        if (restaurant == null && !restaurants.isEmpty()) {
+                            restaurant = restaurants.get(0);
+                        }
+                        model.addAttribute("restaurant", restaurant);
+                        if (restaurants.isEmpty()) {
                             model.addAttribute("error", "No restaurant found for this user");
                         }
                     } catch (Exception e) {
@@ -375,7 +457,7 @@ public class RestaurantController {
      * Loads the restaurant details for the hours management view.
      */
     @GetMapping("/hours")
-    public String restaurantHours(Model model) {
+    public String restaurantHours(@RequestParam(value = "restaurantId", required = false) Long restaurantId, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
             Optional<User> userOpt = userService.findByEmail(auth.getName());
@@ -384,11 +466,21 @@ public class RestaurantController {
                 if (user.getRole() == User.UserRole.RESTAURANT_OWNER) {
                     try {
                         List<Restaurant> restaurants = restaurantService.findByOwnerId(user.getId());
-                        if (!restaurants.isEmpty()) {
-                            Restaurant restaurant = restaurants.get(0);
-                            model.addAttribute("restaurant", restaurant);
-                        } else {
-                            model.addAttribute("restaurant", null);
+                        model.addAttribute("restaurants", restaurants);
+                        Restaurant restaurant = null;
+                        if (restaurantId != null) {
+                            for (Restaurant r : restaurants) {
+                                if (r.getId().equals(restaurantId)) {
+                                    restaurant = r;
+                                    break;
+                                }
+                            }
+                        }
+                        if (restaurant == null && !restaurants.isEmpty()) {
+                            restaurant = restaurants.get(0);
+                        }
+                        model.addAttribute("restaurant", restaurant);
+                        if (restaurants.isEmpty()) {
                             model.addAttribute("error", "No restaurant found for this user");
                         }
                     } catch (Exception e) {
@@ -445,7 +537,8 @@ public class RestaurantController {
      * Validates time formats and updates the restaurant's operating hours.
      */
     @PostMapping("/hours/update")
-    public String updateRestaurantHours(RedirectAttributes redirectAttributes,
+    public String updateRestaurantHours(@RequestParam(value = "restaurantId", required = false) Long restaurantId,
+                                       RedirectAttributes redirectAttributes,
                                        Model model,
                                        @RequestParam(required = false) String openingTime,
                                        @RequestParam(required = false) String closingTime,
@@ -459,9 +552,19 @@ public class RestaurantController {
                 if (user.getRole() == User.UserRole.RESTAURANT_OWNER) {
                     try {
                         List<Restaurant> restaurants = restaurantService.findByOwnerId(user.getId());
-                        if (!restaurants.isEmpty()) {
-                            Restaurant restaurant = restaurants.get(0);
-                            
+                        Restaurant restaurant = null;
+                        if (restaurantId != null) {
+                            for (Restaurant r : restaurants) {
+                                if (r.getId().equals(restaurantId)) {
+                                    restaurant = r;
+                                    break;
+                                }
+                            }
+                        }
+                        if (restaurant == null && !restaurants.isEmpty()) {
+                            restaurant = restaurants.get(0);
+                        }
+                        if (restaurant != null) {
                             // Update hours
                             if (openingTime != null && !openingTime.trim().isEmpty()) {
                                 try {
@@ -469,7 +572,7 @@ public class RestaurantController {
                                     restaurant.setOpeningTime(openingTimeObj);
                                 } catch (DateTimeParseException e) {
                                     redirectAttributes.addFlashAttribute("error", "Invalid opening time format. Use HH:MM");
-                                    return "redirect:/restaurant/hours";
+                                    return "redirect:/restaurant/hours?restaurantId=" + restaurant.getId();
                                 }
                             }
                             if (closingTime != null && !closingTime.trim().isEmpty()) {
@@ -478,7 +581,7 @@ public class RestaurantController {
                                     restaurant.setClosingTime(closingTimeObj);
                                 } catch (DateTimeParseException e) {
                                     redirectAttributes.addFlashAttribute("error", "Invalid closing time format. Use HH:MM");
-                                    return "redirect:/restaurant/hours";
+                                    return "redirect:/restaurant/hours?restaurantId=" + restaurant.getId();
                                 }
                             }
                             if (workingDays != null && !workingDays.trim().isEmpty()) {
@@ -487,7 +590,6 @@ public class RestaurantController {
                             if (weeklyOff != null && !weeklyOff.trim().isEmpty()) {
                                 restaurant.setWeeklyOff(weeklyOff);
                             }
-                            
                             restaurantService.save(restaurant);
                             redirectAttributes.addFlashAttribute("success", "Operating hours updated successfully!");
                         } else {
@@ -496,7 +598,7 @@ public class RestaurantController {
                     } catch (Exception e) {
                         redirectAttributes.addFlashAttribute("error", "Error updating hours: " + e.getMessage());
                     }
-                    return "redirect:/restaurant/hours";
+                    return "redirect:/restaurant/hours?restaurantId=" + (restaurantId != null ? restaurantId : "");
                 } else {
                     return "redirect:/access-denied";
                 }
@@ -758,6 +860,54 @@ public class RestaurantController {
                     }
                 } else {
                     return "redirect:/access-denied";
+                }
+            }
+        }
+        return "redirect:/login";
+    }
+
+    @PostMapping("/set-open")
+    public String setRestaurantOpen(@RequestParam Long restaurantId, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                if (user.getRole() == User.UserRole.RESTAURANT_OWNER) {
+                    Optional<Restaurant> restaurantOpt = restaurantService.findById(restaurantId);
+                    if (restaurantOpt.isPresent() && restaurantOpt.get().getOwner().getId().equals(user.getId())) {
+                        Restaurant restaurant = restaurantOpt.get();
+                        restaurant.setIsOpen(true);
+                        restaurantService.save(restaurant);
+                        redirectAttributes.addFlashAttribute("success", "Restaurant set as open.");
+                    } else {
+                        redirectAttributes.addFlashAttribute("error", "You do not have permission to open this restaurant.");
+                    }
+                    return "redirect:/restaurant/hours?restaurantId=" + restaurantId;
+                }
+            }
+        }
+        return "redirect:/login";
+    }
+
+    @PostMapping("/set-closed")
+    public String setRestaurantClosed(@RequestParam Long restaurantId, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            Optional<User> userOpt = userService.findByEmail(auth.getName());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                if (user.getRole() == User.UserRole.RESTAURANT_OWNER) {
+                    Optional<Restaurant> restaurantOpt = restaurantService.findById(restaurantId);
+                    if (restaurantOpt.isPresent() && restaurantOpt.get().getOwner().getId().equals(user.getId())) {
+                        Restaurant restaurant = restaurantOpt.get();
+                        restaurant.setIsOpen(false);
+                        restaurantService.save(restaurant);
+                        redirectAttributes.addFlashAttribute("success", "Restaurant set as closed.");
+                    } else {
+                        redirectAttributes.addFlashAttribute("error", "You do not have permission to close this restaurant.");
+                    }
+                    return "redirect:/restaurant/hours?restaurantId=" + restaurantId;
                 }
             }
         }

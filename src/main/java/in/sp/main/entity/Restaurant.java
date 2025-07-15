@@ -168,6 +168,16 @@ public class Restaurant {
     @Column(name = "is_active")
     private boolean isActive = true;
     
+    @Column(name = "is_open")
+    private Boolean isOpen = true;
+    
+    public Boolean getIsOpen() {
+        return isOpen;
+    }
+    public void setIsOpen(Boolean isOpen) {
+        this.isOpen = isOpen;
+    }
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     private User owner;

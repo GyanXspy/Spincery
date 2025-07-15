@@ -181,6 +181,12 @@ public class FoodDeliveryController {
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
                 order.setUser(user);
+                // Block order if restaurant is closed
+                if (order.getRestaurant() != null && (order.getRestaurant().getIsOpen() == null || !order.getRestaurant().getIsOpen())) {
+                    model.addAttribute("error", "This restaurant is currently closed and cannot accept orders.");
+                    model.addAttribute("restaurant", order.getRestaurant());
+                    return "food-delivery/menu";
+                }
                 try {
                     FoodOrder savedOrder = foodOrderService.createOrder(order);
                     model.addAttribute("order", savedOrder);

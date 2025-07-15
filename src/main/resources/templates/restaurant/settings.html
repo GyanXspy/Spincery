@@ -45,24 +45,33 @@
                 <p class="text-gray-600">Manage your restaurant information and preferences</p>
             </div>
 
+            <!-- Restaurant Selection Dropdown -->
+            <div class="mb-6">
+                <form th:action="@{/restaurant/settings}" method="get" id="restaurantSelectForm">
+                    <label for="restaurantId" class="block text-sm font-medium text-gray-700 mb-2">Select Restaurant to Edit</label>
+                    <select name="restaurantId" id="restaurantId" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" onchange="document.getElementById('restaurantSelectForm').submit();">
+                        <option th:each="r : ${restaurants}" th:value="${r.id}" th:text="${r.restaurantName}" th:selected="${restaurant != null and r.id == restaurant.id}"></option>
+                    </select>
+                </form>
+            </div>
+            <!-- End Restaurant Selection Dropdown -->
+
             <!-- Settings Form -->
-            <form action="#" method="post" class="space-y-6">
+            <form th:action="@{/restaurant/settings/update}" method="post" class="space-y-6">
                 <!-- Basic Information -->
                 <div class="border-b border-gray-200 pb-6">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                         <i class="fas fa-info-circle text-orange-600 mr-2"></i>
                         Basic Information
                     </h3>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Restaurant Name *</label>
-                            <input type="text" name="restaurantName" value="Spincery Restaurant" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter restaurant name">
+                            <input type="text" name="restaurantName" th:value="${restaurant.restaurantName}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter restaurant name">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Owner Name *</label>
-                            <input type="text" name="ownerName" value="John Doe" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter owner name">
+                            <input type="text" name="ownerName" th:value="${restaurant.ownerName}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter owner name">
                         </div>
                     </div>
                 </div>
@@ -73,26 +82,22 @@
                         <i class="fas fa-phone text-orange-600 mr-2"></i>
                         Contact Information
                     </h3>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                            <input type="email" name="email" value="info@spincery.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter email address">
+                            <input type="email" name="email" th:value="${restaurant.email}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter email address">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Phone *</label>
-                            <input type="tel" name="phone" value="+91 98765 43210" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter phone number">
+                            <input type="tel" name="phone" th:value="${restaurant.phone}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter phone number">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">WhatsApp Number</label>
-                            <input type="tel" name="whatsappNumber" value="+91 98765 43210" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter WhatsApp number">
+                            <input type="tel" name="whatsappNumber" th:value="${restaurant.whatsappNumber}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter WhatsApp number">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Alternate Contact</label>
-                            <input type="tel" name="alternateContact" value="+91 98765 43211" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter alternate contact">
+                            <input type="tel" name="alternateContact" th:value="${restaurant.alternateContact}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter alternate contact">
                         </div>
                     </div>
                 </div>
@@ -103,33 +108,28 @@
                         <i class="fas fa-map-marker-alt text-orange-600 mr-2"></i>
                         Address Information
                     </h3>
-                    
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Address *</label>
-                            <textarea name="address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter complete address">123 Main St, City</textarea>
+                            <textarea name="address" rows="3" th:text="${restaurant.address}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter complete address"></textarea>
                         </div>
-                        
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
-                                <input type="text" name="city" value="Metropolis" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter city">
+                                <input type="text" name="city" th:value="${restaurant.city}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter city">
                             </div>
-                            
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">State *</label>
-                                <input type="text" name="state" value="State" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter state">
+                                <input type="text" name="state" th:value="${restaurant.state}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter state">
                             </div>
-                            
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Zip Code *</label>
-                                <input type="text" name="zipCode" value="123456" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter zip code">
+                                <input type="text" name="zipCode" th:value="${restaurant.zipCode}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter zip code">
                             </div>
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Nearby Landmark</label>
-                            <input type="text" name="nearbyLandmark" value="Near Central Park" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter nearby landmark">
+                            <input type="text" name="nearbyLandmark" th:value="${restaurant.nearbyLandmark}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter nearby landmark">
                         </div>
                     </div>
                 </div>
@@ -140,26 +140,22 @@
                         <i class="fas fa-briefcase text-orange-600 mr-2"></i>
                         Business Information
                     </h3>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Business Registration Number</label>
-                            <input type="text" name="businessRegistrationNumber" value="BRN123456" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter business registration number">
+                            <input type="text" name="businessRegistrationNumber" th:value="${restaurant.businessRegistrationNumber}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter business registration number">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">FSSAI License Number</label>
-                            <input type="text" name="fssaiLicenseNumber" value="FSSAI987654" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter FSSAI license number">
+                            <input type="text" name="fssaiLicenseNumber" th:value="${restaurant.fssaiLicenseNumber}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter FSSAI license number">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">GSTIN</label>
-                            <input type="text" name="gstin" value="GSTIN123456" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter GSTIN">
+                            <input type="text" name="gstin" th:value="${restaurant.gstin}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter GSTIN">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                            <textarea name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter restaurant description">Best restaurant in town!</textarea>
+                            <textarea name="description" rows="3" th:text="${restaurant.description}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter restaurant description"></textarea>
                         </div>
                     </div>
                 </div>
@@ -170,26 +166,22 @@
                         <i class="fas fa-clock text-orange-600 mr-2"></i>
                         Operating Hours
                     </h3>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Opening Time</label>
-                            <input type="text" name="openingTime" value="09:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="HH:MM (e.g., 09:00)">
+                            <input type="text" name="openingTime" th:value="${restaurant.openingTime}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="HH:MM (e.g., 09:00)">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Closing Time</label>
-                            <input type="text" name="closingTime" value="22:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="HH:MM (e.g., 22:00)">
+                            <input type="text" name="closingTime" th:value="${restaurant.closingTime}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="HH:MM (e.g., 22:00)">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Working Days</label>
-                            <input type="text" name="workingDays" value="Monday to Sunday" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="e.g., Monday to Sunday">
+                            <input type="text" name="workingDays" th:value="${restaurant.workingDays}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="e.g., Monday to Sunday">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Weekly Off</label>
-                            <input type="text" name="weeklyOff" value="Sunday" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="e.g., Sunday">
+                            <input type="text" name="weeklyOff" th:value="${restaurant.weeklyOff}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="e.g., Sunday">
                         </div>
                     </div>
                 </div>
@@ -200,26 +192,22 @@
                         <i class="fas fa-truck text-orange-600 mr-2"></i>
                         Delivery Settings
                     </h3>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex items-center">
-                            <input type="checkbox" name="deliveryOffered" checked class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
+                            <input type="checkbox" name="deliveryOffered" th:checked="${restaurant.deliveryOffered}" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
                             <label class="ml-2 block text-sm text-gray-900">Offer Delivery</label>
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Delivery Radius (km)</label>
-                            <input type="number" name="deliveryRadius" value="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter delivery radius">
+                            <input type="number" name="deliveryRadius" th:value="${restaurant.deliveryRadius}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter delivery radius">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Packaging Charges (₹)</label>
-                            <input type="number" name="packagingCharges" value="20" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter packaging charges">
+                            <input type="number" name="packagingCharges" th:value="${restaurant.packagingCharges}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter packaging charges">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Average Preparation Time (minutes)</label>
-                            <input type="number" name="avgPreparationTime" value="30" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter preparation time">
+                            <input type="number" name="avgPreparationTime" th:value="${restaurant.avgPreparationTime}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Enter preparation time">
                         </div>
                     </div>
                 </div>

@@ -56,21 +56,12 @@
             <div class="bg-white rounded-lg shadow-md mb-8">
                 <div class="border-b border-gray-200">
                     <nav class="flex space-x-8 px-6">
-                        <a href="#" class="border-b-2 border-orange-500 py-4 px-1 text-sm font-medium text-orange-600">
-                            All Orders
-                        </a>
-                        <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
-                            Pending
-                        </a>
-                        <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
-                            Confirmed
-                        </a>
-                        <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
-                            Preparing
-                        </a>
-                        <a href="#" class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
-                            Ready
-                        </a>
+                        <a th:href="@{/restaurant/orders}" th:class="${selectedStatus == 'ALL' ? 'border-b-2 border-orange-500 py-4 px-1 text-sm font-medium text-orange-600' : 'border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700'}">All Orders</a>
+                        <a th:href="@{/restaurant/orders(status='PENDING')}" th:class="${selectedStatus == 'PENDING' ? 'border-b-2 border-orange-500 py-4 px-1 text-sm font-medium text-orange-600' : 'border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700'}">Pending</a>
+                        <a th:href="@{/restaurant/orders(status='CONFIRMED')}" th:class="${selectedStatus == 'CONFIRMED' ? 'border-b-2 border-orange-500 py-4 px-1 text-sm font-medium text-orange-600' : 'border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700'}">Confirmed</a>
+                        <a th:href="@{/restaurant/orders(status='PREPARING')}" th:class="${selectedStatus == 'PREPARING' ? 'border-b-2 border-orange-500 py-4 px-1 text-sm font-medium text-orange-600' : 'border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700'}">Preparing</a>
+                        <a th:href="@{/restaurant/orders(status='READY_FOR_PICKUP')}" th:class="${selectedStatus == 'READY_FOR_PICKUP' ? 'border-b-2 border-orange-500 py-4 px-1 text-sm font-medium text-orange-600' : 'border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700'}">Ready</a>
+                        <a th:href="@{/restaurant/orders(status='DELIVERED')}" th:class="${selectedStatus == 'DELIVERED' ? 'border-b-2 border-orange-500 py-4 px-1 text-sm font-medium text-orange-600' : 'border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700'}">Delivered</a>
                     </nav>
                 </div>
             </div>

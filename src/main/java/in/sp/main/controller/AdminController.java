@@ -4,6 +4,8 @@ import in.sp.main.entity.User;
 import in.sp.main.entity.Restaurant;
 import in.sp.main.service.UserService;
 import in.sp.main.service.RestaurantService;
+import in.sp.main.service.HotelService;
+import in.sp.main.service.CloudKitchenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +25,8 @@ import java.util.List;
 public class AdminController {
     private final UserService userService;
     private final RestaurantService restaurantService;
+    private final HotelService hotelService;
+    private final CloudKitchenService cloudKitchenService;
 
     /**
      * Displays the admin dashboard page.
@@ -39,6 +43,10 @@ public class AdminController {
                 if (user.getRole() == User.UserRole.ADMIN) {
                     model.addAttribute("user", user);
                     model.addAttribute("userInitial", user.getName().substring(0, 1).toUpperCase());
+                    model.addAttribute("totalUsers", userService.findAll().size());
+                    model.addAttribute("totalRestaurants", restaurantService.findAll().size());
+                    model.addAttribute("totalHotels", hotelService.findAll().size());
+                    model.addAttribute("totalCloudKitchens", cloudKitchenService.findAll().size());
                     return "admin/dashboard";
                 } else {
                     return "redirect:/access-denied";

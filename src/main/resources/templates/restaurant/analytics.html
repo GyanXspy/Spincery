@@ -55,7 +55,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Total Orders</p>
-                        <p class="text-2xl font-bold text-gray-900">1,234</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${totalOrders}">1,234</p>
                         <p class="text-sm text-green-600">+12% from last month</p>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Revenue</p>
-                        <p class="text-2xl font-bold text-gray-900">₹45,678</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="'₹' + ${revenue}">₹45,678</p>
                         <p class="text-sm text-green-600">+8% from last month</p>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Average Rating</p>
-                        <p class="text-2xl font-bold text-gray-900">4.5</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${avgRating}">4.5</p>
                         <p class="text-sm text-green-600">+0.2 from last month</p>
                     </div>
                 </div>
@@ -94,7 +94,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Customers</p>
-                        <p class="text-2xl font-bold text-gray-900">567</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${customers}">567</p>
                         <p class="text-sm text-green-600">+15% from last month</p>
                     </div>
                 </div>
@@ -122,34 +122,19 @@
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Popular Items</h3>
                 <div class="space-y-4">
-                    <div class="flex items-center justify-between">
+                    <div th:each="item : ${popularItems}" class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-utensils text-orange-600"></i>
                             </div>
                             <div>
-                                <p class="font-medium text-gray-800">Paneer Tikka</p>
-                                <p class="text-sm text-gray-600">₹250</p>
+                                <p class="font-medium text-gray-800" th:text="${item.name}">Paneer Tikka</p>
+                                <p class="text-sm text-gray-600" th:text="'₹' + ${item.price}">₹250</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="font-semibold text-gray-800">156 orders</p>
-                            <p class="text-sm text-green-600">+23%</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-utensils text-orange-600"></i>
-                            </div>
-                            <div>
-                                <p class="font-medium text-gray-800">Butter Chicken</p>
-                                <p class="text-sm text-gray-600">₹320</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-semibold text-gray-800">98 orders</p>
-                            <p class="text-sm text-green-600">+15%</p>
+                            <p class="font-semibold text-gray-800" th:text="${item.orders} + ' orders'">156 orders</p>
+                            <p class="text-sm text-green-600" th:text="'+' + ${item.growth} + '%'">+23%</p>
                         </div>
                     </div>
                 </div>
@@ -159,23 +144,14 @@
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Orders</h3>
                 <div class="space-y-4">
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div th:each="order : ${recentOrders}" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div>
-                            <p class="font-medium text-gray-800">Order #12345</p>
+                            <p class="font-medium text-gray-800" th:text="'Order #' + ${order.id}">Order #12345</p>
                             <p class="text-sm text-gray-600">
-                                <span>2</span> items • ₹<span>280</span>
+                                <span th:text="${order.items}">2</span> items • ₹<span th:text="${order.amount}">280</span>
                             </p>
                         </div>
-                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Delivered</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                            <p class="font-medium text-gray-800">Order #12346</p>
-                            <p class="text-sm text-gray-600">
-                                <span>3</span> items • ₹<span>450</span>
-                            </p>
-                        </div>
-                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Confirmed</span>
+                        <span class="px-2 py-1 text-xs rounded-full" th:classappend="${order.statusClass}" th:text="${order.status}">Delivered</span>
                     </div>
                 </div>
             </div>
@@ -189,7 +165,12 @@
         </div>
     </footer>
 
-    <script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const revenueData = /*[[${revenueTrend}]]*/ [12000, 19000, 15000, 25000, 22000, 30000];
+        const ordersData = /*[[${ordersByStatus}]]*/ [12, 19, 8, 15, 25];
+        /*]]>*/
+
         // Revenue Chart
         const revenueCtx = document.getElementById('revenueChart').getContext('2d');
         new Chart(revenueCtx, {
@@ -198,7 +179,7 @@
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                 datasets: [{
                     label: 'Revenue',
-                    data: [12000, 19000, 15000, 25000, 22000, 30000],
+                    data: revenueData,
                     borderColor: 'rgb(59, 130, 246)',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
                     tension: 0.4
@@ -226,7 +207,7 @@
             data: {
                 labels: ['Pending', 'Confirmed', 'Preparing', 'Ready', 'Delivered'],
                 datasets: [{
-                    data: [12, 19, 8, 15, 25],
+                    data: ordersData,
                     backgroundColor: [
                         '#FCD34D',
                         '#3B82F6',
