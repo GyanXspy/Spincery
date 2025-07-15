@@ -246,6 +246,35 @@ public class HotelBookingController {
                 if (user.getRole() == User.UserRole.HOTEL_OWNER) {
                     model.addAttribute("user", user);
                     model.addAttribute("userInitial", user.getName().substring(0, 1).toUpperCase());
+
+                    // Get all hotels owned by this user
+                    List<Hotel> hotels = hotelService.findByOwnerId(user.getId());
+                    int totalRooms = 0;
+                    int availableRooms = 0;
+                    int bookedRooms = 0;
+                    double totalRevenue = 0.0;
+                    List<RoomBooking> allBookings = new ArrayList<>();
+
+                    for (Hotel hotel : hotels) {
+                        List<Room> rooms = roomService.findByHotelId(hotel.getId());
+                        totalRooms += rooms.size();
+                        availableRooms += (int) rooms.stream().filter(Room::isAvailable).count();
+                        bookedRooms += (int) rooms.stream().filter(r -> r.getStatus() == Room.RoomStatus.OCCUPIED || r.getStatus() == Room.RoomStatus.RESERVED).count();
+                        List<RoomBooking> bookings = roomBookingService.findByHotelId(hotel.getId());
+                        allBookings.addAll(bookings);
+                        totalRevenue += bookings.stream().filter(b -> b.getStatus() == RoomBooking.BookingStatus.CONFIRMED || b.getStatus() == RoomBooking.BookingStatus.CHECKED_IN || b.getStatus() == RoomBooking.BookingStatus.CHECKED_OUT).mapToDouble(b -> b.getTotalAmount() != null ? b.getTotalAmount() : 0.0).sum();
+                    }
+
+                    // Sort bookings by check-in date descending for recent bookings
+                    allBookings.sort((a, b) -> b.getCheckInDate().compareTo(a.getCheckInDate()));
+                    List<RoomBooking> recentBookings = allBookings.stream().limit(5).toList();
+
+                    model.addAttribute("totalRooms", totalRooms);
+                    model.addAttribute("availableRooms", availableRooms);
+                    model.addAttribute("bookedRooms", bookedRooms);
+                    model.addAttribute("totalRevenue", totalRevenue);
+                    model.addAttribute("recentBookings", recentBookings);
+
                     return "hotel/dashboard";
                 } else {
                     return "redirect:/access-denied";
