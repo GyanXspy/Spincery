@@ -12,4 +12,5 @@ public class SpinceryApplication {
 		SpringApplication.run(SpinceryApplication.class, args);
 	}
 
+	
 }
