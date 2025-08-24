@@ -34,3 +34,5 @@ build/
 
 # Spring Boot config
 src/main/resources/application.properties
+
+src/main/java/in/sp/main/service/CloudinaryService.java
