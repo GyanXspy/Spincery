@@ -245,7 +245,7 @@ The application creates the following tables automatically:
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project not licenced
 
 ## 🆘 Support
 
